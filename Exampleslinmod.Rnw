@@ -1,0 +1,90 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Linear modelling critical examples}
+
+\section{Hypothesis testing using C matrix}
+
+<<>>=
+data(ToothGrowth)
+
+fm1<-lm(len~dose+supp,ToothGrowth)
+#summary(fm1)
+
+## see below:
+(varcov.mat<-round(vcov(fm1),digits=3))
+@
+
+Test: $H_0: \beta_0=2\beta_1, \beta_2=0$. 
+
+<<>>=
+y<-ToothGrowth$len
+X<-model.matrix(fm1)
+XT.X <- t (X)%*%X
+XT.y <- t(X)%*%y
+G<-solve(XT.X)
+
+## recovers Vcov matrix:
+4.24^2*G
+
+beta.hat <- G%*%XT.y
+
+C<-matrix(c(1,-2,0,0,0,1),byrow=T,ncol=3)
+## this changes:
+c<-matrix(c(0,0),byrow=T,ncol=1)
+
+(yT.y <- t(y)%*%y)
+(bT.XT.y<-t(beta.hat)%*%t(X)%*%y) 
+
+## by definition of S_r:
+Sr <- yT.y - bT.XT.y
+n<-60
+p<-3  ## num parameters
+sigma.hat.2 <- (1/(n-p)) * Sr
+#sqrt(sigma.hat.2)
+
+num<-t(C %*% beta.hat - c) %*% 
+     ginv(C %*% G %*% t(C) ) %*% 
+     (C %*% beta.hat - c )
+q<-2 ## num of hypotheses
+(F<-num/(sigma.hat.2*q))
+1-pf(F,q,n-p)
+@
+
+In the exam exercise we are given:
+
+<<>>=
+given<-solve(C%*%solve(XT.X)%*%t(C))/4.24^2
+@
+
+So, the middle term is:
+
+<<>>=
+given*4.24^2
+@
+
+Cross-check:
+
+<<>>=
+ginv(C %*% G %*% t(C) )
+@
+
+So we can do:
+
+<<>>=
+num<-t(C %*% beta.hat - c) %*% 
+     ginv(C %*% G %*% t(C) ) %*% 
+     (C %*% beta.hat - c )
+
+num2<-t(C %*% beta.hat - c) %*% 
+     (given*4.24^2)%*% 
+     (C %*% beta.hat - c )
+
+q<-2 ## num of hypotheses
+(F<-num/(sigma.hat.2*q))
+1-pf(F,q,n-p)
+@
+
+\end{document}

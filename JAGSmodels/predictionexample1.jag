@@ -1,0 +1,10 @@
+
+model
+   {
+    ## prior
+    theta ~ dbeta(a,b)
+    ## likelihood
+    y ~ dbin(theta,n)
+    ## predicted posterior distribution
+    y.pred ~ dbin(theta,n.pred)
+   }

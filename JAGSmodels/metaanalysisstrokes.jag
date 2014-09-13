@@ -1,0 +1,25 @@
+
+model
+   {
+for(i in 1:4){
+x[i] ~ dbin(gamma[i],nx[i])
+y[i] ~ dbin(delta[i],ny[i])
+logit(gamma[i]) <- mu[i]
+logit(delta[i]) <- mu[i]+theta[i]
+## priors:
+mu[i] ~ dnorm(0,0.001)
+theta[i] ~ dnorm(alpha,beta)
+}
+alpha ~ dnorm(0,0.001)
+beta<-1/sigma
+sigma ~ dunif(0,100)
+mu.pred ~ dnorm(0,0.001)
+theta.pred ~ dnorm(alpha,beta)
+probc<-exp(mu.pred)/(1+exp(mu.pred))
+probt<-exp(mu.pred+theta.pred)/(1+exp(mu.pred+theta.pred))
+logit(gamma.pred) <- mu.pred
+logit(delta.pred) <- mu.pred+theta.pred
+## shaped like a Beta(1/2,1/2)
+st ~ dbin(gamma.pred,100)
+sc ~ dbin(delta.pred,100)
+}

@@ -1,0 +1,13 @@
+type site frequency
+hutchinson	headneck	22
+hutchinson	trunk	2
+hutchinson	extremities	10
+superficial	headneck	16
+superficial	trunk	54
+superficial	extremities	115
+nodular	headneck	19
+nodular	trunk	33
+nodular	extremities	73
+indeterminate	headneck	11
+indeterminate	trunk	17
+indeterminate	extremities	28

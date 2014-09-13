@@ -1,0 +1,6 @@
+
+model
+   {
+    theta ~ dbeta(3,27)
+    Y ~ dbin(theta,20)
+   }

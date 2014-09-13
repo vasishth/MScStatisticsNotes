@@ -1,0 +1,19 @@
+
+model
+   {
+for(j in 1:6){
+x[j] ~ dpois(lambda[j])
+lambda[j] <- alpha[j]*theta[j]
+theta[j] ~ dgamma(psi,rho)
+}
+psi ~ dgamma(0.001,0.001)
+rho ~ dgamma(0.001,0.001)
+mu <- psi/rho
+## coef of var: extent of variability
+## (sigma/mu) in relation to mean 
+## incidence of disease
+cv <- 1/sqrt(psi)
+theta.pred ~ dgamma(psi,rho)
+lambda.pred<-259*theta.pred
+x.pred ~ dpois(lambda.pred)
+}

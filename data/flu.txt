@@ -1,0 +1,6 @@
+placebo	small 25
+placebo	moderate 8
+placebo	large 5
+vaccine	small 6
+vaccine	moderate 18
+vaccine	large 11

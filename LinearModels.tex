@@ -1,0 +1,1313 @@
+
+%These notes summarize the lecture notes from the Linear Modelling course at Sheffield's School of Mathematics and Statistics, MSc degree programme. The original notes were written by Dr.\ Kevin Walters and Dr.\ Jeremy Oakley. This summary is completely derived from these notes and from other MSc sources. Any errors are most probably mine.
+
+%Everything is in matrix form unless a lower case letter with a subscript (such as $x_i$) is used (even there, I might deviate from this convention if I need to index sub-matrices; it's best to look at the context to decide what is meant).
+
+
+\section{Background}
+
+\subsection{Derivations of combinations of functions}
+
+\begin{equation}
+  (uv)' = uv' + vu'
+\end{equation}
+
+\begin{equation}
+(u/v)' = 	\frac{vu' - uv'}{v^2}
+\end{equation}
+
+
+\subsection{Some key distributional results}
+
+
+\subsection{Some very basic matrix algebra facts}
+
+\textbf{Inverse (2x2)}: 
+
+$\begin{pmatrix}
+a & b \\
+c & d\\
+\end{pmatrix}^{-1}
+= \frac{1}{ad-bc} 
+\begin{pmatrix}
+d & -b \\
+-c & a\\
+\end{pmatrix}$
+
+
+\textbf{Inverse of non-singular matrices}. 
+If A and B are non-singular matrices then $(AB)^{?1} = B^{-1}A^{-1}$.
+
+\textbf{Symmetric square matrix}: $A=A^T$. 
+
+If a symmetric matrix A is non-singular then $A^{-1}$ is also symmetric.
+
+$AA^{-1}=A^{-1}A=I$ given A is square and invertible.
+ 
+ If the symmetric matrix $A$ is non-singular then $A^{-1}$ is also symmetric.
+ 
+ \textbf{Multiplication is distributive}: Multiplication is distributive over addition and subtraction, so $(A-B)(C-D)=AC -BC-AD+BD$.
+
+\textbf{Transpose}: $(A+B)^T =A^T+B^T$ and $(AB)^T =B^TA^T$
+
+\textbf{Sum of squares}: $\sum x_i^2 = \mathbf{x}^T \mathbf{x}$.
+
+\textbf{Symmetry under multiplication}: If A is $n\times p$, then $AA^T$ and $A^TA$ are symmetric.
+
+
+
+
+\textbf{Trace of a square matrix}: 
+
+\begin{enumerate}
+\item
+$tr(A)=\sum a_{ii}$
+\item
+$tr(A + B) = tr(A) + tr(B)$
+\item 
+$tr(cA) = ctr(A)$
+\item
+$tr(AB) = tr(BA)$
+\end{enumerate}
+
+\textbf{Idempotent}:  $A^2 = AA = A$. Example: $A = I_n$; this is the only non-singular idempotent matrix. 
+
+If A is idempotent and if $A\neq I_n$, then A is singular and its trace is equal to its rank $n-p$, for some $p>0$.
+
+\textbf{Inverse of a matrix product}:
+If A and B are non-singular matrices then $(AB)^{-1} = B^{-1}A^{-1}$.
+
+\textbf{Rank}: the number of linearly independent columns or rows of A.
+
+How to determine linear independence: 
+
+\section{Basic facts}
+
+\begin{equation}
+y=X\beta+\epsilon
+\end{equation}
+
+\begin{tabular}{@{}ll@{}ll@{}}
+$E(y) = X\beta = \mu$ &  & $E(\epsilon)=0$  \\
+$Var(y) = \sigma^2 I_n $ & & $Var(\epsilon) = \sigma^2 I_n$ \\
+%y+X\hat{\beta} + e$ \\
+%%$E(y) = X\beta = \mu$ & Var\\
+% $\epsilon \sim N_p (0,\sigma^2I_n)$  & No \verb!\part! divisions. \\
+%\verb!article! & No \verb!\part! or \verb!\chapter! divisions. \\
+%\verb!letter!  & Letter (?). \\
+%\verb!slides!  & Large sans-serif font.
+\end{tabular}
+
+\begin{equation}
+y = X\hat{\beta} + e
+\end{equation}
+
+\begin{fmpage}{\linewidth}
+Note that $S_{xx}=\frac{1}{(X'X)^{-1}}$, and 
+$G=(X'X)^{-1}$, so that $S_{xx}=\frac{1}{G}$.
+\end{fmpage}
+
+\begin{tabular}{@{}ll@{}ll@{}}
+Results for $\hat{\beta}$ & Results for $e$\\
+$E(\hat{\beta}) = \beta$ & $E(e) = 0$\\
+$Var(\hat{\beta}) = \sigma^2 (X^T X)^{-1} = \frac{\sigma^2}{S_{xx}}=\sigma^2G$ & $Var(e)=\sigma^2 M$  \\
+$\hat{\beta} \sim N_p(\beta,\sigma^2 (X^T X)^{-1})$ & $Var(e_i)=\sigma^2 m_{ii} $\\ 
+&  $E(e_i^2)= \sigma^2 m_{ii}$\\
+$\hat{\beta} = (X^T X)^{-1} X^T y$, $X$ has full rank  & $E(\sum e_i^2) = \sigma^2 (n-p)$\\
+\end{tabular}
+
+\medskip
+\textbf{Sum of Squares}:
+
+\begin{equation}
+S(\hat{\beta}) = \sum e_i^2 = e^T e = (y-X\hat{\beta})^T (y-X\hat{\beta})  = y^T y - y^T X \hat{\beta} = S_r
+\end{equation}
+
+Alternatively: $S_r= y^Ty - \hat{\beta}^T X^T X\hat{\beta}=y^Ty - \hat{\beta}^T X^T y$ (see review exercises 2).
+
+\textbf{Estimation of error variance: $e=My$}
+
+\begin{equation}
+e = y - X\hat{\beta} = y - X (X^T X)^{-1} X^T y = My
+\end{equation}
+
+\noindent
+where
+
+\begin{equation}
+M = I_n -  X (X^T X)^{-1} X^T 
+\end{equation}
+
+M is symmetric, idempotent $n\times n$.
+
+Note that $MX=0$, which means that 
+
+\begin{equation}
+E(e)=E(My) = ME(y)= MX\beta = 0
+\end{equation}
+
+Also, $Var(e) = Var(My) = M Var(y) M^T = \sigma^2 I_n M$.
+
+\medskip
+\textbf{Important properties of M}:
+
+\begin{itemize}
+\item $M$ is singular because every idempotent matrix except $I_n$ is singular.
+\item $trace(M)=rank(M)=n-p$.
+\end{itemize}
+
+\medskip
+
+
+\textbf{Residual mean square}:
+\begin{equation}
+\hat{\sigma}^2 = \frac{\sum e_i^ 2}{n-p} \quad E(\hat{\sigma}^2)=\sigma^2
+\end{equation}
+
+The square root of $\hat{\sigma}^2$, $\hat{\sigma}$ is the \textbf{residual standard error}.
+Note: The phrase ``standard error'' here should not be misinterpreted to mean standard error in the sense of ``SE''. 
+
+\textbf{Variance-covariance matrix}:
+
+In a model like \begin{verbatim}fm<-lm(Maint ~ Age, data = data)\end{verbatim}, the variance-covariance matrix is:
+
+\begin{equation}
+\begin{pmatrix}
+Var(\hat{\beta}_0) & Cov(\hat{\beta}_0,\hat{\beta}_1) \\
+Cov(\hat{\beta}_0,\hat{\beta}_1) & Var(\hat{\beta}_1)\\
+\end{pmatrix}
+\end{equation}
+
+The correlation between the two parameter estimates is therefore:
+
+\begin{equation}
+Corr(\hat{\beta}_0,\hat{\beta}_1) = \frac{Cov(\hat{\beta}_0,\hat{\beta}_1)}{SE(\hat{\beta}_0) SE(\hat{\beta}_1)}
+\end{equation}
+
+
+Example (tractor data):
+
+\begin{verbatim}
+> vcov(fm)
+            (Intercept)     Age
+(Intercept)       21591 -4624.0
+Age               -4624  1267.9
+\end{verbatim}
+
+We can check the correlation calculation using
+
+\begin{verbatim}
+> cov2cor(vcov(fm))
+            (Intercept)      Age
+(Intercept)     1.00000 -0.88378
+Age            -0.88378  1.00000
+\end{verbatim}
+
+
+
+\subsection{Some short-cuts for hand-calculations}
+
+\begin{tabular}{@{}ll@{}}
+$S_{xx} = \sum (x_i - \bar{x})^2$  & $= \sum x_i^2 - n\bar{x}^2$\\
+$S_{yy} = \sum (y_i - \bar{y})^2$ & $= \sum y_i^2 - n\bar{y}^2$\\ 
+$S_{xy} = \sum (x_i -\bar{x})(y_i -\bar{y})$ & = $\sum x_i y_i - n\bar{x}\bar{y}$\\
+\end{tabular}
+
+\begin{equation}
+\hat{\beta} = (X^T X)^{-1} X^T y = 
+\begin{pmatrix} 
+\bar{y} - \bar{x} \frac{S_{xy}}{S_{xx}}\\
+\frac{S_{xy}}{S_{xx}}
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+X^T X = \begin{pmatrix}
+n & \sum_{i=1}^n x_i\\
+\sum_{i=1}^n x_i & \sum_{i=1}^n x_i^2\\
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+(X^T X)^{-1} = \frac{1}{nS_{xx}} 
+\begin{pmatrix}
+ S_{xx}+n\bar{x}^2 & -n\bar{x} \\
+ -n\bar{x} & n\\
+\end{pmatrix}
+\end{equation}
+
+\noindent
+Note that $\sum_{i=1}^n x_i = n\bar{x}$.
+
+\begin{equation}
+X^T  y = \begin{pmatrix}
+n\bar{y} \\
+S_{xy} + n\bar{x}\bar{y}
+\end{pmatrix}
+\end{equation}
+
+
+See \cite[25]{DraperSmith} for a full exposition.
+
+\subsection{Gauss-Markov conditions}
+
+This imposes distributional assumptions on $\epsilon = y - X \beta$.
+
+$E(\epsilon)=0$ and $Var(\epsilon)=\sigma^2 I_n$,
+
+\subsection{Gauss-Markov theorem}
+
+Let $a$ be any $p \times 1$ vector and suppose that $X$ has rank $p$. Of all estimators of $\theta = a^T \beta$ that are unbiased and linear functions of $y$, the estimator $\hat{\theta} = a^T \hat{\beta}$ has minimum variance. Note that $\theta$ is a scalar.
+
+Note: no normality assumption required! But if $\epsilon \sim N(0,\sigma^2)$, $\hat{\beta}$ have smaller variances than any other estimators.
+
+\textbf{Minimum variance unbiased linear estimators}:
+to-do
+
+\subsection{$R^2$ or Coefficient of determination}
+
+\begin{tabular}{@{}ll@{}}
+$S_{TOTAL} = (y-\bar{y})^T(y-\bar{y})$  $= y^T y - n\bar{y}^2$ & \\
+$S_{REG} = (X\hat{\beta}-\bar{y})^T (X\hat{\beta}-\bar{y})$ & \\
+$S_r = \sum e_i^2 = (y-X\hat{\beta})^T (y-X\hat{\beta})$ & \\
+\end{tabular}
+
+\begin{equation}
+S_{TOTAL} = S_{REG}+ S_r
+\end{equation}
+
+\begin{equation}
+R^2 = \frac{S_{TOTAL}-S_r}{S_{TOTAL}} = \frac{S_{REG}}{S_{TOTAL}}
+\end{equation}
+
+For $y = 1_n \beta_0 + \epsilon$, then $R^2 = \frac{S_{REG}}{S_{TOTAL}} = 0$ because $X\hat{\beta} = \bar{y}$. So $S_{REG} = (X\hat{\beta} - \bar{y})^T (X\hat{\beta} - \bar{y}) = 0$.
+
+In simple linear regression, $R^2 = r^2$.  $R^2$ is a generalization of $r^2$.
+
+Adjusted $R^2= R_{Adj}^2$.  $R_{Adj}^2= 1-\frac{S_r/(n-p)}{S_{TOTAL}/(n-1)}$. 
+
+$R^2$ increases with increasing numbers of explanatory variables, therefore $R_{Adj}^2$ is better. 
+
+
+\section{Hypothesis testing}
+
+\subsection{Some theoretical background}
+
+\textbf{Multivariate normal}:
+
+Let $X^T = < X_1,\dots,X_p>$, where $X_i$ are univariate random variables.
+
+X has a multivariate normal distribution if and only if every component of $X$ has a univariate normal distribution.
+
+
+\textbf{Linear transformations}:
+
+Let $A, b$ be constants. Then, $Ax + b\sim N_q (A\mu + b, A\Sigma A^T)$.
+
+\textbf{Standardization}:
+
+Note that $\Sigma$ is positive definite (it's a variance covariance matrix), so $\Sigma = CC^T$. 
+$C$ is like a square root (not necessarily unique).
+ 
+It follows ``immediately'' that 
+
+\begin{equation}
+C^{-1} (X-\mu) \sim N_p (0_p, I_p)
+\end{equation}
+
+If $\Sigma$ is a diagonal matrix, then $X_1,\dots,X_n$ are independent and uncorrelated.
+
+\textbf{Quadratic forms}:
+
+Recall distributional result: If we have $n$ independent standard normal random variables, their sum of squares is $\chi_n^2$.
+
+Lt $z = C^{-1} (X-\mu)$, and $\Sigma=CC^T$. The sum of squares $z^T z$ is:
+
+\begin{equation}
+\begin{split}
+z^T z & = [C^{-1} (X-\mu)]^T [C^{-1} (X-\mu)]\\
+& = (X-\mu)^T [C^{-1}]^T [C^{-1}](X-\mu) \quad \dots (AB)^T=B^T A^T\\
+\end{split}
+\end{equation} 
+
+Note that $ [C^{-1}]^T =  [C^{T}]^{-1}$. Therefore, 
+
+\begin{equation}
+\begin{split}
+[C^{-1}]^T [C^{-1}] & = [C^T]^{-1} [C^{-1}]\\
+& = (C^T C)^{-1}\\
+& = (C C^T)^{-1}\\
+& = \Sigma^{-1}\\
+\end{split}
+\end{equation} 
+
+Therefore: $z^T z = (X-\mu)^T  \Sigma^{-1} (X-\mu)\sim \chi_p^2$, where $p$ is the number of parameters.
+
+\textbf{Quadratic expressions involving idempotent matrices}
+
+Given a matrix $K$ that is idempotent, symmetric. Then:
+
+\begin{equation}
+x^T K x = x^T K^2 x = x^T K^T K x
+\end{equation}
+
+Let $x\sim N_n(\mu,\sigma^2 I_n)$, and let $K$ be a symmetric, idempotent $n \times n$ matrix such that $K\mu=0$. Let $r$ be the rank or trace of $K$. Then we have the 
+
+\begin{fmpage}{\linewidth}
+\textbf{sum of squares property}:
+
+\begin{equation}
+x^T K x \sim \sigma^2 \chi_r^2
+\end{equation}
+\end{fmpage}
+
+The above generalizes the fact that if we have $n$ independent standard normal random variables, their sum of squares is $\chi_n^2$.
+
+Two points about the sum of squares property:
+\begin{itemize}
+\item
+Recall that the expectation of a chi-squared random variable is its degrees of freedom. It follows that:
+
+\begin{equation}
+E(x^T K x) =  \sigma^2 r 
+\end{equation}
+
+If $K\mu\neq 0$, $E(x^T K x) =  \sigma^2 r+\mu^T K\mu$. 
+
+\item If $K$ is idempotent, so is $I-K$. This allows us to split $x^T x$ into two components sums of squares:
+
+\begin{equation}
+x^T x = x^T K x+x^T (I-K) x
+\end{equation}
+\end{itemize}
+
+\textbf{Partition sum of squares}:
+
+[helps prove independence of SSs] 
+
+\begin{enumerate}
+\item Let $K_1, K_2,\dots, K_q$ be \textbf{symmetric idempotent $n \times n$ matrices} such that
+\item $\sum K_i= I_n$ and 
+\item $K_iK_j =0$, for all $i\neq j $. 
+\item Let $x\sim N_n(\mu, \sigma^2I_n)$.
+ \end{enumerate}
+ 
+ Then we have the following partitioning into \textbf{independent} sums of squares:
+ 
+  \begin{equation}
+x^T x = \sum x^T K_i x
+\end{equation}
+
+If $K_i \mu = 0$, then $ x^T K_i x\sim \sigma^2 \chi_{r_i}^2$, where $r_i$ is the rank of $K_i$.
+
+\textbf{Example}:
+
+\begin{equation}
+y^T y  = y^T M y + y^T (I-M) y 
+\end{equation}
+
+Let $K_1 = M$ and $K_2 = (I-M)$. It is easy to check that all four conditions above are satisfied; therefore the sums of squares are independent.
+
+Note that 
+
+\begin{equation}
+ y^T M y  = e^T e \sim \chi^2_{n-p}
+\end{equation}
+
+and
+
+\begin{equation}
+ y^T (I-M y)  = \hat{\beta}^T (X^T X) \hat{\beta} \sim \chi^2_{p}
+\end{equation}
+
+Recall distributional result: if $X\sim \chi_v^2, Y\sim \chi_w^2$ and $X,Y$ independent then $\frac{X/v}{Y/w}\sim F_{v,w}$.  
+
+Therefore, $ \frac{\frac{y^T (I-M y)}{n-p}}{\frac{y^T M y}{p}}\sim F_{p,n-p}$.
+
+\subsection{Confidence intervals for $\hat{\beta}$}
+
+Note that $\hat{\beta} \sim N_p (\beta,\sigma^2 (X^T X)^{-1})$, and that 
+$\frac{\hat{\sigma}^2}{\sigma^2} \sim  \frac{\chi^2_{n-p}}{n-p}$.
+
+From distributional theory we know that $T=\frac{X}{\sqrt{Y/v}}$, when $X\sim N(0,1)$ and $Y\sim \chi^2_{v}$. 
+
+Let 
+ $x_i$ be a column vector containing the values of the explanatory/regressor variables for a new observation $i$. Then if we define:
+
+\begin{equation}
+X=\frac{x_i^T \hat{\beta} - x_i^T \beta}{\sqrt{\sigma^2 x_i^T (X^T X)^{-1}x_i}} \sim N(0,1)
+\end{equation}
+
+\noindent
+and 
+
+\begin{equation}
+Y=\frac{\hat{\sigma}^2}{\sigma^2} \sim  \frac{\chi^2_{n-p}}{n-p}
+\end{equation}
+
+
+It follows that  $T=\frac{X}{\sqrt{Y/v}}$:
+
+\begin{equation}
+T=  \frac{x_i^T \hat{\beta} - x_i^T \beta}{\sqrt{\hat{\sigma}^2 x_i^T (X^T X)^{-1}x_i}} = 
+\frac{  \frac{x_i^T \hat{\beta} - x_i^T \beta}{\sqrt{\sigma^2 x_i^T (X^T X)^{-1}x_i}}}{\sqrt{\frac{\hat{\sigma}^2}{\sigma^2}}}
+ \sim t_{n-p}
+\end{equation}
+
+I.e., a 95\% CI:
+
+\begin{equation}
+x_i^T \hat{\beta} \pm t_{n-p,1-\alpha/2}\sqrt{\hat{\sigma}^2 x_i^T(X^T X)^{-1}x_i}
+\end{equation}
+
+Cf.\ a prediction interval:
+
+\begin{equation}
+x_i^T \hat{\beta} \pm t_{n-p,1-\alpha/2}\sqrt{\hat{\sigma}^2 (1+x_i^T(X^T X)^{-1}x_i)}
+\end{equation}
+
+Note that 
+
+\begin{enumerate}
+\item
+A prediction interval will be wider about the edges; this is because the term $\hat{\sigma}^2 (1+x_i^T(X^T X)^{-1}x_i)$ in the prediction interval formula is minimized at the mean value of the 
+predictor variable. When $x_i = \bar{x}$ we have the smallest value for the term, and so the further away the $x_i$ value from $\bar{x}$, the larger the interval. 
+\item 
+The width of the prediction interval stays much more constant around the range of observed values.
+This is because 1 is much larger than $x_i^T(X^T X)^{-1}x_i)$; so if $x_i$ is near the mean value for $x$ then this term will not change much. 
+
+\end{enumerate}
+
+\subsection{Distributions of estimators and residuals}
+
+Covar$(\hat{\beta},e)=0$: 
+
+         Var$\begin{pmatrix}
+	 \hat{\beta} \\
+	e \\
+	\end{pmatrix}
+	= 
+	\begin{pmatrix}
+	 Var(\hat{\beta}) & 0 \\
+	 0 & Var(e) \\
+	\end{pmatrix}
+	= 
+	\begin{pmatrix}
+	 \sigma^2 (X^T X)^{-1} & 0 \\
+	 0 & \sigma^2 M \\
+	\end{pmatrix}
+	$.
+	
+\textbf{Confidence intervals for components of $\beta$}	
+
+
+Let $G=(X^T X)^{-1}$, and $g_{ii}$ the $i$-th diagonal element. 
+
+\begin{equation}
+\hat{\beta}_i \sim N(\beta_i, \sigma^2 g_{ii})
+\end{equation}
+
+Since $\hat{\beta}$ and $S_r$ are independent, we have:
+
+\begin{equation}
+\frac{\hat{\beta}_i - \beta_i}{\hat{\sigma}\sqrt{g_{ii}}} \sim t_{n-p}
+\end{equation}
+
+The 95\% CI:
+
+
+\begin{equation}
+\hat{\beta}_i \pm t_{n-p,(1-\alpha)/2} \hat{\sigma} \sqrt{g_{ii}} 
+\end{equation}
+
+\subsection{Maximum likelihood estimators}
+
+For $\sigma^2$:
+
+
+Let $X_i$, $i=1,\dots,n$ be a random variable with PDF $f(x; \sigma) = \frac{1}{2\sigma} exp (-\frac{\mid x \mid}{\sigma})$. Find $\hat \sigma$, the MLE of $\sigma$.
+
+
+\begin{equation}
+	L(\sigma) = \prod f(x_i; \sigma) = \frac{1}{(2\sigma)^n} exp (-\sum \frac{(x_i - \mu)^2}{\sigma^2})
+\end{equation}
+
+Let $\ell$ be log likelihood. Then:
+
+\begin{equation}
+	\ell (x; \sigma) = - n\log 2 - n\log \sigma - \sum (x_i - \mu)^2 /\sigma^2
+\end{equation}
+
+Differentiating and equating to zero to find maximum:
+
+\begin{equation}
+	\ell ' (\sigma) =  - \frac{n}{\sigma} +  \sum (x_i - \mu)^2 /\sigma^3 =
+	 0
+\end{equation}
+
+Rearranging the above, the MLE for $\sigma$ is:
+
+\begin{equation}
+	\hat \sigma^2 =  \sum (x_i - \mu)^2 /n
+\end{equation}
+
+Since $S_r\sim \chi^2_{n-p}$, $E(S_r)=\sigma^2 (n-p)$. So we need to correct $S_r$ as $S_r/n-p$ to get $E(S_r)=\sigma^2$. 
+
+\subsection{Hypothesis testing}
+
+A general format for specifying null hypotheses: $H_0: C\beta = c$, where $C$ is a $q\times p$ matrix and $c$ is a $q\times 1$ vector of known constants. The matrix $C$ effectively asserts specific values for $q$ linear functions of $\beta$. In other words, it asserts $q$ null hypotheses stated in terms of (components of) the parameter vector $\beta$.
+
+ E.g., given:
+
+\begin{equation}
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2+\epsilon_i
+\end{equation}
+
+\noindent
+we can test $H_0: \beta_1=1, \beta_2=2$ by setting 
+
+$C=\begin{pmatrix} 
+0 & 1 & 0\\
+0 & 0 & 1\\
+\end{pmatrix}$
+and $c=\begin{pmatrix} 
+1\\
+2\\
+\end{pmatrix}$.
+
+The alternative is usually the negation of the null, i.e., $H_1: C\beta\neq c$, which means that at least one of the $q$ linear functions does not take its hypothesized value. 
+
+\textbf{Constructing a test}:
+
+\begin{equation}
+C\hat{\beta} \sim N_q (c,\sigma^2 C (X^T X)^{-1} C^T)
+\end{equation}
+
+So, if $H_0$ is true, by sum of squares property:
+
+\begin{equation}
+(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c) \sim \sigma^2 \chi_q^2
+\end{equation}
+
+In other words:
+
+\begin{equation}
+\frac{(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c)}{ \sigma^2} \sim \chi_q^2
+\end{equation}
+
+Note that $\hat{\beta}$ is independent of $\hat{\sigma}^2$, and recall that
+
+\begin{equation}
+\frac{\hat{\sigma}^2 }{\sigma^2} \sim \frac{\chi_{n-p}^2}{n-p}  \Leftrightarrow 
+\frac{\hat{\sigma}^2 (n-p)}{\sigma^2} \sim \chi_{n-p}^2
+\end{equation} 
+
+Recall distributional result: if $X\sim \chi_v^2, Y\sim \chi_w^2$ and $X,Y$ independent then $\frac{X/v}{Y/w}\sim F_{v,w}$.  
+
+
+It follows that if $H_0$ is true,  and setting
+$X=\frac{(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c)}{ \sigma^2}$,
+$Y=\frac{\hat{\sigma}^2 (n-p)}{\sigma^2}$, and setting the degrees of freedom to $v=q$ and $w=n-p$:
+
+\begin{equation}
+\frac{X/v}{Y/w}=
+\frac{\frac{(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c)}{ \sigma^2}/q}{\frac{\hat{\sigma}^2 (n-p)}{\sigma^2}/(n-p)}
+\end{equation}
+
+Simplifying:
+
+\begin{equation}
+\frac{(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c)}{q\hat{\sigma}^2} \sim F_{q,n-p}
+\end{equation}
+
+%The above test is the \textbf{generalized likelihood ratio test}.
+
+This is a \textbf{one-sided test} even though the original alternative was two-sided.
+
+\textbf{Special cases of hypothesis tests}:
+
+When $q$ is 1, we have only one hypothesis to test, the $i$-th element of $\beta$. Given:
+
+\begin{equation}
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2+\epsilon_i
+\end{equation}
+
+\noindent
+we can test $H_0: \beta_1=0$ by setting 
+
+$C=\begin{pmatrix} 
+0 & 1 & 0\\
+\end{pmatrix}$
+and $c=0$.
+
+
+Using the fact that $X\sim t(v)\Leftrightarrow X^2 \sim F(1,v)$, we have
+
+
+\begin{equation}
+\frac{\hat{\beta}_i - c_i}{\hat{\sigma}\sqrt{g_{ii}}} \sim t_{n-p}
+\end{equation}
+ 
+\subsection{Sum of squares}
+
+This is a very important section!
+
+\begin{fmpage}{\linewidth}
+
+Recall:
+If $K$ is idempotent, so is $I-K$. This allows us to split $x^T x$ into two components sums of squares:
+
+\begin{equation}
+x^T x = x^T K x+x^T (I-K) x
+\end{equation}
+
+ Let $K_1, K_2,\dots, K_q$ be symmetric idempotent $n \times n$ matrices such that
+ $\sum K_i= I_n$ and $K_iK_j =0$, for all $i\neq j $. Let $x\sim N_n(\mu, \sigma^2)$.
+ Then we have the following partitioning into independent sums of squares:
+ 
+  \begin{equation}
+x^T x = \sum x^T K_i x
+\end{equation}
+
+If $K_i \mu = 0$, then $ x^T K_i x\sim \sigma^2 \chi_{r_i}^2$, where $r_i$ is the rank of $K_i$.
+\end{fmpage}
+
+We can use the sum of squares property just in case $K$ is idempotent, and $K\mu =0$ . Below, $K=M$ and $\mu=E(y)=X\beta$.
+
+Consider the sum of squares partition:
+
+\begin{equation}
+y^T y = \explain{\underline{y^T M y}}{S_r= e^T e} + \explain{\underline{y^T (I-M) y}}{\hat{\beta}^T (X^T X)\hat{\beta}}
+\end{equation}
+
+Note that the preconditions for sums of squares partitioning are satisfied:
+\begin{enumerate}
+\item $M$ is idempotent  (and symmetric), rank=trace=$n-p$.
+\item $I-M$ is idempotent (and symmetric), rank=trace=$p$.
+\item $ME(y) = 0$ because $ME(y)=MX\beta$ and $MX=0$.
+\end{enumerate}
+
+We can therefore partition the sum of squares into two independent sums of squares:
+
+\begin{equation}
+y^T y = \explain{\underline{y^T M y}}{e^T e \sim \sigma^2 \chi_{n-p}^2} \hbox{~~~~~~~~}+\hbox{~~~~~~~~} 
+\explain{\underline{y^T (I-M) y}}{ \sim \sigma^2 \chi_p^2 \newline \hbox{ iff } X\beta=0, i.e., \beta=0}
+\end{equation}
+
+So, iff we have $H_0: \beta=0$, we can partition sum of squares as above. Saying that $\beta=0$ is equivalent to saying that $X$ has rank $p$ and $X\beta=0$.
+
+\subsection{Testing the effect of a subset of regressor variables}
+
+Let:
+
+\begin{equation}
+C= (0_{p-q} I_q) \quad c=0, \hbox{ and } \beta=\begin{pmatrix} \beta_1\\ \beta_2 \end{pmatrix}
+\end{equation}
+
+
+Here, $\beta_{1,2}$ are vectors (sub-vectors?), not components of the $\beta$ vector.
+Then, $C\times \beta = \beta_2$ and $H_0: \beta_2=0$. Note that order of elements in $\beta$ is arbitrary; i.e., any subset of $\beta$ can be tested.
+
+Since  $C\times \beta = \beta_2$ and $c=0$, we can construct a sum of squares:
+
+\begin{equation}
+(C\hat{\beta} - c)^T [C (X^T X)^{-1} C^T]^{-1} (C\hat{\beta} - c) \sim \sigma^2 \chi_q^2
+\end{equation}
+
+This becomes (since $C\beta=\hat{\beta}_2$):
+
+\begin{equation}
+\hat{\beta}_2^T [C (X^T X)^{-1} C^T]^{-1} \hat{\beta}_2 \sim \sigma^2 \chi_q^2
+\end{equation}
+
+We can rewrite this as: $\hat{\beta}_2^T G_{qq}^{-1} \hat{\beta}_2$, where $G_{qq}= C (X^T X)^{-1} C^T$ ($G_{qq}$ should not be confused with $g_{ii}$) is a $q\times q$ submatrix of $G=(X^T X)^{-1}$. 
+
+Note that $\hat{\beta}$ is independent of $\hat{\sigma}^2$, and 
+recall that  $\frac{\hat{\sigma}^2 (n-p)}{\sigma^2} \sim \chi_{n-p}^2$. We can now construct the F-test as before:
+
+\begin{equation}
+\frac{\hat{\beta}_2^T C (X^T X)^{-1} C^T \hat{\beta}_2}{q\hat{\sigma}^2} = 
+\frac{\hat{\beta}_2^T G \hat{\beta}_2}{q\hat{\sigma}^2}
+ \sim F_{q,n-p}
+\end{equation}
+
+
+\textbf{Sums of squares}:
+
+We can construct three idempotent matrices:
+
+\begin{itemize}
+\item
+$M = I_n - X(X^T X)^{-1} X^T$
+\item
+$M_1 =  X(X^T X)^{-1} X^T -   [X(X^T X)^{-1} C^T]  [\explain{\underline{C (X^T X)^{-1} C^T}}{G}]^{-1}  
+[C(X^T X)^{-1} X^T]$
+
+(that is: $M_1 =  X(X^T X)^{-1} X^T - M_2$)
+
+\item $M_2 = [X(X^T X)^{-1} C^T]  [\explain{\underline{C (X^T X)^{-1} C^T}}{G}]^{-1}  
+[C(X^T X)^{-1} X^T]$
+\end{itemize}
+
+Note that $M+M_1+M_2=I_n$ and $MM_1=MM_2=M_1M_2=0$. I.e., sum of squares partition property applies. We have three independent sums of squares:
+
+\begin{enumerate}
+\item $S_r = y^T M y$
+\item $S_1 = y^T M_1 y = \hat{\beta}^T X^T X \hat{\beta}-  \hat{\beta}_2^T G_{qq}^{-1} \hat{\beta}_2$
+\item $S_2 = y^T M_2 y =  \hat{\beta}_2^T G_{qq}^{-1} \hat{\beta}_2$
+\end{enumerate}
+
+So: $y^T y = S_r + S_1 + S_2$.  Then:
+
+\begin{itemize}
+\item It is unconditionally true that $S_r \sim \sigma^2 \chi^2_{n-p}$.
+\item If $H_0: \beta=0$ is true, then $E(\hat{\beta}_2) = \beta_2 = 0$. It follows from the sum of squares property that $S_2 \sim \sigma^2 \chi_q^2$.  
+\item Regarding $S_1$: 
+We can prove that $M_1 = X_1 (X_1^T X_1)^{-1}X_1^T$, where $X_1$ contains the first $p-q$ columns of $X$. It follows that:
+
+$S_1 = y^T M_1 y =y^T X_1 (X_1^T X_1)^{-1}X_1^T  y$
+
+Note that $X_1 (X_1^T X_1)^{-1}X_1^T$ is idempotent. If $\beta=0$, i.e., if $E(y) =X\beta = 0$, we can use the  sum of squares property and conclude that
+
+$S_1 \sim \sigma^2 \chi_{p-q}^2$
+
+The degrees of freedom are $p-q$ because the rank=trace of  $X_1 (X_1^T X_1)^{-1}X_1^T$ is $n-p$.
+
+\textbf{Thus, $S_1$ is testing $\beta_1=0$ but under the assumption that $\beta_2=0$}.
+
+\end{itemize}
+
+\textbf{Analysis of variance}
+
+%\begin{table}[htdp]
+%\caption{default}
+%\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Sources & SS & df & MS & MS ratio\\
+ of variation & & & & \\
+\hline
+Due to $X_1$  & $S_1$ & $p-q$ & $S_1/(p-q)$ & $F_1$ \\
+if $\beta_2=0$   d& & & & $F_{p-q,n-p}$\\
+\hline
+Due to $X_2$ & $S_2$ & $q$ & $S_2/q$ & $F_2$\\
+& & & &  $F_{q,n-p}$\\
+\hline
+Residuals   & $S_r$ & $n-p$ & $\hat{\sigma}^2$ & \\
+\hline
+Total           & $y^T y$  & n &  &\\
+\hline
+\end{tabular}
+%\end{center}
+%\label{default}
+%\end{table}%
+
+Note:
+
+\begin{enumerate}
+\item 
+The ANOVA tests are \textbf{performed in order}:  First we test $H_0: \beta_2=0$. Then, if this test does not reject the null, we test $H_0: \beta_1 = 0$ \textbf{on the assumption (which may or may not be true)} that $\beta_2=0$. 
+\item What happens if we reject the first hypothesis?
+\end{enumerate}
+
+\textbf{The null or minimal model (constant term)}
+
+We can set $C=I_p$ and $c=0$. This tests whether all coefficients are zero. But this states that $E(y)=0$, whereas it should have a non-zero value (e.g., reading times).  We include the constant term to accommodate this desire to have $E(y)=\mu=\neq 0$. In matrix format: let $\beta$ be the parameter vector; then, $\beta_1=\mu$ is the first, constant, term, and the rest of the parameters are the vector $\beta_2$ ($p-1\times 1$).
+The first column of $X$ will be $X_1=1_n$.
+
+\begin{enumerate}
+\item
+$S_1=y^T (X_1^T X_1)^{-1} X_1^T y = (\sum y)^2/n = n\bar{y}^2$
+\item
+$S_r = y^Ty - \hat{\beta}^T X^T X\hat{\beta}$
+\item
+$S_2 = y^T y -S_1 - S_r = \hat{\beta}^T X^T X\hat{\beta}-n\bar{y}^2$
+\end{enumerate}
+
+It is normal to omit the row in the ANOVA table corresponding to the constant term.
+
+\medskip
+\textbf{Testing whether all predictors (besides the constant term) are zero}
+
+To test whether $p$ predictor variables have any effect on $y$,we set $q=p-1$, and our anova table looks like this:
+
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Sources & SS & df & MS & MS \\
+of variation  & & & & ratio \\
+\hline
+%Due to $X_1$ if $\beta_2=0$ & $S_1$ & $p-q$ & $S_1/(p-q)$ & ($F_1$) $  F_{p-q,n-p}$\\
+%\hline
+Due & $S_2$ & $p-1$ & $\frac{S_2}{(p-1)}$ & $F_2$\\
+ to regressors & & & &  $F_{p-1,n-p}$\\
+\hline
+Residuals   & $S_r$ & $n-p$ & $\hat{\sigma}^2$ & \\
+\hline
+Total        & $S_{yy}=$  & n-1 &  &\\
+ (\textbf{adjusted})    & $(y-\bar{y})^T(y-\bar{y})$ & & & \\
+& $=y^T y - n\bar{y}^2$ & & & \\
+\hline
+\end{tabular}
+
+Note that $S_{yy}=\sum (y_i - \bar{y})^2$ is the residual sum of squares that we get after fitting the constant $\hat{\mu}=\bar{y}$.
+
+\medskip
+\textbf{Testing a subset of predictors $\beta_2$}
+
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Sources & SS & df & MS & MS \\
+of variation  & & & & ratio \\
+\hline
+Due to $X_1$   & $S_1$ & $p-q-1$ & $\frac{S_1}{(p-q-1)}$ & ($F_1$) \\
+if $\beta_2=0$ & & & & $F_{p-q-1,n-p}$\\
+(test of $\beta_1$) & & & & \\
+\hline
+Due & $S_2$ & $q$ & $\frac{S_2}{q}$ & $F_2$\\
+ to $X_2$ & & & &  $F_{q,n-p}$\\
+(test of $\beta_2$) & & & & \\
+\hline
+Residuals   & $S_r$ & $n-p$ & $\hat{\sigma}^2$ & \\
+\hline
+Total        & $S_{yy}$  & n-1 &  &\\
+\hline
+\end{tabular}
+%Note: the lecture notes have total SS as $y^T y$ but I think that's a typo.
+
+%Used at the very beginning of a document:
+%\verb!\documentclass{!\textit{class}\verb!}!.  Use
+%\verb!\begin{document}! to start contents and \verb!\end{document}! to
+%end the document.
+
+
+\section{Checking model assumptions}
+
+\subsection{Standardized residuals (\texttt{stdres} in R)}
+
+Recall that $Var(e)=\sigma^2 M$, where $M = I_n -  X (X^T X)^{-1} X^T \quad \hbox{M is symmetric, idempotent } n\times n$. The diagonals of $M$ are all less than 1, and are not all equal (i.e., not equal variance), and off-diagonals are not 0 (i.e., the residuals are correlated). Correcting for unequal variance is done by the \textbf{scaled residual}:
+
+\begin{equation}
+e_i* = \frac{e_i}{\sqrt{m_{ii}}}
+\end{equation}
+
+Note: $Var(e_i*) = \sigma^2$ because $e_i \sim N(0,\sigma^2 m_{ii})$, therefore $e_i=\frac{e_i}{\sqrt{m_{ii}}}*\sim N(0,\sigma^2)$. 
+
+
+The \textbf{standardized residuals} are 
+
+\begin{equation}
+s_i = \frac{e_i*}{\hat{\sigma}}
+\end{equation}
+
+This is approximately $t_{n-p}$ (approximately because $e_i*$ and  $\hat{\sigma}$ are not independent).
+Since $s_i\sim t_{n-p}$, we can designate a residual as an outlier if $\mid s_i \mid > t_{crit}$ where $t_{crit}$ is the critical t-value.
+
+\subsection{Standardized deletion residuals (\texttt{studres} in R)}
+
+This is a more exact way to test for outliers than the above discussion. Define:
+
+\begin{equation}
+\hat{\beta}_{-i} = (X_{-i}^T X_{-i})^{-1} X_{-i}^T y_{-i}
+\end{equation}
+
+\noindent
+where the $-i$ refers to removing data point $i$.
+Standardized deletion residuals are
+
+\begin{equation}
+s_{-i} = \frac{e_i}{\hat{\sigma}_{-i}\sqrt{m_{ii}}}
+\end{equation}
+
+We can compute $s_{-i}$ from $s_{i}$:
+
+\begin{equation}
+s_{-i} = \frac{s_i \sqrt{n-p-1}}{\sqrt{n-p-s_{i}^2}} \sim t_{n-p-1}
+\end{equation}
+
+If $n$ is large, $s_{-i}\approx s_i$. 
+
+\subsection{Correcting for multiple testing}
+
+\v{S}id\'ak correction: 
+``suppose we are performing $n$ tests and in each test we specify the probability of making a type I error to be $\beta$ (note: don't confuse this as type II error). Then, if the tests are independent, the probability of at least one false positive claim in the $n$ tests is given by 
+
+\begin{equation}
+1-(1-\beta)^n = \alpha \Leftrightarrow \beta = 1-(1-\alpha)^{1/n}
+\end{equation}
+
+This correction ``has a stronger bound [than the Bonferroni] and so has greater statistical power.''
+
+\subsection{Checks}
+
+\begin{enumerate}
+\item Normality: qqnorm etc. Hist is a useful addition to qqplot in large samples. For small samples, use scaled or standardized residuals if sample size is small (not sure why).
+\item Independence: index-plots: residuals against observation number. Not useful for small samples. Or: compute correlation between $e_i, e_{i+1}$ pairs of residuals.
+\item Homoscedasticity: residuals against fitted. Fan out suggests violation. A quadratic trend in a plot of residuals against predictor x could suggest that a quadratic predictor term is needed; note that $X^T e = 0$. (review exercises 3), so we will never have a perfect straight line in such a plot. Alternative: Bartlett's test.
+\end{enumerate}
+
+\subsection{Formal tests of normality}
+
+Komogorov-Smirnov and Shapiro-Wilk. Only useful for large samples ; not very powerful and not much better than diagnostic plots. Tests may be useful as follow-ups if non-normality is suspected.
+
+\subsection{Influence and leverage (\texttt{lm.influence\$hat} in R)}
+
+A point can influence the parameter estimates without being an exceptional outlier. Influence does not depend on ``outlyingness''. Potential to influence (e.g., by being an extreme x value) is called leverage; once the y value is also extreme, we have influence. I.e., it takes an extreme x and y value to be influential, and it takes only an extreme x value to have leverage.
+
+Leverage more formally defined: recall that $M = I_n -  X (X^T X)^{-1} X^T$. Define a hat matrix $H=I-M=X (X^T X)^{-1} X^T$. It's called a hat matrix because it puts a hat on y: $\hat{y} = X \hat{\beta} = Hy$.
+Since $x_i^T$  is the $i$-th row of $X$, we have $h_{ii} = x_i^T (X^T X)^{-1}x_i$. The measure for leverage is:
+
+\begin{equation}
+h_{ii} = 1 - m_{ii}
+\end{equation}
+
+Notice that $h_{ii}$ is a scalar, so $\hbox{trace}(h_{ii}=h_{ii}$.
+So (because for a square matrix A,B, tr(AB)= tr(BA)):
+
+\begin{equation}
+h_{ii} = tr(x_i^T (X^T X)^{-1}x_i)=tr(x_i^T x_i (X^T X)^{-1})
+\end{equation}
+
+Since $X^T X = \sum_{i=1}^n x_i x_i^T$, $h_{ii}$ represents the magnitude of $ x_i x_i^T$ relative to the sum of the values for all observations. Note that $h_{ii}$ only depends on X. 
+
+Also note that
+
+\begin{equation}
+\sum_{i=1}^n h_{ii} = tr(X^T X (X^T X)^{-1}) = tr(I_p)=p \quad mean(h_{ii})=p/n
+\end{equation}
+
+$h_{ii}$ measures leverage because $Var(e_i)=\sigma^2 m_{ii} = \sigma^2(1-h_{ii})$ and $Var(\hat{y}_i) = \sigma^2 h_{ii}$. Therefore $h_{ii}$ has to lie between 0 and 1. When it is close to one, the fitted value will be close to the actual value of $y_i$---signalling potential for leverage (aside by SV: the explanation sounds circular to me---this statement says it has leverage by definition. Also, I don't know why I should care that a data point has \textit{potential} to influence the estimates).  
+
+A cutoff one can use to identify high leverage points is $h_{ii} > 2p/n$ or $h_{ii} > 3p/n$.
+
+The leverage of a data point is directly related to how far away it is from the mean:
+
+\begin{equation}
+h_{ii} = n^{-1} + \frac{(x_i - \bar{x})^2}{S_{xx}}
+\end{equation}
+
+In \texttt{lm.influence}, ``coefficients is the matrix whose i-th row contains the change in the estimated coefficients which results when the i-th case is dropped from the regression. sigma is a vector whose i-th element contains the estimate of the residual standard error obtained when the i-th case is dropped from the regression'' (p.\ 71 of lecture notes).
+
+\subsection{Cook's distance D: A measure of influence}
+
+Let $s_i$ be the i-th standardized residual, $\hat{\beta}_{-i}$ the estimate of the vector of parameters with the i-th row removed.
+
+\begin{equation}
+D_i =  \frac{(\hat{\beta}-\hat{\beta}_{-i})^T(X^T X)^{-1}(\hat{\beta}-\hat{\beta}_{-i})}{p\hat{\sigma}^2} = \frac{s_i^2 h_{ii}}{p(1-h_{ii})}
+\end{equation}
+
+A data point is influential if it is outlying as well as high leverage. Cutoff for Cook's distance is $\frac{4}{n}$.
+
+\textbf{Procedure for checking model fit}:
+to-do, see p 73
+
+\subsection{Transformations}
+
+Suppose $Y$ is a random variable whose variance depends on its mean. I.e., $E(y)=\mu, Var(y)=g(\mu)$.
+The function $g(\cdot)$ is known.
+
+We seek a transformation from $y$ to $z = f(y)$ such that $Var(z)$ is (approximately) constant. 
+
+Expand $f(\cdot)$ in a Taylor series expansion, keeping only the first-order term:
+
+\begin{equation}
+z= f(y)\approx f(\mu) + (y-\mu)f'(\mu)
+\end{equation}
+
+Then: $E(z)=f(\mu)$ and $Var(z)=g(\mu) f'(\mu)^2$. The variance needs to be constant at, say, $k^2$:
+
+\begin{equation}
+k^2 = g(\mu) f'(\mu)^2 \Rightarrow f'(\mu)=\frac{k}{\sqrt{g(\mu)}}
+\end{equation}
+
+So, 
+
+\begin{equation}
+f(\mu) = \int f'(\mu) = k\int \frac{1}{\sqrt{g(\mu)}}
+\end{equation}
+
+\begin{fmpage}{\linewidth}
+\begin{equation}
+f(\mu) =  k\int [\sqrt{g(\mu)}]^{-1/2}\, d\mu
+\end{equation}
+\end{fmpage}
+
+\textbf{Example 1}: Let $g(\mu)=a\mu$; then $f(\mu)=2k\sqrt{\frac{\mu}{a}}$. So, $z=\sqrt{\mu}$.
+
+\textbf{Example 2}: Let $g(\mu)=a\mu^2$; then $f(\mu)=k\sqrt{\frac{1}{a}}\log \mu$. So, $z=\log \mu$.
+
+\textbf{Estimating a transformation}: $\exists \lambda$ such that 
+
+\begin{equation}
+f_\lambda (y_i) = x_i^T \beta + \epsilon_i \quad \epsilon_i \sim N(0, \sigma^2)
+\end{equation}
+
+We use maximum likelihood estimation to estimate $\lambda$. Note that
+
+$L(\beta_\lambda, \sigma^2_\lambda, \lambda; y) \propto$
+
+\begin{equation}
+(\frac{1}{\sigma})^n \exp [-\frac{1}{2\sigma^2} \sum [f_\lambda(y_i)-  x_i^T \beta ]^2] [\prod \explain{f'_\lambda(y_i)}{\hbox{Jacobian}}] 
+\end{equation}
+
+For fixed $\lambda$, we estimate $\hat{\beta}$ and $\hat{\sigma}^2$ in the usual MLE way, and then we turn our attention to $\lambda$:
+
+\begin{equation}
+L(\hat{\beta}_\lambda, \hat{\sigma}^2_\lambda, \lambda; y) = S_\lambda^{-n/2}\prod f'_\lambda(y_i) 
+\end{equation}
+
+Taking logs:
+
+\begin{equation}
+\ell = c-\frac{n}{2} \log S_\lambda + \sum \log f'_\lambda(y_i)
+\end{equation}
+
+\textbf{Box-Cox family}:
+
+\begin{equation}
+f_\lambda (y) = \left\{ 
+\begin{array}{l l}
+       \frac{y^\lambda - 1}{\lambda}   & \lambda \neq 0\\
+       \log y & \quad \lambda=0\\
+\end{array}
+\right.
+\end{equation}
+
+We assume that $f_\lambda (y) \sim N(x_i^T \beta,\sigma^2)$. So we have to just estimate $\lambda$ by MLE, along with $\beta$.
+
+\textbf{Box-Cox by hand}:
+
+Since $f_\lambda=\frac{y^\lambda-1}{\lambda}$, it follows that $f'_\lambda(y)= y^{\lambda-1}$.
+
+Now, for different $\lambda$ you can figure out the log likelihoods by hand by solving this equation:
+
+\begin{equation}
+\ell = c-\frac{n}{2} \log \explain{S_\lambda}{\hbox{Residual sum of squares}} + (\lambda-1)\sum \log (y_i)
+\end{equation}
+
+\section{Factors}
+
+\subsection{Overcoming multicollinearity through parameterization}
+
+to-do: multicollinearity explanation
+
+If the model matrix $X$ is not full rank (this is true when we include a column for the intercept), then we can put constraints on the predictors (through parameterization). E.g., treatment contrasts (corner-point constraints), sum contrasts, etc.
+
+to-do constraints on p.\ 94-95
+
+%\subsection{Merging factor levels}
+
+%This is done to increase group size. 
+
+\subsection{Model selection}
+
+\textbf{$S_r$ and $R^2$ can't be used for model selection}:
+``$S_r$ will always decrease when we add more regressor variables, so the best fitting model is always the full model which contains all the possible regressor variables - so $S_r$ is not a good model selection tool. For the same reason, the coefficient of determination $R^2$ is not a useful measure in model selection. $R^2$ will not decrease as the number of parameters increases (i.e. it is a non-decreasing function of the number of parameters in the model).''
+
+\textbf{Penalized likelihood methods for model comparison}:
+
+We can compare models using log likelihood: 
+
+\begin{equation}
+\ell = n \log \hat{\sigma}^2 + z(p)
+\end{equation}
+
+\noindent
+where $z$ is some penalty function. ``Then we declare that the optimal model is that which minimizes $\ell$. We can think of $z$ as an ad hoc adjustment that tries to give simpler models credit for having fewer regressor variables.''
+
+AIC etc cannot be used to compare across datasets, but can be used to compare non-nested models (cf.\ ANOVA, which allows only nested models to be compared).
+
+\textbf{AIC}: here, $z(p)= 2p$. To calculate AIC:
+
+\begin{equation}
+AIC = 2p + n\log \frac{S_r}{n}
+\end{equation}
+
+[Note: does not match up with the AIC function output in R.]
+
+\textbf{Where does AIC come from?} From the fact that maximum likelihood of $\hat{\sigma}^2$ is:
+
+\begin{equation}
+  L(\sigma) \propto  (\hat{\sigma}^2)^{-n/2}
+\end{equation}
+
+$-2\times loglik=n\log \hat{\sigma}^2=n\log \frac{S_r}{n}$ is a good model selection tool: smaller values (smaller $S_r$) will mean better fit.
+
+\textbf{BIC}:  $z(p)= p\log n$. This penalty will be large for large $n$, compared to AIC. 
+
+\textbf{Mallow's $C_p$}: 
+
+\begin{equation}
+C_p = \frac{S_r}{\hat{\sigma}_f^2} - n + 2p_r
+\end{equation}
+
+$\hat{\sigma}_f^2$ is the residual mean square of the full model, $S_r$ is residual 
+sums of squares of  reduced model, $p_r$ is the number of regressors in the reduced model.  
+
+We want a small $C_p$ and $C_p \approx p$. 
+
+\textbf{Best subsets method}: in leaps library, regsubsets command.
+
+\begin{verbatim}
+b<-regsubsets(model specification)
+summary(b)$rsq, $cp, $bic
+\end{verbatim}
+
+\textbf{Backward elimination}: fit full model, and remove the t-value that's smallest, and so on.
+Forward elimination goes in the other direction.
+
+\textbf{Stepwise selection}: step function in MASS. Incrementally add a predictor as above, but once one is added, try removing other predictors with smallest t-value. Repeat until nothing can be added or deleted.
+
+\begin{verbatim}
+step(fm,scope=list(upper/lower=formula),
+        direction="forward/backward/both")
+\end{verbatim}
+
+\section{Generalized least squares}
+
+Let $Var(\epsilon)=\sigma^2 \Sigma$, where  $\Sigma$ is known and non-singular. If $\Sigma\neq I_n$ then we either have correlation or non-equal variance or both. If $\Sigma$ is known, we only need to estimate $\sigma$ and we are back in least squares theory, with some modification:
+
+\begin{equation}
+y \sim N(X\beta,\sigma^2 \Sigma)
+\end{equation}
+
+Likelihood $L(\beta,\sigma^2; y)$ is now:
+
+\begin{equation}
+ (2\pi)^{-n/2}\mid \sigma^2 \Sigma\mid^{-1/2} \exp[-\frac{1}{2\sigma^2}(y-X\beta)^T \Sigma^{-1}  (y-X\beta)]
+\end{equation}
+
+The MLE of $\beta$ minimizes:
+
+\begin{equation}
+S=(y-X\beta)^T \Sigma^{-1}  (y-X\beta)
+\end{equation}
+
+instead of $(y-X\beta)^T (y-X\beta)$.
+
+\textbf{Least squares estimators}:
+
+$\hat{\beta}: (X^T \Sigma^{-1} X)^{-1}X^T \Sigma^{-1} y$
+
+$E(\hat{\beta})=\beta$
+
+$Var(\hat{\beta})=\sigma^2 (X^T \Sigma^{-1}X)^{-1}$
+
+
+Estimator of $\sigma^2$ is $\frac{S_v}{n-p}$, where
+
+$S_v=y^T \Sigma^{-1} y - \hat{\beta}^T X^T \Sigma^{-1} X\hat{\beta} = y^T \Sigma^{-1} y - \hat{\beta}^T X^T \Sigma^{-1} y$.
+
+\subsection{Weighted least squares}
+
+Suppose $\Sigma=diag(c1,\dots,cn)$ (uncorrelated, but not homoscedastic) and so $\Sigma^{-1}=diag(1/
+c1,\dots,1/cn)$. Let $w_i = 1/c_i$. 
+
+The sum of squares will be 
+$S=\sum_{i=1}^n w_i (y_i - x_i^T \beta)^2$. So each squared residual is weighted by that observation's variance; observations with large variance are less reliable, and are down-weighted.
+
+Compared to $X^T X = \sum x_i x_i^T$ in WLS we have  $X^T \Sigma^{-1} X = \sum w_i x_i x_i^T$. 
+And instead of $X^T y = \sum x_i y_i$ in WLS we have $X^T \Sigma^{-1}y = \sum w_i x_i y_i$.
+
+So $\hat{\beta}=(X^T \Sigma^{-1}  X)^{-1}X^T \Sigma^{-1}y= ( \sum w_i x_i x_i^T)^{-1} (\sum w_i x_i y_i)$
+
+``Weighted LS is appealing because it allows us to adjust for different (known) variances in the observations in an intuitive way that is easy to implement. The variances of the different observations might be known from pilot or previous studies'' (or are estimated from data).
+
+[SV: I don't get this ``known variance'' business. How can we ever \textbf{know} what the variance is? Pilot or previous data will only yield estimates.]
+
+The main disadvantage of WLS is that weights have to specified in advance.
+
+\subsection{OLS vs WLS}
+
+With dataset wls1.txt, if we fit:
+
+\begin{verbatim}
+summary(m0<-lm(y~X.x,data))
+summary(m0.wls<-lm(y~X.x,data,
+                   weights=I(1/X.x^2)))
+\end{verbatim}
+
+The coefs will be the same in each, but SEs of coefs will be smaller in WLS fit (because $S_r$ will be down-weighted.
+
+\textbf{Effect of scaling weights}:
+
+Multiplying the weights by some constant will change residual standard error, but leaves SEs and coefs unchanged. This is because $Var(\hat{\beta})=\sigma^2 (X^T \Sigma^{-1} X)^{-1}$, so whatever factor $\sigma^2$ gets multiplied by, it will be cancelled out because it also appears in $ \Sigma^{-1}$.
+
+Differently put:
+
+``Let $w_i'$ be the scaled weights, $\hat{\sigma}'$ be the residual standard error in the analysis with the scaled weights, $S_r'$ be the residual sum of squares for the scaled analysis and $(\Sigma^{-1})'$ be the weight matrix for the scaled analysis. Then if $w_i' = 16w_i$, we see that $\hat{\sigma}' = 4\hat{\sigma}$ since $S_r' = 16S_r$.''
+
+The SEs will not change because: ``If 
+$(\Sigma^{-1})'=16\Sigma^{-1}$ and 
+$\hat{\sigma}' = 4\hat{\sigma}$ 
+then $Var(\hat{\beta}') = 
+(\hat{\sigma}^2)' (X^T (\Sigma^{-1})'X)^{-1} =
+(\hat{\sigma}^2)  (X^T (\Sigma^{-1})X)^{-1}$.
+So the standard errors don’t change.''
+
+\begin{verbatim}
+summary(m0.wls<-lm(y~X.x,data,
+                   weights=I(16*1/X.x^2)))
+\end{verbatim}
+
+\begin{enumerate}
+\item
+If you get the weights wrong, SEs will increase. So, if unsure about weights use OLS.
+\item
+``If looking at the standardized residuals shows that there are observations that may be outliers and they reside in regions that will be given high weight then it may be safer to use OLS rather than WLS.''
+\item One can estimate the weights from the data, but one needs lots of replicates for this, with fewer replicates the SEs will increase.
+\item If you don't have enough replicates, you can group x values close to each other.
+\item Outliers can dramatically influence estimates in WLS.
+\end{enumerate}
+
+Conclusion: WLS is a powerful tool, if weights are known, but outliers must be studied carefully.
+
+\subsection{Using group means in WLS with replicated data}
+
+Without replicates in the data, we have:
+
+\begin{equation}
+X^T y = \sum_i^n x_i y_i
+\end{equation}
+
+If we have $k$ replicates:
+
+\begin{equation}
+X^T y = \sum_{i=1}^k \sum_{j=1}^{n_i} x_i y_{ij} =  
+\sum_{i=1}^k x_i  \sum_{j=1}^{n_i}  y_{ij} 
+= \sum_{i=1}^k n_i x_i \bar{y}_i
+\end{equation}
+
+This is equivalent to having $\bar{y}_i$ as observations for the replicate sets, and $n_i$ as weights in WLS.
+If we had $\bar{y}_i$ as observations, then their variances would be $\sigma^2/n_i$, so we would have unequal variances and would use WLS with $w_i = n_i$. \textbf{Example}: tractor data.
+
+\subsection{Replication}
+
+Define replicates here as repeated measurements that are mutually independent (cf.\ replicates which are not independent, as in linear mixed model theory).
+Since all $x_i^T$ within a replicate set come from the same distribution, their variance should be an estimate of $\sigma^2$.
+
+Let $y_{ij}$ be the $j$th observation in the $i$th replicate set, where $j=1,\dots,n_i$ and $n_i$ is the size of the $i$th replicate set ($i=1,\dots,k$). When $n_i = 1$ we have no replication, and for higher values we have replication. \textit{Within} each replicate, we can produce an estimator:
+
+\begin{equation}
+\hat{\sigma}^2 =  (n_i - 1)^{-1}  \sum_{j=1}^{n_{i}} (y_{ij} - \bar{y}_i)^2 = (n_i - 1)^{-1}S_i
+\end{equation}
+
+$\bar{y}_i=n_i^{-1} \sum_{j=1}^{n_i} y_{ij}$  is the mean of the replicate set.
+$S_i \sim \sigma^2 \chi_{n_i - 1}^2$.
+
+In a one-factor model, $S_r = \sum_{i=1}^k S_i$ and dfs are $n-k = \sum_{i=1}^k (n_i -1)$. 
+So, in the general case,  $df_r=n-k$,  $S_r = \sum_{i=1}^k S_i\sim \chi_{df_R}^2$. The ratio $\hat{\sigma}^2/df_R$ is an unbiased estimator of $\sigma^2$.
+
+The distributional fact being used here is that the sum of independent chi-squared distributions has a chi-squared distribution, and the degrees of freedom is the sum of dfs of the RVs being summed.
+
+\textbf{The replication estimator}: $\hat{\sigma}_R^2=\frac{S_R}{df_R}$ is the replication estimator of $\sigma^2$.
+
+``The $\hat{\sigma}_R^2$ is independent of the particular form that we have used for the model. We obtain the same replication sum of squares with the same degrees of freedom whether we postulate a linear, quadratic, or some other relationship between Maintenance cost and Age.'' (to-do: don't get this). This is the strength of the replication sum of squares.
+
+The $S_R$ is in general not equal to $S_r$.
+
+\subsection{Partitioning replication sum of squares}
+
+to-do
+
+\bibliographystyle{plain}
+\bibliography{/Users/shravanvasishth/Dropbox/Bibliography/bibcleaned}

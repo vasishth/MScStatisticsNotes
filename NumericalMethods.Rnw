@@ -1,0 +1,55 @@
+\documentclass{article}
+
+\title{Notes on numerical methods in R}
+\author{Shravan Vasishth}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section{Rounding and display of digits}
+
+<<>>=
+x<-.7/.1 -7
+zapsmall(.7/.1) -7
+formatC(x,format="f",big.mark=",")
+x<-10000
+formatC(x,format="f",big.mark=",")
+formatC(x,format="E",big.mark=",")
+.Machine
+@
+
+<<>>=
+library(simgen)
+library(lme4)
+
+pmx <- createParamMx(10,h0=FALSE)
+x.df <- mkDf(nsubj=24, nitem=24, mcr.params=pmx[1,], wsbi=FALSE)
+
+xtabs(~ItemID+Cond,x.df)
+
+m0<-lmer(Resp~Cond+(1+Cond|SubjID)+(1+Cond|ItemID),x.df)
+summary(m0)
+
+
+p.env<-getParamRanges()
+as.list(p.env)
+p.env$r01.subj.range<-c(0.6,0.6)
+p.env$r01.item.range<-c(0.6,0.6)
+
+nsim<-100
+
+tvals<-rep(NA,nsim)
+for(i in 1:nsim){
+pmx <- createParamMx(10,h0=FALSE,simparam.env=p.env)
+x.df <- mkDf(nsubj=24, nitem=48, mcr.params=pmx[1,], wsbi=FALSE)
+
+m0<-lmer(Resp~Cond+(1+Cond|SubjID)+(1+Cond|ItemID),x.df)
+tvals[i]<-summary(m0)$coef[2,3]
+}
+
+@
+
+
+\end{document}
