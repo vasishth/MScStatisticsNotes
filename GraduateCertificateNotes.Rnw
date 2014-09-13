@@ -1,0 +1,4916 @@
+\documentclass[12pt]{book}
+
+\usepackage{Sweave}
+
+%% added by SV:
+\usepackage{hyperref}
+\hypersetup{colorlinks=TRUE,linkcolor=blue,anchorcolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,citecolor=blue,bookmarksnumbered=true}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{gauss}
+
+\usepackage[latin1]{inputenc}
+
+\usepackage{mathptmx}
+\usepackage{helvet}
+\usepackage{courier}
+%
+\usepackage{type1cm}         
+
+\usepackage{makeidx}         % allows index generation
+\usepackage{graphicx}        % standard LaTeX graphics tool
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{amsthm}
+
+\usepackage{esint}
+
+\usepackage{cancel}
+
+\usepackage{comment}
+\excludecomment{answer}
+%\includecomment{answer}
+
+\setcounter{secnumdepth}{5}
+
+%\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\vect}[1]{\vec{#1}}
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+  
+\hyphenation{distribu-tion}
+ 
+\newcommand{\BlackBox}{\rule{1.5ex}{1.5ex}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\SweaveOpts{prefix.string=figures/statsnotesfig}
+
+%\SweaveOpts{cache=TRUE}
+
+\title{Notes to self\\
+\small
+on mathematics, probability theory, and statistics}
+\author{Compiled by Shravan Vasishth}
+
+\date{version of \today}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{xleftmargin=2em}
+\fvset{listparameters={\setlength{\topsep}{0pt}}}
+\renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
+\SweaveOpts{keep.source=TRUE}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+
+\tableofcontents
+
+<<echo=FALSE>>=
+## customize
+options(prompt="> ", continue="   ",
+show.signif.stars=FALSE)
+
+options(width=50)
+
+options(SweaveHooks=list(fig=function() par(bg="white", fg="black")))
+
+@
+
+
+\chapter*{Preface}
+It is worth noting that there is \textbf{absolutely nothing original} in terms of content in this document. As the title suggests, these are just notes for myself, for reviewing material I learnt in the Graduate Certificate in Statistics at Sheffield University (2011-12), and in the MSc at Sheffield (2012-2015). I try to remember to cite sources at the beginning of a section, but I might not do that consistently (sometimes I'm short on time). The references at the end of the document are an incomplete listing of the sources I consulted.
+
+\begin{answer}
+foobar
+\end{answer}
+
+\chapter{Helpful advice on studying math etc.}
+
+%\begin{enumerate}
+%	\item Terry Tao's advice: \href{http://terrytao.wordpress.com/career-advice/}{http://terrytao.wordpress.com/career-advice/}
+%\end{enumerate}
+
+
+
+\chapter{Mathematics}
+
+Sources: heavily depended on \cite{salas2003calculus}, \cite{spivak}, \cite{gilbertjordan} (the official textbook in the course), \cite{foxprimer} and various summaries on the internet on trigonometric functions. 
+
+\section{Homework assignments}
+
+These assignments cover pretty much all the course material, so they are worth reviewing.
+
+\begin{itemize}
+	\item Ass 0:
+	\begin{itemize}
+		\item Sets
+		\item Functions
+		\item Inequalities
+	\end{itemize}
+	\item Ass 1:
+	\begin{itemize}
+		\item Series
+		\item Partial Fractions and telescoping series
+		\item \textbf{Taylor, Maclaurin series}
+	\end{itemize}
+	\item Ass 2: 
+	\begin{itemize}
+		\item \textbf{Integration methods}
+		\item Riemann integrals
+	\end{itemize}
+	\item Ass 3: 
+	\begin{itemize}
+		\item Change of variables ($\int_0^\infty x^2 e^{-x^5}\, dx$)
+		\item Gamma function
+		\item Partial differentiation (level curves, lagrangian multipliers)
+		\item Vectors
+	\end{itemize}
+	\item Ass 4:
+	\begin{itemize}
+		\item Double integrals
+		\item Gaussian elimination
+		\item Inverse
+		\item Determinants
+	\end{itemize}
+	\item Ass 5:
+	\begin{itemize}
+		\item Polar coordinates
+		\item Linear independence
+		\item Diagonalization
+		\item Quadratic forms
+	\end{itemize}
+\end{itemize}
+
+
+\section{Trigonometry}
+
+\subsection{Basic definitions}
+
+\begin{figure}[!htbp]
+	\centering
+\includegraphics[width=6cm]{triangle}
+\caption{Right triangle.}
+\label{fig:tri}
+\end{figure}
+
+\begin{equation}
+\sin A = \frac{opp}{hyp} = \frac{a}{c}
+\end{equation}
+
+Cosine is the complement of the sine:
+
+\begin{equation}
+\cos A = \sin (90-A) = \sin B
+\end{equation}
+
+\begin{equation}
+\cos A = \frac{b}{c}
+\end{equation}
+
+\subsection{Pythagorean identity}
+
+\begin{equation}
+a^2 + b^2  = c^2
+\end{equation}
+
+\begin{equation}
+\begin{split}
+\frac{a^2}{c^2} + \frac{b^2}{c^2} & = 1\\
+\sin^2 A + \cos^2 A  & = 1
+\end{split}
+\end{equation}
+
+\subsection{Relations between trig functions}
+
+\begin{equation}
+\tan A = \frac{\sin A}{\cos A} = \frac{a}{c}/\frac{b}{c}= \frac{a}{b} = 
+\frac{opp}{adj}
+\end{equation}
+
+\begin{equation}
+\cot A = \frac{1}{\tan A}=\frac{\cos A}{\sin A}
+\end{equation}
+
+\begin{equation}
+\sec A = \frac{1}{\cos A}
+\end{equation}
+
+\begin{equation}
+\csc A = \frac{1}{\sin A}
+\end{equation}
+
+
+
+%\begin{figure}[!htbp]
+\begin{center}
+\begin{fmpage}{.6\linewidth}
+\begin{tabular}{c|c}
+sin A = a/c (opp/hyp) & csc A = c/a (hyp/opp)\\
+cos A = b/c (adj/hyp) & sec A = c/b (hyp/adj)\\
+tan A = a/b (opp/adj) & cot A = b/a (adj/opp)\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+%\end{figure}
+
+
+
+Note that cot A = tan B, and csc A = sec B.
+
+\subsection{Identities expressing trig functions in terms of their complements}
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\begin{tabular}{c|c}
+cos t = sin($\pi$/2-t)  & sin t = cos($\pi$/2-t)\\
+cot t = tan($\pi$/2-t)   & tan t = cot($\pi$/2-t)\\
+csc t = sec($\pi$/2-t)  & sec t = csc($\pi$/2-t)\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+      
+
+     
+
+      
+
+
+
+\subsection{Periodicity}
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\begin{tabular}{c|c}
+$\sin t + 2\pi = \sin t$  &  $\sin t + \pi = -\sin t$\\
+$\cos t + 2\pi = \cos t$   & $\cos t + \pi = -\cos t$\\
+$\tan t + 2\pi = \tan t$  &  $\tan t + \pi = \tan t$\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+
+\begin{center}
+\begin{fmpage}{.6\linewidth}
+\begin{tabular}{ccc}
+$\sin 0 = 0$  & $\cos 0 = 1$  & $\tan 0 = 0$ \\
+$\sin \frac{\pi}{2} = 1$  & $\cos \frac{\pi}{2} = 0$  & $\tan \frac{\pi}{2}$ undefined \\
+$\sin \pi = 0$  & $\cos \pi = -1$  & $\tan \pi = -1$ \\
+\end{tabular}
+\end{fmpage}
+\end{center}
+
+\subsection{Law of cosines}
+
+Three ways of writing it:
+
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab \cos C
+\end{equation}	
+
+\begin{equation}
+a^2 = b^2 + c^2 - 2bc \cos C
+\end{equation}	
+
+\begin{equation}
+b^2 = c^2 + a^2 - 2ca \cos C
+\end{equation}	
+
+\subsection{Law of sines}
+
+\begin{equation}
+\frac{\sin A}{a}=\frac{\sin B}{b}=\frac{\sin C}{c}
+\end{equation}	
+
+
+
+
+
+\subsection{Odd and even functions}
+
+A function $f$ is said to be an odd function if for any number $x$, $f(-x) = -f(x)$ (e.g., $f(y)=x^5$). A function $f$ is said to be an even function if for any number $x$, $f(-x) = f(x)$ (e.g., $f(y)=x^4$).
+
+Odd functions: sin, tan, cotan, csc.
+
+Even functions: cos, sec.
+
+%$\sin $ is odd ($\sin -t=-\sin t $), $\cos$ is even ($\cos -t=\cos t $).
+
+\subsection{Sum formulas for sine and cosine}
+
+\begin{equation}
+\sin (s + t) = \sin s \cos t + \cos s \sin t
+\end{equation}
+
+\begin{equation}
+\cos (s + t) = \cos s \cos t - \sin s \sin t
+\end{equation}
+
+
+\subsection{Double angle formulas for sine and cosine}
+
+\begin{equation}
+\sin 2t = 2 \sin t \cos t
+\end{equation}
+
+\begin{equation}
+\cos 2t = \cos^2 t - \sin^2 t = 2 \cos^2 t - 1 =  1 - 2 \sin^2 t
+\end{equation}
+
+\subsection{Less important identities}
+
+Pythagorean formula for tan and sec:
+
+\begin{equation}
+\sec^2 t = 1 + \tan^2 t
+\end{equation}
+
+Identities expressing trig functions in terms of their supplements
+
+\begin{equation}
+\sin(\pi - t) = \sin t
+\end{equation}
+
+\begin{equation}
+\cos(\pi - t) = -\cos t
+\end{equation}
+
+\begin{equation}
+\tan(\pi - t) = -\tan t
+\end{equation}
+
+Difference formulas for sine and cosine
+
+\begin{equation}
+\sin (s - t) = \sin s \cos t - \cos s \sin t
+\end{equation}
+
+\begin{equation}
+\cos (s - t) = \cos s \cos t + \sin s \sin t
+\end{equation}
+
+
+\section{Basic differentiation}
+
+\subsection{Diff.\ from first principles}
+
+Given a function $f(x)$, the derivative from first principles is:
+
+\begin{equation}
+f^{(1)}(x)= \frac{f(x+\delta x) - f(x)}{\delta x}
+\end{equation}
+
+
+\subsection{Derivations of combinations of functions}
+
+\begin{equation}
+	(uv)' = uv' + vu'
+\end{equation}
+
+\begin{equation}
+(u/v)' = 	\frac{vu' - uv'}{v^2}
+\end{equation}
+
+
+derivations of trig functions
+
+\subsection{Leibniz' rule}
+
+This is about successive differentiation of products of functions $uv$:
+
+\begin{equation}
+uv^{(n)}=u^{(n)}v + {n \choose 1}u^{(n-1)}v^{(1)}   +   \dots +  {n \choose r}u^{(n-r)}v^{(r)}    + uv^{(n)}
+\end{equation}
+
+\section{Series}
+
+\subsection{Arithmetic series}
+
+General form: 
+
+\begin{equation}
+a+(a+d)+(a+2d)+\dots
+\end{equation}
+
+$k$-th partial sum for \textbf{arithmetic series}:
+
+\begin{equation}
+S_k = \underset{n=1}{\overset{k}{\sum}} (a+(n-1)d)
+\end{equation}
+
+The sum can be found by:
+\begin{equation}
+S_k = \frac{k}{2} (2a+(k-1)d)
+\end{equation}
+
+\subsection{Geometric series}
+
+General form:
+
+\begin{equation}
+a+ar+ar^2\dots
+\end{equation}
+
+In summation notation:
+
+\begin{equation}
+\underset{n=1}{\overset{\infty}{\sum}} ar^{n-1}
+\end{equation}
+
+$k$-th partial sum:
+
+\begin{equation}
+S_k=\frac{a-(1-r^k)}{1-r}
+\end{equation}
+
+$S_\infty$ exists just in case $\mid r \mid < 1$.
+
+\begin{equation}
+S_\infty = \frac{a}{1-r}
+\end{equation}
+
+\subsection{Clever trick for computing partial sums of geometric series}
+
+to-do (see my P-Ass1 solution)
+
+\subsection{Power series}
+
+\begin{equation}
+ \underset{n=0}{\overset{\infty}{\sum}} a_n (x-a)^n
+\end{equation}
+
+\textbf{radius of convergence}: to-do
+
+\subsection{Taylor's theorem (Taylor series)}
+
+We can represent a function as a power series (SV: not sure if we can do this for any function):
+
+\begin{equation}
+f(x)= a_0 + a_1 (x-a) + a_2 (x-a)^2 + \dots + a_n (x-a)^n + R_n (x)
+\end{equation}
+
+\noindent
+where $R_n (x)$ is the remainder term (a power series beginning with $a_{n+1} (x-a)^{n+1}$).
+
+\textbf{Taylor's theorem}: Let $f$ be a function that is $n+1$ times differentiable on an open interval containing points a and x. Then 
+
+\begin{equation}
+f(x)= f(a) + f^{(1)} \frac{(x-a)^1}{1!} + f^{(2)} \frac{(x-a)^2}{2!} + \dots + f^{(n)} \frac{(x-a)^n}{n!} + R_n (x)
+\end{equation}
+
+\noindent
+where $R_n (x) =   f^{(n+1)} (c) \frac{(x-a)^n+1}{n+1!}$, $c$ is some point between a and x.
+
+\textbf{Taylor series}: If $R_n (x)$ tends to zero as $n\rightarrow \infty$, then the series in the above theorem converges and is called the Taylor series:
+
+\begin{equation}
+\underset{n=0}{\overset{\infty}{\sum}} f^{(n)} \frac{(x-a)^n}{n!} 
+\end{equation}
+ 
+
+
+basic taylor series: p. 91
+
+combination rules for power series: p. 75
+
+\subsection{Maximizing and minimizing functions}
+
+\subsection{Partial derivatives}
+
+\subsubsection{Chain rule for partial derivatives}
+
+\subsection{Maxima and minima in higher dimensions}
+
+\subsection{Lagrangian multipliers}
+
+
+\section{Integration}
+
+\subsection{Riemann sums}
+
+A simple example comes from M-Ass-2-problem-2:
+	
+Given $\phi (x)$, the probability density function of the standard normal distribution:
+
+\begin{equation*}
+\phi (x) = \frac{1}{\sqrt{2\pi}} e^{-x^{2}/2}
+\end{equation*}
+
+We have to find an approximate value of 
+
+\begin{equation*}
+\int_0^1 \phi (x)\, dx	
+\end{equation*}
+
+We divide the interval $[0,1]$ into $10$ intervals of width $1/10$, and approximate the area under the curve by taking the sum of the $10$ rectangles under the curve. The width of each rectangle will be $\delta x=1/10$, and each of the ten $x_i$ are $1/10,2/10,\dots,10/10$, i.e., $i/10$, where $i=1,\dots, 10$.
+
+The area $A$ can be computed by summing up the areas of the ten rectanges. Each rectangle's area is length $\times$ width, which is $\phi(x_i) \times \delta x$. Hence,
+
+\begin{equation*}
+A= \underset{i=1}{\overset{10}{\sum}} \phi(x_i) \delta x = \underset{i=1}{\overset{10}{\sum}}
+\frac{1}{\sqrt{2\pi}} e^{-x_i^{2}/2} \times \frac{1}{10} 	
+\end{equation*}
+	
+The constant terms $\frac{1}{\sqrt{2\pi}}$ and $\frac{1}{10}$  can be pulled out of the summation: 	
+
+\begin{equation*}
+A= \frac{1}{\sqrt{2\pi}} \frac{1}{10} 	 
+   \underset{i=1}{\overset{10}{\sum}}
+   e^{-x_i^{2}/2} 
+\end{equation*}
+
+	
+We use R for the above calculations. First, we define the function for $e^{-x_i^{2}/2}$: 
+
+<<>>=
+my.fn<-function(x)
+     {exp(1)^(-(x^2/2))}
+@
+
+Then we define $x_i$ (I made the code very general so that the number of intervals $n$ can be increased arbitrarily) and plug this into the function:
+
+<<>>=
+n<-10
+
+(x.i<-(1:n)/n)
+     
+A<- ((1/n) * (1/sqrt(2 * pi)) * sum(my.fn(x.i)))
+
+(A<-round(A,digits=5))
+@
+
+Compare this to the exact value, computed using R:
+
+<<>>=
+fprob2<-function(x){
+	(1/sqrt(2 * pi))*exp(1)^(-(x^2/2))
+}
+
+integrate(fprob2,lower=0,upper=1)
+@
+
+
+
+\textbf{Answer}: The approximate area is: $\Sexpr{A}$. This is a bit lower than the value in Neave's tables or the value computed by R, but this is because the ten rectangles fall inside the curve.  
+
+<<>>=
+## As an aside, note that one can get really close  
+## to Neave's value by increasing $n$, 
+## say to a high number like 2000:
+n<-2000
+
+## 2000 rectangles now:
+x.i<-(1:n)/n
+     
+(A<- ((1/n) * (1/sqrt(2 * pi)) * sum(my.fn(x.i))))
+@
+
+With 2000 rectangles, we can get a better estimate of the area than with 10 rectangles: \Sexpr{A}.
+
+\subsection{Some common integrals}
+
+\begin{equation}
+	\int \frac{1}{x}\, dx = \log \mid x \mid + c
+\end{equation}
+
+\begin{equation}
+	\int \log x\, dx = \frac{1}{x} + c
+\end{equation}
+
+
+
+\subsection{The Fundamental Theorem of Calculus}
+
+The Fundamental Theorem states the following:
+
+
+Let $f$ be a continuous real-valued function defined on a closed interval $[a, b]$. Let $F$ be the function defined, for all $x$ in $[a, b]$, by
+
+\begin{equation*}
+F(x) = \int_a^x f(u)\, du	
+\end{equation*}
+
+Then, $F$ is continuous on $[a, b]$, differentiable on the open interval $(a, b)$, and
+
+\begin{equation*}
+F'(x) = f(x)	
+\end{equation*}
+
+for all $x $ in $(a, b)$.	
+
+\subsection{Rules of integration}
+
+
+\subsection{Standard integrals}
+
+\subsection{The u-substitution}
+
+From \cite[306]{salas2003calculus}:
+
+An integral of the form
+\begin{equation}
+\int f(g(x)) g'(x) \, dx
+\end{equation}
+
+can be written as
+
+\begin{equation}
+\int f(u) \, du
+\end{equation}
+
+by setting
+
+\begin{equation}
+u = g(x)
+\end{equation}
+
+and 
+
+\begin{equation}
+du = g'(x) \, dx
+\end{equation}
+
+If F is an antiderivative for f, then 
+
+\begin{equation}
+\frac{d}{dx} [F(g(x))] \explain{=}{\textrm{by the chain rule}} F'(g(x)) g'(x) \explain{=}{F'=f} f(g(x)) g'(x)
+\end{equation}
+
+We can obtain the same result by calculating:
+
+\begin{equation}
+\int f(u) \, du
+\end{equation}
+
+and then substituting g(x) back in for u:
+
+\begin{equation}
+\int f(u) \, du = F(u)+C = F(g(x)) + C
+\end{equation}
+
+\textbf{A frequently occurring type of integral} is
+
+\begin{equation}
+\int \frac{g'(x)}{g(x)} \, dx
+\end{equation}
+
+Let $u=g(x)$, giving $\frac{du}{dx}=g'(x)$, i.e., $du = g'(x)\,dx$, so that
+
+\begin{equation}
+\int \frac{g'(x)}{g(x)}\,dx=\int \frac{1}{u} du = ln \mid u \mid +C
+\end{equation}
+
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\textbf{Examples}:
+
+\begin{equation*}
+\int \tan x \, dx = \int \frac{1}{\cos x} \sin x \, dx
+\end{equation*}
+
+\begin{equation*}
+\int \frac{2x + b}{x^2+bx + c} \, dx
+\end{equation*}
+
+\end{fmpage}
+\end{center}
+
+
+\textbf{Functions of linear functions}: E.g., $\int cos(2x-1)\,dx$. Here, the general form is $\int f(ax+b)\,dx$. We do $u=ax+b$, and then $du=a \,dx$
+
+\begin{center}
+\begin{fmpage}{.9\linewidth}
+\textbf{Using integration by substitution to compute the expectation of a standard normal random variable}: 
+
+The expectation of the standard normal random variable:
+
+\begin{equation*}
+E[Z] = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty x e^{-x^2/2} \, dx
+\end{equation*}
+
+Let $u = -x^2/2$.
+
+Then, $du/dx = -2x/2=-x$. I.e., $du= -x \, dx$ or $-du=x \, dx$.
+
+We can rewrite the integral as:
+
+\begin{equation*}
+E[Z]  = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} x \, dx\\
+\end{equation*}
+
+Replacing $x\, dx$ with $-du$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} \, du	
+\end{equation*}
+
+which yields:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{u} ]_{-\infty}^{\infty}
+\end{equation*}
+
+Replacing $u$ with $-x^2/2$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{-x^2/2} ]_{-\infty}^{\infty} = 0
+\end{equation*}
+\end{fmpage}
+\end{center}
+
+\begin{center}
+\begin{fmpage}{.9\linewidth}
+\textbf{Examples}: 
+
+\begin{itemize}
+	\item From M-Ass2-problem-4a:
+	Use a substitution to find:
+
+	\begin{equation*} 
+	\int_1^4 x^2 e^{-x^3}\, dx
+	\end{equation*}
+\item From M-Ass2-problem-4b:
+Use a substitution to find
+
+	\begin{equation*}
+	\int_1^4 \frac{1+2 \log_e x}{x} \, dx
+	\end{equation*}
+	\item From M-Ass2-problem-5:
+	We have to use an appropriate substitution to find the indefinite integral:
+
+	\begin{equation*}
+	\int x e^{-x^2}\, dx
+	\end{equation*}	
+
+Then, 	
+use the answer to the above to calculate:
+
+\begin{equation*}
+\int_0^\infty x e^{-x^2}\, dx 
+\end{equation*}
+	
+Then, we have to use integration by parts (using the first answer above) to find a reduction formula for:
+
+\begin{equation}\label{eq5c}
+I_n = \int_0^{\infty} x^n e^{-x^2}\, dx
+\end{equation}
+
+[Note: this last problem needs a certain amount of concentration, so make yourself comfortable before you start.]	
+\end{itemize}
+\end{fmpage}
+\end{center}
+
+\subsection{Integration by parts}
+
+\begin{equation}
+\frac{d(uv)}{dx} = u\frac{dv}{dx} + \int v\frac{du}{dx}
+\end{equation}
+
+\begin{equation}
+uv = \int u\frac{dv}{dx}\, dx + \int v\frac{du}{dx}\, dx 
+\end{equation}
+
+\begin{equation}
+\int u\frac{dv}{dx}\, dx = uv - \int v\frac{du}{dx}\, dx
+\end{equation}
+
+
+\begin{center}
+\begin{fmpage}{.9\linewidth}
+\textbf{Examples}: 
+
+From M-Ass2-problem-4c: Use integration by parts to find 
+
+	\begin{equation*}
+	\int_0^{\pi/2} \sin (2x) e^{-x}\, dx
+	\end{equation*}
+	
+The trick here: get the same expression on the right-hand side (RHS) as you have on the LHS, and then solve for the LHS.	
+\end{fmpage}
+\end{center}
+
+
+\subsection{Change of variables (gamma functions)}
+
+We can solve integrals like 
+
+\begin{equation}
+	\int_0^\infty x^2 e^{-x^5}\, dx
+\end{equation}
+
+by restating it as the gamma function:
+
+\begin{equation}
+	\Gamma (z) = \int_0^\infty x^{z-1}e^{-x}\, dx
+\end{equation}
+
+
+
+
+This can be done by, e.g., letting $y=x^5$, so that $dy/dx= 5x^4$, and therefore $dx= dy/5x^4 = dy/5*y^{4/5}$. This lets us rewrite the above integral in terms of y:
+
+\begin{equation}
+	\frac{y^{2/5}}{5y^{4/5}}e^y\, dy 
+\end{equation}
+
+This has the form of the gamma function, allowing us to state the integral in terms of the gamma function.
+
+Note that
+
+\begin{equation}
+	\Gamma(z) = (z-1) \Gamma (z-1)
+\end{equation}
+
+
+\subsection{Double integrals}
+
+\subsection{Change of variables in multiple integration}
+
+\subsection{Vectors}
+
+A vector is an ordered triple. It has a geometric interpretation only when the coordinates are established.
+
+\begin{equation}
+	\vect{a} = (x_1,y_1,z_1)
+\end{equation}
+
+\textbf{Norm}
+
+\begin{equation}
+	\lVert \vect{a} \rVert = \sqrt{x_1^2 + y_1^2 + z_1^2}
+\end{equation}
+
+Vectors of norm 1 are called unit vectors. For each non-zero vector there is a unit vector going in the same direction.
+
+\begin{equation}
+u_{\vect{a}} = \frac{1}{\lVert \vect{a} \rVert}
+\end{equation}
+
+Also, every vector can be expressed as a linear combination of these three unit vectors:
+
+\begin{equation}
+\vect{i} = (1,0,0) \quad \vect{j} = (0,1,0) \quad \vect{k} = (0,0,1)	
+\end{equation}
+
+I.e., if 
+
+\begin{equation}
+	\vect{a} = (x_1,y_1,z_1)	
+\end{equation}
+
+then
+
+\begin{equation}
+\vect{a} = x_1 \vect{i} + y_1 \vect{j} + z_1 \vect{k} 
+\end{equation}
+
+Dot product:
+
+\begin{equation}
+	\vect{a}\cdot \vect{b} = a_1 b_1 + a_2 b_2 + a_3 b_3  
+\end{equation}
+
+Note that
+
+
+
+\begin{equation}
+\vect{a}\vect{a} = \mid\mid \vect{a} \mid \mid ^2
+\end{equation}
+
+and 
+
+\begin{equation}
+\vect{a}\cdot \vect{b} = \mid\mid\vect{a} \vect{b}\mid\mid \cos \theta
+\end{equation}
+
+Also, 
+
+\begin{equation}
+	\cos \theta = u_{\vect{a}} \cdot u_{\vect{b}}
+\end{equation}
+
+
+
+\section{Linear Algebra}
+
+This section depends heavily on \cite{evenslinalg}, and sometimes I quote exactly from this book.
+
+\subsection{Gaussian elimination for solving systems of linear equations}
+
+
+Elementary row operations (note that these are reversible, and the effect of any sequence of row operations on a system of equations is to produce an equivalent system of equations):
+
+
+\begin{enumerate}
+	\item \textbf{Replacement}: Replace one equation by the sum of itself and a multiple of another equation
+	\item \textbf{Interchange}: Interchange two equations
+	\item \textbf{Scaling}: Multiply all the terms of an equation by a nonzero constant
+\end{enumerate}
+
+\begin{definition}\label{def:roweq}
+	\textbf{Row equivalent}: Two matrices are row equivalent if a sequence of elementary row operations can transform one matrix to the other.
+	\end{definition}
+
+\begin{definition}\label{def:echelon}
+	\textbf{Echelon form}: example:
+
+	\begin{equation}
+	\begin{pmatrix}
+	\explain{3}{pivot position} & 1 & 1 \\
+	0 & 4 & -1 \\
+	\explain{0}{pivot column} & 0 & 7
+	\end{pmatrix}
+	\end{equation}	
+\end{definition}
+
+\begin{definition}\label{def:redechelon}
+	\textbf{Reduced echelon form}: example:
+
+	\begin{equation}
+	\begin{pmatrix}
+	1 & 1 & 1 \\
+	0 & 1 & -1 \\
+	0 & 0 & 1
+	\end{pmatrix}
+	\end{equation}
+\end{definition}
+
+\begin{theorem}\label{thm:consistent}
+\textbf{Consistency}:
+A linear system is consistent iff the rightmost column of an augmented matrix is not a pivot column, i.e.,
+
+$[0 \cdots 0 b]$ with $b$ nonzero.
+\end{theorem}
+
+[A leading non-zero entry of a row, when used in this way, is called a
+{\it pivot}.   
+]
+
+
+\textbf{Identity matrix}
+
+Multiplying a matrix by its inverse (see below) gives an identity matrix (the R function solve computes the inverse of a matrix):
+
+<<>>=
+
+(m3<-matrix(c(2,3,4,5),2,2))
+
+(round(solve(m3)%*%m3))
+
+@
+
+And multiplying an identity matrix with any (conformable) matrix gives that matrix:
+
+<<>>=
+
+(I<-matrix(c(1,0,0,1),2,2))
+
+(m4<-matrix(c(6,7,8,9),2,2))
+
+(I%*%m4)
+
+@
+
+
+\textbf{The rank of a matrix}
+
+The column rank of a matrix is the maximum number of \textbf{linearly independent} columns in the matrix. The row rank is the maximum number of linearly independent rows. Column rank is always equal to row rank, so we can just call it rank.
+
+\textbf{Determinant}
+
+The determinant of a square matrix can be computed using an in-built R function. 
+
+<<>>=
+
+(m1<-matrix(1:4,2,2))
+
+det(m1)
+
+@
+
+Given a $2\times 2$ matrix $\left( \begin{array}{cc}
+a & b \\
+c & d \\
+\end{array} \right)$, 
+det = $ad - bc$. 
+
+For a $3\times 3$ matrix $M_1$, the determinant is:
+
+\[
+\hbox{det} M_1 = a_{11}\hbox{det}M_{1_{11}} - a_{12}\hbox{det}M_{1_{12}} + a_{13}\hbox{det}M_{1_{13}}
+\] 
+
+
+
+\textbf{Inverse of a matrix}
+
+For a matrix $A$, $A^{-1}$ is its inverse. Think of it as the reciprocal of a number: the reciprocal of 10 is 1/10, and if we multiple 10 and 1/10, we get 1. Similarly, if we multiply the matrix by its inverse we get the identity matrix.
+
+A matrix has an inverse iff its determinant is not equal to zero.
+
+Note that $AA^1=I$ and $A^1A=I$. 
+
+\textbf{Singular matrix=non-invertible matrix}
+
+If the determinant of a square matrix is zero, then it can't be inverted; we say that the matrix is singular.
+
+\subsection{Gauss-Jordan reduction}
+
+To solve an equation of the form
+
+\begin{equation}
+AX=B
+\end{equation}
+
+Take $[A\mid B]$ and reduce A in this augmented matrix to the identity matrix:
+
+
+\begin{equation}
+\begin{pmatrix}
+1 & 0 & 0 & b_1 \\
+0 & 1 & 0 & b_2\\
+0 & 0 & 1 & b_3
+\end{pmatrix}
+\end{equation}
+
+$B'=[b_1 b_2 b_3]$ is the solution. Basically, we have
+
+\begin{equation}
+IX=B'
+\end{equation}
+
+or
+
+\begin{equation}
+X=B'
+\end{equation}
+
+This works because elementary operations are reversible and the effect of any sequence of row operations on a system of equations is to produce an equivalent system of equations: 
+the system $AX = B$ is equivalent to the system 
+$X=IX=B'$, which is to
+say $X=B'$ is a solution of $AX=B$.
+
+Note that if a solution
+exists, it is unique, i.e., there is only one solution.
+
+If the $n \times n$ matrix A is non-singular, then every equation of the form $AX=B$ (where both $X$ and $B$ are $n\times p$ matrices)
+does have a solution and also that the solution $X=B'$ is unique. On the other
+hand, if $A$ is singular, an equation of the form $AX = B$ may have a solution, but
+there will certainly be matrices $B$ for which $AX = B$ has no solutions.
+
+When $A$ is a singular $n\times n$ matrix, if $AX=B$ has a
+solution $X$ for a particular $B$, then it has infinitely many solutions. \textbf{See general case below of Gauss-Jordan reduction}.
+
+If $A$ is non-singular then $AX=B$ has a solution for every
+$B$, while if $A$ is singular, there are many $B$ for which $AX=B$ has no solution.
+
+\subsubsection{The general case of Gauss-Jordan reduction}
+
+Taken verbatim from \cite{evenslinalg}.
+
+
+	Gauss-Jordan reduction works just as well if the coefficient
+	matrix $A$ is singular or even if it is not a square matrix.
+	Consider the system
+	\[
+	  Ax = b
+	\]
+	where the coefficient matrix $A$ is an $m\times n$ matrix.
+	 The method is to apply
+	elementary row operations to the augmented matrix
+	\[
+	[A\,|\,b] \to \dots \to [A'\, |\, b']
+	\]
+	making the best of it with the coefficient matrix $A$.
+
+Example:
+
+
+\begin{equation}
+\begin{pmatrix}
+1 & 1 & 2 &| & 1\\
+0 & 0 & 3 & | & 6 \\
+0 & 0 & 0 & | & 0	
+\end{pmatrix}
+\begin{pmatrix}
+x_1 \\
+x_2  \\
+x_3 	
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \\
+5  \\
+3 	
+\end{pmatrix}
+\end{equation}
+
+Using Gauss-Jordan reduction we get:
+
+\begin{equation}
+\begin{pmatrix}
+	1 & 1 & 0 &| & -3\\
+	0 & 0 & 1 & | & 2 \\
+	0 & 0 & 0 & | & 0	
+\end{pmatrix}	
+\end{equation}
+
+This resulting augmented matrix corresponds to the system
+\[
+\begin{aligned}
+x_1 + x_2 \hphantom{+ x_3} &= -3 \\ 
+                      x_3  &= 2 \\
+0 &= 0
+\end{aligned} \]
+
+If the last equation were $0=6$ or some such, it would be inconsistent---it would have no solution.
+
+We can rewrite the above system as:
+
+\[
+x = 
+\begin{pmatrix}
+x_1 \\
+ x_2 \\ 
+x_3
+\end{pmatrix}
+ = 
+\begin{pmatrix}
+ -3 - x_2 \\ x_2 \\ 2	
+\end{pmatrix}
+ = 
+\begin{pmatrix}
+ -3\\ 0 \\ 2 	
+\end{pmatrix}
++ 
+x_2
+\begin{pmatrix}
+-1\\ 1\\ 0
+\end{pmatrix}
+\]
+
+$x_2$ can have any value---it is a free variable. The fact that it is arbitrary means that there are infinitely many solutions. $x_1$ and $x_2$ are bound variables (and they are in pivot positions).
+
+Geometrically this means that the solution of the above system is a vector equation: A line passing through the end-point of the vector $(-3,0,2)$ and parallel to the vector $(-1,1,0)$.
+
+\textbf{Summary of the procedure for Gauss-Jordan reduction in the general case}
+
+Gauss--Jordan reduction of the coefficient matrix is always
+possible, but {\it the pivots don't always end up on the diagonal\/}.
+In any case, the Jordan part of the reduction will yield
+a 1 in each pivot position with zeroes elsewhere
+in the column containing the pivot.   
+The position of a pivot in a row will be
+on the diagonal or to its right, and  all entries in that row {\it to the left
+of the pivot\/} will be zero.  Some of the entries to the right
+of the pivot may be non-zero.   
+
+If the number of pivots is smaller than the number of rows
+(which will always be the case for a singular square matrix),
+then some rows of the reduced coefficient matrix will
+ consist entirely of zeroes.
+If there are non-zero entries in those rows 
+to the right of the
+divider {\it in the augmented matrix\/}, the system is inconsistent and
+has no solutions.  
+
+Otherwise, the system does have solutions.
+Such solutions are obtained by writing out the corresponding
+system, and transposing all terms {\it not associated with the
+pivot position\/} to the right side of the equation.  Each
+unknown in a pivot position is then expressed in terms of
+the non-pivot unknowns (if any). The pivot unknowns
+are said to be {\it bound}.  The non-pivot unknowns may
+be assigned any value and are said to be {\it free}.
+
+\subsubsection{Geometric visualization (vector space)}
+
+In $R^3$, the graph of a single linear equation
+\[
+a_1x_1 + a_2x_2 + a_3x_3 = b
+\]
+
+is a plane.  Hence, by analogy, we call the `graph' in $R^4$ of
+
+\[
+a_1x_1 + a_2x_2 + a_3x_3 + a_4x_4 = b
+\]
+
+a \textit{hyperplane}.    
+
+Example:
+
+Consider
+the system
+\[
+\begin{aligned}
+x_1 + 2x_2 - x_3   &= 0 \\
+x_1 + 2x_2 + x_3 + 3x_4 & = 0 \\
+2x_1 + 4x_2 + 3x_4  &= 0
+\end{aligned}
+\]
+
+If we solve this (exercise), we get 
+the system corresponding to the reduced augmented matrix:
+
+\[
+\begin{aligned}
+x_1 + 2x_2 \hphantom{+ x_3} + (3/2)x_4 &= 0 \\
+               x_3          + (3/2)x_4 &= 0 \\
+0 &= 0
+\end{aligned}
+\]
+
+Thus,
+
+\[
+\begin{aligned}
+x_1 &= -2x_2 - (3/2)x_4 \\
+x_3 &= \hphantom{-2x_2} -3(/2)x_4
+\end{aligned}
+\]
+
+with $x_1$ and $x_3$ \textit{bound} and $x_2$ and $x_4$ \textit{free}.
+
+[skipping a few steps] A general solution is:
+
+\[
+x = 
+x_2 
+\begin{pmatrix}
+-2\\ 1\\ 0\\ 0
+\end{pmatrix}
+ +
+   x_4
+\begin{pmatrix}
+-3/2\\ 0\\-3/2\\ 1 \\ 
+\end{pmatrix}
+\]
+
+where the free variables $x_2$ and $x_4$ can assume any value.
+The bound variables $x_1$ and $x_3$ are then determined.
+
+
+As \cite[40]{evenslinalg} puts it
+``This solution may also be interpreted geometrically in $R^4$.
+The original set of equations may be thought of as determining
+a `graph' which is the intersection of three hyperplanes (each
+defined by one of the equations.)   Note also that each of
+these hyperplanes passes through the origin since the zero vector
+is certainly a solution.''
+
+\subsubsection{The LU decomposition}
+
+not needed for course, to-do. Notes from Leonard Evens (Northwestern math).
+
+\subsection{Vector spaces, subspaces, and linear combinations}
+
+A homogeneous system is
+
+\begin{equation}
+	Ax = 0
+\end{equation}
+
+and if the RHS vector is non-zero, inhomogeneous:
+
+\begin{equation}
+	Ax = b
+\end{equation}
+
+Every inhomogeneous
+system has an associated homogeneous system, and the solutions of the
+two systems are closely related.
+
+Consider the examples above:
+
+Example 1:
+
+\[
+\begin{pmatrix}
+	1 & 1 & 2 \\
+	-1 & -1 & 1 \\
+	1 & 1 & 3	
+\end{pmatrix}
+\begin{pmatrix}
+ x_1\\ x_2\\ x_3 	
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\5\\3	
+\end{pmatrix}
+\]
+
+This was shown above to have the solution
+
+\[
+x = 
+\begin{pmatrix}
+x_1 \\
+ x_2 \\ 
+x_3
+\end{pmatrix}
+ = 
+\begin{pmatrix}
+ -3 - x_2 \\ x_2 \\ 2	
+\end{pmatrix}
+ = 
+\begin{pmatrix}
+ -3\\ 0 \\ 2 	
+\end{pmatrix}
++ 
+x_2
+\begin{pmatrix}
+-1\\ 1\\ 0
+\end{pmatrix}
+\]
+
+Example 2:
+
+Consider
+
+\[
+\begin{pmatrix}
+	1 & 1 & 2 \\
+	-1 & -1 & 1 \\
+	1 & 1 & 3	
+\end{pmatrix}
+\begin{pmatrix}
+x_1\\ x_2\\ x_3	
+\end{pmatrix}
+=
+\begin{pmatrix}
+0\\0\\0	
+\end{pmatrix} 
+\]
+
+This has the general solution
+
+\begin{equation}\label{Eq:parhomeq}
+x 
+ = \mathtt{}
+ x_2
+\begin{pmatrix}
+-1\\ 1\\ 0	
+\end{pmatrix}
+\end{equation}
+where $x_2$ is also free.
+
+
+Note
+that if we set  $x_2 = 0$ in (\ref{Eq:pareqn}),
+ we obtain the specific
+solution
+\[
+\begin{pmatrix}
+-3\\ 0 \\ 2	
+\end{pmatrix}
+\]
+and then the remaining part of the solution is a general solution 
+of
+the homogeneous equation.
+
+The general principle is: {\it You can always find a general solution of an inhomogeneous linear
+system by
+adding one particular solution to a general solution of the corresponding
+homogeneous
+system}.
+
+to-do algebraic explanation.
+
+\subsubsection{Null spaces}
+
+The null space is the set of all solutions $x$ to 
+
+\begin{equation}
+	Ax = 0
+\end{equation}
+
+These are interesting because of the relationship described above between homogeneous and non-homogeneous systems.
+
+\noindent
+Notice that the null space of an $m\times n$
+matrix is a subset of $R^n$.
+
+\begin{definition}\label{def:vs}
+  \textbf{Vector subspace}: 
+A non-empty subset V of $R^n$ is called a vector subspace if it has the property
+that any linear combination of vectors in V is also in V . In symbols, if u and v are
+vectors in V , and a and b are scalars, then au + bv is also a vector in V .
+	\end{definition}
+
+Aside: 	The entire set $R^n$ is considered a subset of itself; i.e., a vector subspace of itself.
+
+\textbf{Why is the zero vector always in the subspace?} 
+
+``The zero vector must be in every vector subspace W.
+Indeed, just pick any two vectors u and v in W---v could even be a multiple of u.
+Then 0 = (0)u + (0)v, the linear combination with both scalars a = b = 0, must
+also be in W. The upshot is that any set which does not contain the zero vector
+cannot be a vector subspace.
+
+The set consisting only of the zero vector 0 has the desired property---any linear
+combination of zero with itself is also zero. Hence, that set is also a vector subspace,
+called the \textbf{zero subspace}.''
+
+\textbf{Why are we interested in vector subspaces?}
+
+At least two reasons:
+
+First, they arise in null spaces, and these are interesting because they constitute solutions to systems of homogeneous linear equations.
+
+To see why a null space satisfies
+the definition, suppose u and v are both solutions of Ax = 0. That is, Au = 0 and
+Av = 0. Then
+
+\begin{equation}
+A(au + bv) = A(au) +A(bv) = aAu + bAv = a 0 + b 0 = 0
+\end{equation}
+
+Second (related to the above point), talking about vector subspaces as the solution set of a homogeneous system of linear equations gives us a compact way of talking about the solution set (or null space). For example, in 
+
+\[
+\begin{pmatrix}
+  1& 2& -1& 0\\
+  1& 2& 1& 3 \\
+  2& 4& 0& 3 	
+\end{pmatrix}
+\begin{pmatrix}
+x_1\\x_2\\x_3\\x_4	
+\end{pmatrix}
+= 
+\begin{pmatrix}
+0\\0\\0 	
+\end{pmatrix}
+\]
+
+As shown earlier,  its null space
+ consists of all vectors of the form
+
+\[
+   x_2
+\begin{pmatrix}
+-2\\ 1\\ 0\\ 0 
+\end{pmatrix}
++
+x_4
+\begin{pmatrix}
+-3/2\\ 0\\-3/2\\ 0
+\end{pmatrix}
+\]
+
+as  the free scalars $x_2$ and $x_4$ range over all possible values.
+Let
+\[
+v_1 = 
+\begin{pmatrix}
+-2\\ 1\\ 0\\ 0   	
+\end{pmatrix}
+\qquad
+v_2 =
+\begin{pmatrix}
+ -3/2\\ 0\\-3/2\\ 0   
+\end{pmatrix}
+\]
+
+Then, what we have discovered is that the solution set or
+null space consists
+of all linear combinations of the set $(v_1, v_2)$ of vectors.
+\textbf{This is a much more useful way of presenting the answer, since
+we specify it in terms of a small number of objects---in this
+case just two.   Since the null space itself is infinite, this
+simplifies things considerably.}
+
+\subsubsection{Spanning set}
+
+In general, suppose  $W$ is a vector subspace of $R^n$ and
+ $\{v_1, v_2, \dots, v_k\}$ is a finite
+subset of $W$.      We say that $\{v_1,v_2,\dots,v_n\}$ 
+is a \textit{spanning set} for $W$ (or more simply that it
+\textit{spans}  $W$) if each vector $v$ in $W$ can be expressed
+as a linear combination
+\[
+v = s_1 v_1 + s_2 v_2 + \dots + s_k v_k,
+\]
+for appropriate scalars $s_1, s_2,\dots, s_k$. 
+The simplest case of this is when $k = 1$, i.e., the spanning set consists
+of a single vector $v$.   Then the subspace spanned by this
+vector is just the set of all $s v$ with $s$ an arbitrary scalar.
+If $v \not= \mathbf 0$, this set is just the line through the origin
+containing $v$.
+
+Example:
+
+Consider the set of solutions $x$ in $R^4$
+ of the single homogeneous equation
+\[
+x_1 - x_2 + x_3 - 2x_4 = 0.
+\]
+This is the null space of the $1\times 4$ matrix
+\[
+A = \begin{pmatrix} 1 & -1 & 1 & -2 \end{pmatrix}.
+\]
+The matrix is already reduced with pivot 1 in the $1,1$-position.
+The general solution is
+\[
+x_1 = x_2 - x_3 + 2x_4\qquad x_2, x_3, x_4\quad\text{free},
+\]
+and the general solution vector is
+
+\[
+x = 
+\begin{pmatrix}
+x_2 - x_3 + 2x_4\\ x_2 \\ x_3 \\ x_4 
+\end{pmatrix}
+  = x_2
+\begin{pmatrix} 
+	1\\ 1\\ 0 \\ 0 
+\end{pmatrix}	
+  + x_3
+\begin{pmatrix} -1\\ 0\\ 1 \\ 0 
+\end{pmatrix}
+  + x_4
+\begin{pmatrix}
+ 2\\ 0\\ 0 \\ 1 
+\end{pmatrix}
+\]
+It follows that the null space is spanned by
+\[
+\left\{v_1 =  
+\begin{pmatrix}
+1\\ 1\\ 0 \\ 0 
+\end{pmatrix}
+,\quad
+  v_2 = 
+\begin{pmatrix} -1\\ 0\\ 1 \\ 0 
+\end{pmatrix}	
+	, \quad
+ v_3 = 
+\begin{pmatrix}
+ 2\\ 0\\ 0 \\ 1 
+\end{pmatrix}
+ \right\}
+\]
+
+
+This is a special case of a more general principle:
+ \textbf{Gauss-Jordan reduction for a homogeneous
+system always results in a description of the null space 
+as the vector subspace spanned by a finite set of basic solution vectors}.
+
+
+\chapter{Probability}
+
+Sources: Kerns \cite{kerns}.
+
+\section{Kolmogorov Axioms of Probability}
+
+\subsection{Axiom 1}
+$(\mathbb{P}(A)\geq 0)$ for any event $(A\subset S)$.
+
+\subsection{Axiom 2}
+$(\mathbb{P}(S)=1)$.
+
+
+\subsection{Axiom 3}
+If the events $(A_{1}), (A_{2}), (A_{3})\dots$ are disjoint then
+
+
+\begin{equation}
+\mathbb{P}\left(\bigcup_{i=1}^{n}A_{i}\right)=\sum_{i=1}^{n}\mathbb{P}(A_{i})\mbox{ for every }n,
+\end{equation}
+
+and furthermore,
+
+\begin{equation}
+\mathbb{P}\left(\bigcup_{i=1}^{\infty}A_{i}\right)=\sum_{i=1}^{\infty}\mathbb{P}(A_{i}).
+\end{equation}
+
+\subsection{Four important propositions}
+
+We'll be using these later on a lot.
+
+\begin{proposition}\label{pro:p1}
+
+Let $E\cup E^c=S$. Then,
+
+\begin{equation}
+1=P(S) = P(E \cup E^c) = P(E)+P(E^c)	
+\end{equation}
+
+or:
+
+\begin{equation}
+P(E^c) = 1-P(E)
+\end{equation}
+\end{proposition}
+
+\begin{proposition}\label{pro:p2}
+If $E\subset F$ then $P(E)\leq P(F)$.	
+\end{proposition}
+
+\begin{proposition}\label{pro:p3}
+
+\begin{equation}
+P(E \cup F) = P(E)+P(F)-P(EF)	
+\end{equation}
+
+This result will be needed for a (to me) totally non-obvious outcome in multivariate distributions.
+	
+\end{proposition}
+
+\begin{proposition}\label{pro:p4}
+	
+This is ugly if written in a formula, but easy to follow intuitively: the inclusion-exclusion identity.
+	
+\end{proposition}
+
+\section{Counting}
+
+
+
+The number of ways in which one may select an unordered sample of k subjects from a population that has n distinguishable members is
+
+\begin{itemize}
+\item
+$\frac{(n-1+k)!}{[(n-1)!k!]}$ if sampling is done with replacement,
+\item
+${n \choose k}=\frac{n!}{[k!(n-k)!]}$ if sampling is done without replacement.
+\end{itemize}
+
+\begin{table}[!htbp]
+\caption{default}
+\begin{center}
+\begin{tabular}{c|cc}
+                   & ordered = TRUE     & ordered = FALSE\\
+\hline                   
+replace = TRUE & $n^{k}$           & $(n-1+k)! / [(n-1)!k!]$ \\
+replace = FALSE & $n! / (n-k)!$   & ${n \choose k}$        
+\end{tabular}
+\end{center}
+\label{default}
+\end{table}%
+
+\section{Permutations}
+
+For $n$ objects, of which $n_1,\dots , n_r$ are alike, the number of different permutations are
+
+\begin{equation}
+\frac{n!}{n_1!n_2!\dots n_r!}
+\end{equation}
+
+\section{Combinations}
+
+Choosing $k$ distinct objects from $n$, when order irrelevant:
+
+\begin{equation}
+{n \choose k} = \frac{n!}{(n-r)! r!}
+\end{equation}
+
+\section{Binomial theorem}
+
+\begin{equation}
+(x+y)^n = \underset{n=0}{\overset{n}{\sum}} {n \choose k} x^k y^{n-k}
+\end{equation}
+
+\section{Conditional probability}
+
+The conditional probability of $B$ given $A$, denoted $\mathbb{P}(B\mid A)$, is defined by
+
+\begin{equation}
+\mathbb{P}(B\mid A)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(A)},\quad \mbox{if }\mathbb{P}(A)>0.
+\end{equation}
+
+\textbf{Theorem}:
+For any fixed event $A$ with $\mathbb{P}(A)>0$,
+
+\begin{enumerate}
+\item $ \mathbb{P} (B|A)\geq 0 $, for all events $ B \subset S$,
+\item $ \mathbb{P} (S|A) = 1 $, and
+\item If $B_{1}$, $B_{2}$, $B_{3}$,... are disjoint events,
+\end{enumerate}
+
+  then:
+  
+  \begin{equation}
+  \mathbb{P}\left(\left.\bigcup_{k=1}^{\infty}B_{k}\:\right|A\right)=\sum_{k=1}^{\infty}\mathbb{P}(B_{k}|A).
+  \end{equation}
+
+In other words, $\mathbb{P}(\cdot|A)$ is a legitimate probability function. With this fact in mind, the following properties are immediate:
+
+
+For any events $A$, $B$, and $C$ with $\mathbb{P}(A)>0$,
+
+\begin{enumerate}
+\item $ \mathbb{P} ( B^{c} | A ) = 1 - \mathbb{P} (B|A).$
+\item If $B\subset C$ then $\mathbb{P}(B|A)\leq\mathbb{P}(C|A)$.
+\item $ \mathbb{P} [ ( B\cup C ) | A ] = \mathbb{P} (B|A) + \mathbb{P}(C|A) - \mathbb{P} [ (B \cap C|A) ].$
+\item The Multiplication Rule. For any two events $A$ and $B$,
+
+  \begin{equation}
+  \mathbb{P}(A\cap B)=\mathbb{P}(A)\mathbb{P}(B|A).\label{eq-multiplication-rule-short}
+  \end{equation}
+
+  And more generally, for events $A_{1}$, $A_{2}$, $A_{3}$,..., $A_{n}$,
+
+  \begin{equation}
+  \mathbb{P}(A_{1}\cap A_{2}\cap\cdots\cap A_{n})=\mathbb{P}(A_{1})\mathbb{P}(A_{2}|A_{1})\cdots\mathbb{P}(A_{n}|A_{1}\cap A_{2}\cap\cdots\cap A_{n-1}).\label{eq-multiplication-rule-long}
+  \end{equation}
+
+\end{enumerate}
+
+\subsection{Some important results that keep turning up}
+
+\begin{enumerate}
+\item Conditional probability $A\mid B$ stated in terms of the complement $A'\mid B$:
+\begin{equation}
+\begin{split}
+P(B) =& P(AB) + P(A'B)\\
+=& P(A\mid B)P(B) + P(A'\mid B) P(B)\\
+\Leftrightarrow& P(B) = P(B) [P(A\mid B) + P(A'\mid B)]\\
+\Leftrightarrow& 1 = P(A\mid B) + P(A'\mid B)\\
+\Leftrightarrow& P(A\mid B) = 1- P(A'\mid B)
+\end{split}
+\end{equation}
+
+\item Eq 3.1 in Ross:
+
+\begin{equation}
+P(A)=P(A\mid C)P(C) + P(A\mid C')P(C')
+\end{equation}
+
+Note also (the equation below is the same as the second line in the first item above):
+
+\begin{equation}
+P(C)=P(A\mid C)P(C) + P(A'\mid C)P(C)
+\end{equation}
+\item
+A product P(AB) can be written:
+
+\begin{equation}
+P(AB)= P(A\mid B)P(B) = P(B\mid A)P(A)
+\end{equation}
+
+\end{enumerate}
+\subsection{Iterated conditional probability}
+
+to-do: see Cameron book (prob-1.pdf in ExtraReading)
+
+\subsection{Independence of events}
+
+[Taken nearly verbatim from \cite{kerns}.]
+
+\begin{definition}
+Events A and B are said to be independent if 
+
+\begin{equation}
+\mathbb{P}(A\cap B)=\mathbb{P}(A)\mathbb{P}(B).
+\end{equation}
+
+Otherwise, the events are said to be dependent.
+\end{definition}
+
+We know that when $\mathbb{P}(B)>0$ we may write
+
+\begin{equation}
+\mathbb{P}(A|B)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(B)}.
+\end{equation}
+
+In the case that A and B are independent, the numerator of the fraction factors so that $\mathbb{P}(B)$ cancels, with the result:
+
+\begin{equation}
+\mathbb{P}(A|B)=\mathbb{P}(A)\mbox{ when $A$, $B$ are independent.}
+\end{equation}
+
+Proposition:
+
+If E and F are independent events, then so are E and F$^c$, E$^c$ and F, and E$^c$ and F$^c$.
+
+Proof:
+
+Assume E and F are independent. Since $E=EF\cup EF^c$ and $EF$ and $EF^c$ are mutually exclusive, 
+
+\begin{equation}
+\begin{split}
+P(E) =& P(EF)+P(EF^c)\\
+     =& P(E)P(F)+P(EF^c)	
+\end{split}	
+\end{equation}
+
+Equivalently:
+
+\begin{equation}
+\begin{split}
+P(EF^c) =& P(E)[1-P(F)]\\
+        =& P(E)P(F^c)
+\end{split}	
+\end{equation}
+
+\subsection{Bayes' rule}
+
+[Cited verbatim from \cite{kerns}.]
+
+\begin{theorem}\label{thm:bayes}
+	\textbf{Bayes' Rule}. Let $B_{1}$, $B_{2}$, ..., $B_{n}$ be mutually exclusive and exhaustive and let $A$ be an event with 
+	$\mathbb{P}(A)>0$. Then 
+
+\begin{equation}
+\mathbb{P}(B_{k}|A)=\frac{\mathbb{P}(B_{k})\mathbb{P}(A|B_{k})}{\sum_{i=1}^{n}\mathbb{P}(B_{i})\mathbb{P}(A|B_{i})},\quad k=1,2,\ldots,n.\label{eq-bayes-rule}
+\end{equation}	
+\end{theorem}
+
+The proof follows from looking at $\mathbb{P}(B_{k}\cap A)$ in two different ways. For simplicity, suppose that $P(B_{k})>0$ for all $k$. Then
+
+\[
+\mathbb{P}(A)\mathbb{P}(B_{k}|A)=\mathbb{P}(B_{k}\cap A)=\mathbb{P}(B_{k})\mathbb{P}(A|B_{k}).
+\]
+
+Since $\mathbb{P}(A)>0$ we may divide through to obtain 
+
+\[
+\mathbb{P}(B_{k}|A)=\frac{\mathbb{P}(B_{k})\mathbb{P}(A|B_{k})}{\mathbb{P}(A)}.
+\]
+
+Now remembering that  $\{B_{k}\}$ is a partition, the Theorem of Total Probability  gives the denominator of the last expression to be
+
+\[
+\mathbb{P}(A)=\sum_{k=1}^{n}\mathbb{P}(B_{k}\cap A)=\sum_{k=1}^{n}\mathbb{P}(B_{k})\mathbb{P}(A|B_{k}).
+\]
+
+\hfill \BlackBox
+
+See great example in \cite{kerns} on misfiling assistants.
+
+
+
+\section{Discrete random variables; Expectation}
+
+A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+
+$S_X$ is all the $x$'s (all the possible values of X, the support of X). I.e., $x \in S_X$. It seems we can also sloppily write $X \in S_X$ (not sure about this). 
+
+Good example: number of coin tosses till H
+
+\begin{itemize}
+	\item $X: \omega \rightarrow x$
+	\item $\omega$: H, TH, TTH,\dots (infinite)
+	\item $x=0,1,2,\dots; x \in S_X$
+\end{itemize}
+
+Every discrete random variable X has associated with it a \textbf{probability mass/distribution  function (PDF)}, also called \textbf{distribution function}. 
+
+
+\begin{equation}
+p_X : S_X \rightarrow [0, 1] 
+\end{equation}
+
+defined by
+
+\begin{equation}
+p_X(x) = P(X(\omega) = x), x \in S_X
+ \end{equation}
+
+[\textbf{Note}: Books sometimes abuse notation by overloading the meaning of $X$. They usually have: $p_X(x) = P(X = x), x \in S_X$]
+
+\medskip
+
+The \textbf{cumulative distribution function} is
+
+\begin{equation}
+F(a)=\sum_{\hbox{all } x \leq a} p(x)
+\end{equation}
+
+
+Basic results:
+
+\begin{equation}
+	E[X]= \underset{i=1}{\overset{n}{\sum}} x_i p(x_i)
+\end{equation}
+
+\begin{equation}
+	E[g(X)]= \underset{i=1}{\overset{n}{\sum}} g(x_i) p(x_i)
+\end{equation}
+
+\begin{equation}
+	Var(X)= E[(X-\mu)^2]
+\end{equation}
+
+\begin{equation}
+	Var(X)= E[X^2] - (E[X])^2
+\end{equation}
+
+\begin{equation}
+	Var(aX+b)= a^2 Var(X)
+\end{equation}
+
+\begin{equation}
+	SD(X)=\sqrt{Var(X)}
+\end{equation}
+
+For two independent random variables $X$ and $Y$, 
+
+\begin{equation}
+E[XY]=E[X]E[Y]
+\end{equation}
+
+Covariance of two random variables:
+
+\begin{equation}
+Cov(X,Y)=E[(X-E[X]) (Y - E[Y])]
+\end{equation}
+
+Note that Cov(X,Y)=0 if X and Y are independent.
+
+Corollary in 4.1 of Ross:
+
+\begin{equation}
+E[aX + b] = aE[X]+b
+\end{equation}
+
+A related result is about \textbf{linear combinations of RVs}:
+
+\textbf{Theorem}. Given two \textbf{not necessarily independent} random variables X and Y:
+
+\begin{equation}
+E[aX + bY] =aE[X] + bE[Y]
+\end{equation}
+
+If X and Y are independent, 
+
+\begin{equation}
+Var(X+Y)=Var[X] + Var[Y]
+\end{equation}
+
+and
+
+\begin{equation}
+Var(aX+bY)=a^2Var(X) + b^2Var(Y)
+\end{equation}
+
+If $a=1, b=-1$, then
+
+\begin{equation}
+Var(X-Y)=Var(X) + Var(Y)
+\end{equation}
+
+If X and Y are not independent, then
+
+\begin{equation}
+Var(X-Y)=Var(X) + Var(Y) -2 Cov (X,Y)
+\end{equation}
+
+
+\subsection{Discrete probability distributions}
+
+to-do
+
+\subsubsection{Binomial}
+
+\subsubsection{Poisson}
+
+\subsubsection{Geometric}
+
+Suppose that independent trials are performed, each with probability $p$, where $0<p<1$, until a success occurs. Let $X$ equal the number of trials required. Then, 
+
+\begin{equation}
+	P(X=n)=(1-p)^{n-1}p \quad n=1,2,\dots	
+\end{equation}
+
+Note that:
+
+\begin{alignat*}{1}
+\sum_{x=0}^{\infty}p(1-p)^{x}= & p\sum_{x=0}^{\infty}q^{x}=p\,\frac{1}{1-q}=1.
+\end{alignat*}
+
+The mean and variance are
+\begin{equation}
+\mu=\frac{1-p}{p}=\frac{q}{p}\mbox{ and }\sigma^{2}=\frac{q}{p^{2}}.
+\end{equation}
+
+to-do: example
+
+
+\subsubsection{Negative binomial}
+
+[Taken nearly verbatim from \cite{kerns}.]
+
+Consider the case where we wait for more than one success. Suppose that we conduct Bernoulli trials repeatedly, noting the respective successes and failures. Let $X$ count the number of failures before $r$ successes. If $\mathbb{P}(S)=p$ then $X$ has PMF
+
+\begin{equation}
+f_{X}(x)={r+x-1 \choose r-1}\, p^{r}(1-p)^{x},\quad x=0,1,2,\ldots
+\end{equation}
+
+We say that $X$ has a \textbf{Negative Binomial distribution} and write $X\sim\mathsf{nbinom}(\mathtt{size}=r,\,\mathtt{prob}=p)$. 
+
+%The associated $\mathsf{R}$ functions are =dnbinom(x, size, prob)=, =pnbinom=, =qnbinom=, and =rnbinom=, which give the PMF, CDF, quantile function, and simulate random variates, respectively.
+
+Note that $f_{X}(x)\geq 0$ and the fact that $\sum f_{X}(x)=1$ follows from a generalization of the geometric series by means of a Maclaurin's series expansion:
+
+\begin{alignat}{1}
+\frac{1}{1-t}= & \sum_{k=0}^{\infty}t^{k},\quad \mbox{for $-1 < t < 1$},\mbox{ and}\\
+\frac{1}{(1-t)^{r}}= & \sum_{k=0}^{\infty}{r+k-1 \choose r-1}\, t^{k},\quad \mbox{for $-1 < t < 1$}.
+\end{alignat}
+
+Therefore
+
+\begin{equation}
+\sum_{x=0}^{\infty}f_{X}(x)=p^{r}\sum_{x=0}^{\infty}{r+x-1 \choose r-1}\, q^{x}=p^{r}(1-q)^{-r}=1,
+\end{equation}
+
+since $|q|=|1-p|<1$.
+
+to-do examples
+
+\subsubsection{Hypergeometric}
+
+
+
+\section{Continuous random variables}
+
+\textbf{Recall from the discrete random variables section that}:
+A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+$S_X$ is all the $x$'s (all the possible values of X, the support of X). I.e., $x \in S_X$.
+
+$X$ is a continuous random variable if\footnote{Is this supposed to be an iff? Note that there are pathological continuous RVs that have no PDF \cite[138]{kerns}. Kerns says that regardless of this fact, it can be proved that the CDF always exists. Kerns provides no references, so I have to look this up (to-do).} there is a non-negative function $f$ defined for all real $x \in (-\infty,\infty)$ having the property that for any set B of real numbers, 
+
+%(note that B is the support $S_X$ in Kerns' notation; the use of B is Ross' notation),
+
+\begin{equation}
+P\{X \in B\} = \int_B f(x) \, dx 
+\end{equation}
+
+Kerns has the following to add about the above:
+
+\begin{quote}
+Continuous random variables have supports that look like
+	
+	\begin{equation}
+	S_{X}=[a,b]\mbox{ or }(a,b),
+	\end{equation}
+	
+	or unions of intervals of the above form. Examples of random variables that are often taken to be continuous are:
+
+\begin{itemize}
+\item the height or weight of an individual,
+\item other physical measurements such as the length or size of an object, and
+\item durations of time (usually).
+\end{itemize}
+
+	Every continuous random variable $X$ has a probability density function (PDF) denoted $f_{X}$ associated with it
+	that satisfies three basic properties:
+
+\begin{enumerate}
+\item $f_{X}(x)>0$ for $x\in S_{X}$,
+\item $\int_{x\in S_{X}}f_{X}(x)\,\mathrm{d} x=1$, and
+\item  $\mathbb{P}(X\in A)=\int_{x\in A}f_{X}(x)\:\mathrm{d} x$, for an event $A\subset S_{X}$.
+\end{enumerate}
+
+	We can say the following about continuous random variables:
+
+\begin{itemize}
+\item Usually, the set $A$ in condition 3 above takes the form of an interval, for example, $A=[c,d]$, in which case
+
+	  \begin{equation}
+	  \mathbb{P}(X\in A)=\int_{c}^{d}f_{X}(x)\:\mathrm{d} x.
+	  \end{equation}
+
+\item It follows that the probability that $X$ falls in a given interval is simply the area under the curve of $f_{X}$ over the interval.
+\item Since the area of a line $x=c$ in the plane is zero, $\mathbb{P}(X=c)=0$  for any value $c$. In other words, the chance that $X$ equals a particular value $c$ is zero, and this is true for any number $c$. Moreover, when $a<b$ all of the following probabilities are the same:
+
+	  \begin{equation}
+	  \mathbb{P}(a\leq X\leq b)=\mathbb{P}(a<X\leq b)=\mathbb{P}(a\leq X<b)=\mathbb{P}(a<X<b).
+	  \end{equation}
+\item The PDF $f_{X}$ can sometimes be greater than 1. This is in contrast to the discrete case; every nonzero value of a PMF is a probability which is restricted to lie in the interval $[0,1]$.
+\end{itemize}
+\end{quote}
+
+$f(x)$ is the probability density function of the random variable $X$.
+
+Since $X$ must assume some value, $f$ must satisfy
+
+\begin{equation}
+1= P\{X \in (-\infty,\infty)\} = \int_{-\infty}^{\infty} f(x) \, dx 
+\end{equation}
+
+If $B=[a,b]$, then 
+
+\begin{equation}
+P\{a \leq X \leq b\} = \int_{a}^{b} f(x) \, dx 
+\end{equation}
+
+If $a=b$, we get
+
+\begin{equation}
+P\{X=a\} = \int_{a}^{a} f(x) \, dx = 0
+\end{equation}
+
+Hence, for any continuous random variable, 
+
+\begin{equation}
+P\{X < a\} = P \{X \leq a \} = F(a) = \int_{-\infty}^{a} f(x) \, dx 
+\end{equation}
+
+$F$ is the \textbf{cumulative distribution function}. Differentiating both sides in the above equation:
+
+\begin{equation}
+\frac{d F(a)}{da} = f(a) 
+\end{equation}
+
+The density (PDF) is the derivative of the CDF. In the discrete case \cite[128]{kerns}:
+
+\begin{equation}
+f_{X}(x)=F_{X}(x)-\lim_{t\to x^{-}}F_{X}(t)
+\end{equation}
+
+
+
+Ross says that it is more intuitive to think about it as follows:
+
+\begin{equation}
+P\{a - \frac{\epsilon}{2} \leq X \leq a + \frac{\epsilon}{2} \} = \int_{a - \epsilon/2}^{a + \epsilon/2} f(x)\, dx \approx \epsilon f(a) 
+\end{equation}
+
+when $\epsilon$ is small and when $f(\cdot)$ is continuous. I.e., $\epsilon f(a)$ is the approximate probability that $X$ will be contained in an interval of length $\epsilon$ around the point $a$.
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Basic results (proofs omitted)}:
+
+\begin{enumerate}
+	\item \begin{equation}
+	E[X]= \int_{-\infty}^{\infty} x f(x) \, dx
+	\end{equation}
+\item
+	\begin{equation}
+	E[g(X)]= \int_{-\infty}^{\infty} g(x) f(x) \, dx
+	\end{equation}
+\item
+	\begin{equation}
+	E[aX+b]= aE[X]+b
+	\end{equation}
+\item
+	\begin{equation}
+	Var[X]= E[(X-\mu)^2]=E[X^2]-(E[X])^2
+	\end{equation}
+\item
+	\begin{equation}
+	Var(aX+b)= a^2Var(X)
+	\end{equation}	
+\end{enumerate}
+
+\end{fmpage}
+\end{center}
+
+\section{Important classes of continuous random variables}
+
+\subsection{Uniform random variable}
+
+A random variable $(X)$ with the continuous uniform distribution on the interval $(\alpha,\beta)$ has PDF
+
+\begin{equation}
+f_{X}(x)=
+\begin{cases}
+\frac{1}{\beta-\alpha}, & \alpha < x < \beta,\\
+0 , & \hbox{otherwise}
+\end{cases}
+\end{equation}
+
+The associated $\mathsf{R}$ function is $\mathsf{dunif}(\mathtt{min}=a,\,\mathtt{max}=b)$. We write $X\sim\mathsf{unif}(\mathtt{min}=a,\,\mathtt{max}=b)$. Due to the particularly simple form of this PDF we can also write down explicitly a formula for the CDF $F_{X}$:
+
+\begin{equation}
+F_{X}(a)=
+\begin{cases}
+0, & a < 0,\\
+\frac{a-\alpha}{\beta-\alpha}, & \alpha \leq t < \beta,\\
+1, & a \geq \beta.
+\end{cases}
+\label{eq-unif-cdf}
+\end{equation}
+
+\begin{equation}
+E[X]= \frac{\beta+\alpha}{2}
+\end{equation}
+
+\begin{equation}
+Var(X)= \frac{(\beta-\alpha)^2}{12}
+\end{equation}
+
+\subsection{Normal random variable}
+
+\begin{equation}
+f_{X}(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{ \frac{-(x-\mu)^{2}}{2\sigma^{2}}},\quad -\infty < x < \infty.
+\end{equation}
+
+We write $X\sim\mathsf{norm}(\mathtt{mean}=\mu,\,\mathtt{sd}=\sigma)$, and the associated $\mathsf{R}$ function is \texttt{dnorm(x, mean = 0, sd = 1)}.
+
+<<label=normaldistr,include=FALSE>>=
+plot(function(x) dnorm(x), -3, 3,
+      main = "Normal density",ylim=c(0,.4),
+              ylab="density",xlab="X")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<normaldistr>>	
+@
+\caption{Normal distribution.}
+\label{fig:normaldistr}
+\end{figure}
+
+If $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then $Y=aX+b$ is normally distributed with parameters $a\mu + b$ and $a^2\sigma^2$.
+
+Computing areas under the curve with R:
+
+<<>>=
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+lower=-Inf,upper=Inf)
+## alternatively:
+pnorm(Inf)-pnorm(-Inf)
+
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+          lower=-2,upper=2)
+## alternatively:
+pnorm(2)-pnorm(-2)
+
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+          lower=-1,upper=1)
+## alternatively:
+pnorm(1)-pnorm(-1)
+@
+
+\subsubsection{Standard or unit normal random variable} 
+
+If $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then $Z=(X-\mu)/\sigma$ is normally distributed with parameters $0,1$.
+
+We conventionally write $\Phi (x)$ for the CDF:
+
+\begin{equation}
+\Phi (x)=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x}  e^{\frac{-y^2}{2}} \, dy 
+\quad \textrm{where} y=(x-\mu)/\sigma
+\end{equation}
+
+Neave's tables give the values for positive $x$; for negative $x$ we do:
+
+\begin{equation}
+\Phi (-x)= 1- \Phi (x),\quad -\infty < x < \infty
+\end{equation}
+
+If $Z$ is a standard normal random variable (SNRV) then
+
+\begin{equation}
+p\{ Z\leq -x\} = P\{Z>x\}, \quad -\infty < x < \infty
+\end{equation}
+
+Since $Z=((X-\mu)/\sigma)$ is an SNRV whenever $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then the CDF of $X$ can be expressed as:
+
+\begin{equation}
+F_X(a) = P\{ X\leq a \} = P\left( \frac{X - \mu}{\sigma} \leq \frac{a - \mu}{\sigma}\right) = \Phi\left( \frac{a - \mu}{\sigma} \right)
+\end{equation}
+
+The standardized version of a normal
+random variable X is used to compute specific probabilities relating to X (it's also easier to compute probabilities from different CDFs so that the two computations are comparable).
+
+
+
+\textbf{The expectation of the standard normal random variable}:
+
+\begin{equation*}
+E[Z] = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty x e^{-x^2/2} \, dx
+\end{equation*}
+
+Let $u = -x^2/2$.
+
+Then, $du/dx = -2x/2=-x$. I.e., $du= -x \, dx$ or $-du=x \, dx$.
+
+We can rewrite the integral as:
+
+\begin{equation*}
+E[Z]  = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} x \, dx\\
+\end{equation*}
+
+Replacing $x\, dx$ with $-du$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} \, du	
+\end{equation*}
+
+which yields:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{u} ]_{-\infty}^{\infty}
+\end{equation*}
+
+Replacing $u$ with $-x^2/2$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{-x^2/2} ]_{-\infty}^{\infty} = 0
+\end{equation*}
+ 
+\textbf{The variance of the standard normal distribution}:
+
+We know that 
+
+\begin{equation*}
+\hbox{Var}(Z)=E[Z^2]-(E[Z])^2
+\end{equation*}
+
+Since $(E[Z])^2=0$ (see immediately above), we have
+
+\begin{equation*}
+\hbox{Var}(Z)=E[Z^2] = 
+\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \explain{x^2}{\textrm{This is $Z^2$.}}  e^{-x^2/2}  \, dx
+\end{equation*}
+
+Write $x^2$ as $x\times x$ and use integration by parts:
+
+\begin{equation*}
+\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty 
+\explain{x}{u} \explain{x e^{-x^2/2}}{dv/dx} \, dx =
+\frac{1}{\sqrt{2\pi}}\explain{x}{u} \explain{-e^{-x^2/2}}{v} -
+\frac{1}{\sqrt{2\pi}}\int_{-\infty}^\infty \explain{-e^{-x^2/2}}{v} 
+\explain{1}{du/dx} \, dx = 1
+\end{equation*} 
+
+[Explained on p.\ 274 of \cite{GrinsteadSnell}; it wasn't obvious to me, and \cite[200]{RossProb} is pretty terse]:
+``The first summand above can be shown to equal 0, since as 
+$x \rightarrow \pm \infty$, 
+$e^{-x^2/2}$
+gets
+small more quickly than $x$ gets large. The second summand is just the standard
+normal density integrated over its domain, so the value of this summand is 1.
+Therefore, the variance of the standard normal density equals 1.''
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Example}:	
+Given N(10,16), write distribution of $\bar{X}$, where $n=4$. Since $SE=sd/sqrt(n)$, the distribution of $\bar{X}$ is $N(10,4/\sqrt{4}$).
+\end{fmpage}
+\end{center}
+
+to-do: print out exercises in chapters 5 and 6 of Grinstead and Snell and work through them.
+
+\subsection{Exponential random variables}
+
+For some $\lambda > 0$, 
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+A continuous random variable with the above PDF is an exponential random variable (or is said to be exponentially distributed).
+
+The CDF:
+
+\begin{equation*}
+\begin{split}
+F(a) =& P(X\leq a)\\
+     =& \int_0^a \lambda e^{-\lambda x}\, dx\\
+ 	 =& \left[ -e^{-\lambda x} \right]_0^a\\
+     =& 1-e^{-\lambda a} \quad a \geq 0\\
+\end{split}		
+\end{equation*}
+
+[Note: the integration requires the u-substitution: $u=-\lambda x$, and then $du/dx=-\lambda$, and then use $-du=\lambda dx$ to solve.]
+
+
+\subsubsection{Expectation and variance of an exponential random variable}
+
+For some $\lambda > 0$ (called the rate), if we are given the PDF of a random variable $X$:
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+Find E[X].
+
+[This proof seems very strange and arbitrary---one starts really generally and then scales down, so to speak. The standard method can equally well be used, but this is more general, it allows for easy calculation of the second moment, for example. Also, it's an example of how reduction formulae are used in integration.]
+
+\begin{equation*}
+E[X^n] = \int_0^\infty x^n \lambda e^{-\lambda x} \, dx	
+\end{equation*}
+
+Use integration by parts:
+
+Let $u=x^n$, which gives $du/dx=n x^{n-1}$. Let $dv/dx= \lambda e^{-\lambda x}$, which gives
+$v = -e^{-\lambda x}$. Therefore:
+
+\begin{equation*}
+\begin{split}	
+E[X^n] =&  \int_0^\infty x^n \lambda e^{-\lambda x} \, dx	\\
+       =& \left[ -x^n e^{-\lambda x}\right]_0^\infty + \int_0^\infty e^{\lambda x} n x^{n-1}\, dx\\
+       =& 0 + \frac{n}{\lambda} \int_0^\infty \lambda e^{-\lambda x} n^{n-1}\, dx  
+\end{split}
+\end{equation*}
+
+Thus,
+
+\begin{equation*}
+E[X^n] =  \frac{n}{\lambda}E[X^{n-1}]
+\end{equation*}
+
+If we let $n=1$, we get $E[X]$:
+
+\begin{equation*}
+E[X] =  \frac{1}{\lambda}
+\end{equation*}
+
+Note that when $n=2$, we have
+
+\begin{equation*}
+E[X^2] =  \frac{2}{\lambda}E[X]= \frac{2}{\lambda^2}
+\end{equation*}
+
+Variance is, as usual,
+
+\begin{equation*}
+var(X) = E[X^2] - (E[X])^2	=  \frac{2}{\lambda^2} -  (\frac{1}{\lambda})^2 = \frac{1}{\lambda^2}
+\end{equation*}
+
+\subsection{Weibull distribution}
+
+\begin{equation}
+f(x\mid \alpha, \beta) = \alpha \beta (\beta x)^{\alpha-1} \exp (- (\beta x)^{\alpha})
+\end{equation}
+
+When $\alpha=1$, we have the exponential distribution.
+
+\subsection{Gamma distribution}
+
+[The text is an amalgam of
+ \cite{kerns} and \cite[215]{RossProb}. I don't put it in double-quotes as a citation because it would look ugly.]
+
+This is a generalization of the exponential distribution. We say that $X$ has a gamma distribution and write $X\sim\mathsf{gamma}(\mathtt{shape}=\alpha,\,\mathtt{rate}=\lambda)$, where $\alpha>0$ (called shape) and $\lambda>0$ (called rate). It has PDF
+
+%% Kerns:
+%\begin{equation*}
+%f_{X}(x)=\frac{\lambda^{\alpha}}{\Gamma(\alpha)}\: x^{\alpha-1}\mathrm{e}^{-\lambda x},\quad x>0.
+%\end{equation*}
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \frac{\lambda e^{-\lambda x} (\lambda x)^{\alpha - 1}}{\Gamma(\alpha)} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+$\Gamma(\alpha)$ is called the gamma function:
+
+\begin{equation*}
+\Gamma(\alpha) = \int_0^\infty e^{-y}y^{\alpha-1}\, dy \explain{=}{\textrm{integration by parts}} (\alpha -1 )\Gamma(\alpha - 1)
+\end{equation*}
+
+Note that for integral values of $n$, $\Gamma(n)=(n-1)!$ (follows from above equation).
+
+The associated $\mathsf{R}$ functions are \texttt{gamma(x, shape, rate = 1)}, \texttt{pgamma}, \texttt{qgamma}, and \texttt{rgamma}, which give the PDF, CDF, quantile function, and simulate random variates, respectively. If $\alpha=1$ then $X\sim\mathsf{exp}(\mathtt{rate}=\lambda)$. The mean is $\mu=\alpha/\lambda$ and the variance is $\sigma^{2}=\alpha/\lambda^{2}$.
+
+To motivate the gamma distribution recall that if $X$ measures the length of time until the first event occurs in a Poisson process with rate $\lambda$ then $X\sim\mathsf{exp}(\mathtt{rate}=\lambda)$. If we let $Y$ measure the length of time until the $\alpha^{\mathrm{th}}$ event occurs then $Y\sim\mathsf{gamma}(\mathtt{shape}=\alpha,\,\mathtt{rate}=\lambda)$. When $\alpha$ is an integer this distribution is also known as the \textbf{Erlang} distribution.
+
+
+<<label=gamma,include=FALSE>>=
+## fn refers to the fact that it is a function in R, it does not mean that this is the gamma function:
+gamma.fn<-function(x){
+	lambda<-1
+	alpha<-1
+	(lambda * exp(1)^(-lambda*x) * 
+	(lambda*x)^(alpha-1))/gamma(alpha)
+}
+
+x<-seq(0,4,by=.01)
+
+plot(x,gamma.fn(x),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<gamma>>	
+@
+\caption{The gamma distribution.}.
+\label{fig:gamma}
+\end{figure}
+
+The Chi-squared distribution is the gamma distribution with $\lambda=1/2$ and $\alpha=n/2$, where $n$ is an integer:
+
+
+<<label=chisq,include=FALSE>>=
+gamma.fn<-function(x){
+	lambda<-1/2
+	alpha<-8/2 ## n=4
+	(lambda * (exp(1)^(-lambda*x)) * 
+	(lambda*x)^(alpha-1))/gamma(alpha)
+}
+
+x<-seq(0,100,by=.01)
+
+plot(x,gamma.fn(x),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<chisq>>	
+@
+\caption{The chi-squared distribution.}
+\label{fig:chisq}
+\end{figure}
+
+\subsubsection{Mean and variance of gamma distribution}
+
+Let $X$ be a gamma random variable with parameters $\alpha$ and $\lambda$. 
+
+\begin{equation*}
+\begin{split}	
+E[X] =& \frac{1}{\Gamma(\alpha)} \int_0^\infty x \lambda e^{-\lambda x} (\lambda x)^{\alpha - 1}\, dx\\  
+     =& \frac{1}{\lambda \Gamma(\alpha)} \int_0^\infty e^{-\lambda x} (\lambda x)^{\alpha}\, dx\\
+     =& \frac{\Gamma(\alpha+1)}{\lambda \Gamma(\alpha)}\\
+     =& \frac{\alpha}{\lambda} \quad \textrm{see derivation of $\Gamma(\alpha), p.\ 215$  of Ross}
+\end{split}
+\end{equation*}
+
+It is easy to show (exercise) that
+
+\begin{equation*}
+Var(X)=\frac{\alpha}{\lambda^2}	
+\end{equation*}
+
+
+\subsection{Memoryless property (Poisson, Exponential, Geometric)}
+
+A nonnegative random variable is memoryless if
+
+\begin{equation*}
+P(X>s+t) \mid X > t) = P(X>s) \quad \textrm{for all } s,t\geq 0	
+\end{equation*}
+
+Two equivalent ways of stating this:
+
+\begin{equation*}
+\frac{P(X>s+t, X>t)}{P(X>t)} = P(X>s)
+\end{equation*}
+
+[just using the definition of conditional probability]
+
+or
+
+\begin{equation*}
+P(X>s+t) = P(X>s)P(X>t)
+\end{equation*}
+
+[not clear yet why the above holds]
+
+
+Recall definition of conditional probability:
+
+\begin{equation*}
+\mathbb{P}(B\mid A)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(A)},\quad \mbox{if }\mathbb{P}(A)>0.
+\end{equation*}
+
+What memorylessness means is: let $s=10$ and $t=30$. Then
+
+\begin{equation*}
+\frac{P(X>10+30, X\geq 30)}{P(X\geq 30)} = P(X>10)
+\end{equation*}
+
+or 
+
+\begin{equation*}
+P(X>10+30) = P(X>10)P(X\geq 30)
+\end{equation*}
+
+It does \textbf{not} mean:
+
+\begin{equation*}
+P(X>10+30\mid X\geq30) = P(X>40)
+\end{equation*}
+
+It's easier to see graphically what this means:
+
+
+<<label=exp,include=FALSE>>=
+fn<-function(x,lambda){
+	lambda*exp(1)^(-lambda*x)
+}
+
+x<-seq(0,1000,by=1)
+
+plot(x,fn(x,lambda=1/100),type="l")
+abline(v=200,col=3,lty=3)
+abline(v=300,col=1,lty=3)
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<exp>>	
+@
+\caption{The memoryless property of the exponential distribution. The graph after point 300 is an exact copy of the original graph (this is not obvious from the graph, but redoing the graph starting from 300 makes this clear, see figure~\ref{fig:exp2} below).}
+\label{fig:exp}
+\end{figure}
+
+
+<<label=exp2,include=FALSE>>=
+x1<-seq(300,1300,by=1)
+
+plot(x1,fn(x1,lambda=1/100),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<exp2>>	
+@
+\caption{Replotting the distribution starting from 300 instead of 0, and extending the x-axis to 1300 instead of 1000 (the number in figure~\ref{fig:exp}) gives us an 
+exact copy of original. This is the meaning of the memoryless property of the distribution.}
+\label{fig:exp2}
+\end{figure}
+
+\subsubsection{Examples of memorylessness}
+
+[problem 2 in P-Ass3]
+
+Suppose we are given that a discrete random variable $X$ has probability function $\theta^{x-1}(1-\theta)$, where $x=1,2,\dots$. Show that 
+
+\begin{equation} \label{memoryless}
+P(X>t+a\mid X>a) = \frac{P(X>t+a)}{P(X>a)} 
+\end{equation}
+
+\noindent
+hence establishing the `absence of memory' property:
+
+\begin{equation}
+P(X>t+a\mid X>a) = P(X>t)	
+\end{equation}
+
+\textbf{Proof}:
+
+First, restate the pdf given so that it satisfies the definition of a geometric distribution. Let $\theta=1-p$; then the pdf is
+
+\begin{equation}
+(1-p)^{x-1}p 
+\end{equation}
+
+This is clearly a geometric random variable (see p.\ 155 of Ross). On p.\ 156, Ross points out that  
+
+\begin{equation}
+P(X>a) = (1-p)^a	
+\end{equation}
+
+[Actually Ross points out that $P(X\geq k) = (1-p)^{k-1}$, from which it follows that $P(X\geq k+1) = (1-p)^{k}$; and since $P(X\geq k+1)=P(X>k)$, we have $P(X> k) = (1-p)^{k}$.]
+
+Similarly, 
+
+\begin{equation}
+P(X>t) = (1-p)^t	
+\end{equation}
+
+\noindent
+and 
+
+\begin{equation}
+P(X>{t+a}) = (1-p)^{t+a}
+\end{equation}
+
+Now, we plug in the values for the right-hand side in equation~\ref{memoryless}, repeated below:
+
+\begin{equation}
+P(X>t+a\mid X>a) = \frac{P(X>t+a)}{P(X>a)}  = \frac{(1-p)^{t+a}}{(1-p)^a} = (1-p)^t
+\end{equation}
+
+Thus, since $P(X>t) = (1-p)^t$ (see above), we have proved that
+
+\begin{equation}
+P(X>t+a\mid X>a) = P(X>t)
+\end{equation}
+
+\noindent
+This is the definition of memorylessness (equation 5.1 in Ross, p.\ 210).
+Therefore, we have proved the memorylessness property.
+
+\hfill \BlackBox
+
+\subsubsection{Prove the memorylessness property for Gamma and Exponential distributions}
+
+\textbf{Exponential}:
+
+The CDF is:
+
+\begin{equation}
+P(a)=1-e^{-\lambda a}
+\end{equation}
+
+Therefore: 
+
+\begin{equation}
+P(X>s+t)=1-P(s+t) = 1-(1-e^{-\lambda (s+t)}) = e^{-\lambda (s+t)} = e^{-\lambda s}e^{-\lambda t} = P(X>s)P(X>t)
+\end{equation}
+
+The above is the definition of memorylessness.
+
+\hfill \BlackBox
+
+\textbf{Gamma distribution}:
+
+The CDF (not sure how this comes about, see Ross) is
+
+\begin{equation}
+	F(x; \alpha, \beta) = 1 - \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta x)^i e^{-\beta x} 
+\end{equation}
+
+Therefore, 
+
+\begin{equation}
+P(X>s+t) = 1-P(X<s+t) = 1 - (1 - \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta (s+t))^i e^{-\beta (s+t)} ) = \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta (s+t))^i e^{-\beta (s+t)}
+\end{equation}
+
+\subsection{Beta distribution}
+
+This is a generalization of the continuous uniform distribution.
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \frac{1}{B(a,b)} x^{a - 1} (1-x)^{b-1}  & \quad \textrm{if } 0< x < 1\\
+       0 & \quad \textrm{otherwise}\\
+\end{array} \right.
+\end{equation*}
+
+\noindent
+where
+
+\begin{equation*}
+B(a,b) = \int_0^1 x^{a-1}(1-x)^{b-1}\, dx
+\end{equation*}
+
+There is a connection between the beta and the gamma:
+
+\begin{equation*}
+B(a,b) = \int_0^1 x^{a-1}(1-x)^{b-1}\, dx = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}	
+\end{equation*}
+
+\noindent
+which allows us to rewrite the beta PDF as
+
+\begin{equation}
+f(x)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\, x^{a-1}(1-x)^{b-1},\quad 0 < x < 1.
+\end{equation}
+
+%We write $X\sim\mathsf{beta}(\mathtt{shape1}=\alpha,\,\mathtt{shape2}=\beta)$. The associated $\mathsf{R}$ function is =dbeta(x, shape1, shape2)=. 
+
+The mean and variance are
+
+\begin{equation} 
+E[X]=\frac{a}{a+b}\mbox{ and }Var(X)=\frac{ab}{\left(a+b\right)^{2}\left(a+b+1\right)}.
+\end{equation}
+
+%See Example [[exa-cont-pdf3x2][Cont-pdf3x2]]. This distribution comes up a lot in Bayesian statistics because it is a good model for one's prior beliefs about a population proportion $p$, $0\leq p\leq1$.
+
+to-do: plot beta with different a,b.
+
+\subsection{Distribution of a function of a random variable (transformations of random variables)}
+
+A nice and intuitive description:
+
+Consider a continuous RV Y which is a continuous differentiable increasing function of X:
+
+\begin{equation}
+Y=g(X)	
+\end{equation}
+
+Because g is differentiable and increasing, $g'$ and $g^{-1}$ are guaranteed to exist. Because g maps all $x\leq s \leq x+\Delta x$ to 
+$y\leq s \leq y+\Delta y$, we can say:
+
+\begin{equation}
+\int_x^{x+\Delta x} f_X(s)\, ds = \int_y^{y+\Delta y} f_Y(t)\, dt	
+\end{equation}
+
+Therefore, for small $\Delta x$:
+
+\begin{equation}
+f_Y(y)\Delta y \approx f_X(x)\Delta x	
+\end{equation}
+
+Dividing by $\Delta y$ we get:
+
+\begin{equation}
+f_Y(y) \approx f_X(x)\frac{\Delta x}{\Delta y}
+\end{equation}
+
+
+
+\begin{theorem}
+[\textbf{Theorem 7.1 in Ross}]
+Let $X$ be a continuous random variable having probability density function $f_X$.
+Suppose that $g(x)$ is a strict monotone (increasing or decreasing) function, differentiable and (thus continuous) function of $x$. Then the random variable $Y$ defined by $Y=g(X)$ has a probability density function defined by 
+
+\begin{equation*}
+f_Y(y)=  \left\{ 	
+\begin{array}{l l}
+       f_X(g^{-1}(y)) \mid \frac{d}{dx} g^{-1}(y) \mid  & \quad \textrm{if } y = g(x) \textrm{ for some $x$}\\
+       0 & \quad \textrm{if } y\neq g(x) \textrm{ for all $x$}.\\
+\end{array} \right.
+\end{equation*}
+
+\noindent
+where $g^{-1}(y)$ is defined to be equal to the value of $x$ such that $g(y-y)$.
+
+[to-do: Ross writes $\frac{d}{dx} g^{-1}(y)$ as an absolute $\mid \frac{d}{dx} g^{-1}(y) \mid$. Need to understand why.]
+
+\end{theorem}
+
+Proof:
+
+Suppose $y=g(x)$ for some $x$. Then, with $Y=g(X)$,
+
+\begin{equation}
+\begin{split}
+F_Y(y) =& P(g(X)\leq y)\\
+	=& P(X\leq g^{-1}(y))\\
+	=& F_X(g^{-1}(y))\\
+\end{split}	
+\end{equation}
+
+%\begin{equation}\label{theorem7.1a}
+%F_Y(y) = F_X(g^{-1}(y))
+%\end{equation}
+
+Differentiation gives
+
+\begin{equation} \label{theorem7.1b}
+	f_Y(y) = f_X(g^{-1}(y)) \frac{d(g^{-1}(y))}{dy}	
+\end{equation}
+
+Detailed explanation for the above equation:
+Since
+
+\begin{equation} \label{theorem7.1c}
+\begin{split}	
+F_Y(y) =& F_X(g^{-1}(y)) \\
+       =& \int f_X(g^{-1}(y)) \, dy\\
+\end{split}
+\end{equation}
+
+Differentiating: 
+
+\begin{equation} \label{theorem7.1d}
+\begin{split}	
+\frac{d(F_Y(y))}{dy}=& \frac{d}{dy}(F_X(g^{-1}(y)))
+\end{split}
+\end{equation}
+
+We use the chain rule. To simplify things, rewrite $w(y)=g^{-1}(y)$ (otherwise typesetting things gets harder). Then, let
+
+\begin{equation*}
+u = w(y)	
+\end{equation*}
+
+which gives
+
+\begin{equation*}
+\frac{du}{dy} = w'(y)	
+\end{equation*}
+
+and let
+
+\begin{equation*}
+x = F_X(u)	
+\end{equation*}
+
+This gives us 
+
+\begin{equation*}
+\frac{dx}{du} = F'_X(u) = f_X(u)
+\end{equation*}
+
+By the chain rule:
+
+\begin{equation*}
+\frac{du}{dy} \times \frac{dx}{du} = w'(y) f_X(u) \explain{=}{\textrm{plugging in the variables}} 
+\frac{d}{dy}(g^{-1}(y)) f_X(g^{-1}(y))  
+\end{equation*}
+
+\hfill \BlackBox
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Exercises}:	
+\begin{enumerate}
+	\item $Y=X^2$
+	\item $Y=\sqrt X$
+	\item $Y=\mid X \mid$
+	\item $Y = aX + b$ (see document gst2.pdf)
+\end{enumerate}
+\end{fmpage}
+\end{center}
+
+\subsection{$\chi^2$ distribution}
+
+to-do
+
+\subsection{$t$ distribution}
+
+to-do
+
+\subsection{$F$ distribution}
+
+to-do
+
+\subsection{The Poisson distribution}
+
+
+
+As Kerns \cite{kerns} puts it (I quote him nearly exactly, up to the definition):
+
+\begin{quote}
+	This is a distribution associated with ``rare events'', for reasons which will become clear in a moment. The events might be:
+	\begin{itemize}
+		\item traffic accidents,
+		\item typing errors, or
+		\item customers arriving in a bank.		
+	\end{itemize}
+
+	Let $\lambda$ be the average number of events in the time interval $[0,1]$. Let the random variable $X$ count the number of events occurring in the interval. Then under certain reasonable conditions it can be shown that
+
+	\begin{equation}
+	f_{X}(x)=\mathbb{P}(X=x)=\mathrm{e}^{-\lambda}\frac{\lambda^{x}}{x!},\quad x=0,1,2,\ldots
+	\end{equation}
+\end{quote}
+
+\subsubsection{Poisson conditional probability and binomial}
+
+If $X_1 \sim Pois(\lambda_1)$ and $X_2 \sim Pois(\lambda_2)$ are independent and $Y=X_1+X_2$, then the distribution of $X_1$ conditional on $Y=y$ is a binomial. Specifically, $X_1\mid Y=y ~\sim Binom(y,\lambda_1)/(\lambda_1,\lambda_2)$. More generally, if $X_1, X_2,\dots,X_n$ are independent Poisson random variables with parameters $\lambda_1,\lambda_2,\dots,\lambda_n$ then 
+
+\begin{equation}
+X_i\mid \underset{j=1}{\overset{n}{\sum}} X_j \sim Binom(\underset{j=1}{\overset{n}{\sum}} X_j, 
+\frac{\lambda_i}{\underset{j=1}{\overset{n} \lambda_j}})	
+\end{equation}
+
+[Source for above: wikipedia]. Relevant for q3 in P-Ass 5.
+
+To see why this is true, see p. 173 of Dekking et al. Also see the stochastic processes book.
+
+
+\subsection{Geometric distribution [discrete]}
+
+From Ross \cite[155]{RossProb}:
+
+\begin{quote}
+Let independent trials, each with probability $p$, $0<p<1$ of success, be performed until a success occurs. If $X$ is the number of trials required till success occurs, then
+
+\begin{equation*}
+P(X=n)	= (1-p)^{n-1} p \quad n=1,2,\ldots
+\end{equation*}
+
+I.e., for X to equal n, it is necessary and sufficient that the first $n-1$ are failures, and the $n$th trial is a success. The above equation comes about because the successive trials are independent.
+\end{quote}
+
+$X$ is a geometric random variable with parameter $p$.
+
+
+Note that a success will occur, with probability 1:
+
+\begin{equation*}
+\underset{i=1}{\overset{\infty}{\sum}} P(X=n) = p \underset{i=1}{\overset{\infty}{\sum}} (1-p)^{n-1} \explain{=}{\textrm{see geometric series section.}}	\frac{p}{1-(1-p)} = 1
+\end{equation*}
+
+
+%Kerns \cite{kerns} defines it like this:
+
+%\begin{equation}
+%\sum_{k=0}^{\infty} x^{k} = \frac{1}{1 - x},\quad |x| < 1.\label{eq-geom-series}
+%\end{equation}
+
+\subsubsection{Mean and variance of the geometric distribution}
+
+\begin{equation*}
+E[X] = \frac{1}{p}	
+\end{equation*}
+
+\begin{equation*}
+Var(X) = \frac{1-p}{p^2}	
+\end{equation*}
+
+For proofs, see Ross \cite[156-157]{RossProb}.
+
+
+
+
+
+
+
+\subsection{Normal approximation of the binomial and poisson}
+
+Excellent explanation available at:
+
+\begin{verbatim}
+http://www.johndcook.com/normal_approx_to_poisson.html
+\end{verbatim}
+
+If $P(X=n)$ use $P(n - 0.5<X<n+0.5)$
+
+If $P(X>n)$ use $P(X > n + 0.5)$
+
+If $P(X\leq n)$ use $P(X < n + 0.5)$
+
+If $P(X<n)$ use $P(X < n - 0.5)$
+
+If $P(X \geq n)$ use $P(X > n - 0.5)$
+
+to-do: show graphically why.
+
+
+\section{Limit theorems}
+
+\subsection{Chebyshev's inequality}
+
+Chebyshev's inequality states that if $X$ is a random variable with finite mean $\mu$ and variance $\sigma^2$, then, for any value $k>0$, 
+
+\begin{equation}
+	P(\mid X-\mu\mid) \geq k) \leq \frac{\sigma^2}{k^2}
+\end{equation}
+
+\subsection{Central Limit Theorem}
+
+The Central Limit Theorem is as follows:
+
+Let $X_1, X_2, \dots$ be a sequence of iid random variables, each having mean $\mu$ and variance $\sigma^2$. Then the distribution of
+
+\begin{equation}
+\frac{X_1 + \cdots + X_n - n \mu}{\sigma \sqrt{n}}
+\end{equation}
+
+\noindent
+tends to the standard normal as $n\rightarrow \infty$. That is, $-\infty < a < \infty$.
+
+\begin{equation}
+P\left( \frac{X_1 + \cdots + X_n - n \mu}{\sigma \sqrt{n}} \leq a \right) \rightarrow \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{a} e^{-x^{2}/2} \quad \textrm{as } n\rightarrow \infty	
+\end{equation}
+
+\section{Jointly distributed random variables}
+
+
+\subsection{Joint distribution functions}
+
+\subsubsection{Discrete case}
+
+[This section is an extract from \cite{kerns}.]
+
+Consider two discrete random variables $X$ and $Y$ with PMFs $f_{X}$ and $f_{Y}$ that are supported on the sample spaces $S_{X}$ and $S_{Y}$, respectively. Let $S_{X,Y}$ denote the set of all possible observed \textbf{pairs} $(x,y)$, called the \textbf{joint support set} of $X$ and $Y$. Then the \textbf{joint probability mass function} of $X$ and $Y$ is the function $f_{X,Y}$ defined by
+
+\begin{equation}
+f_{X,Y}(x,y)=\mathbb{P}(X=x,\, Y=y),\quad \mbox{for }(x,y)\in S_{X,Y}.\label{eq-joint-pmf}
+\end{equation}
+
+Every joint PMF satisfies
+
+\begin{equation}
+f_{X,Y}(x,y)>0\mbox{ for all }(x,y)\in S_{X,Y},
+\end{equation}
+
+and
+
+\begin{equation}
+\sum_{(x,y)\in S_{X,Y}}f_{X,Y}(x,y)=1.
+\end{equation}
+
+It is customary to extend the function $f_{X,Y}$ to be defined on all of $\mathbb{R}^{2}$ by setting $f_{X,Y}(x,y)=0$ for $(x,y)\not\in S_{X,Y}$. 
+
+In the context of this chapter, the PMFs $f_{X}$ and $f_{Y}$ are called the \textbf{marginal PMFs} of $X$ and $Y$, respectively. If we are given only the joint PMF then we may recover each of the marginal PMFs by using the Theorem of Total Probability: observe
+\begin{eqnarray}
+f_{X}(x) & = & \mathbb{P}(X=x),\\
+ & = & \sum_{y\in S_{Y}}\mathbb{P}(X=x,\, Y=y),\\
+ & = & \sum_{y\in S_{Y}}f_{X,Y}(x,y).
+\end{eqnarray}
+By interchanging the roles of $X$ and $Y$ it is clear that 
+\begin{equation}
+f_{Y}(y)=\sum_{x\in S_{X}}f_{X,Y}(x,y).\label{eq-marginal-pmf}
+\end{equation}
+Given the joint PMF we may recover the marginal PMFs, but the converse is not true. Even if we have \textbf{both} marginal distributions they are not sufficient to determine the joint PMF; more information is needed.\footnote{We are not at a total loss, however. There are Frechet bounds which pose limits on how large (and small) the joint distribution must be at each point.}
+
+Associated with the joint PMF is the \textbf{joint cumulative distribution function} $F_{X,Y}$ defined by
+\[
+F_{X,Y}(x,y)=\mathbb{P}(X\leq x,\, Y\leq y),\quad \mbox{for }(x,y)\in\mathbb{R}^{2}.
+\]
+The bivariate joint CDF is not quite as tractable as the univariate CDFs, but in principle we could calculate it by adding up quantities of the form in Equation~\ref{eq-joint-pmf}. The joint CDF is typically not used in practice due to its inconvenient form; one can usually get by with the joint PMF alone.
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Examples from \cite{kerns}}:	
+\textbf{Example 1}:
+
+Roll a fair die twice. Let $X$ be the face shown on the first roll, and let $Y$ be the face shown on the second roll. For this example, it suffices to define
+
+\[
+f_{X,Y}(x,y)=\frac{1}{36},\quad x=1,\ldots,6,\ y=1,\ldots,6.
+\]
+
+The marginal PMFs are given by $f_{X}(x)=1/6$, $x=1,2,\ldots,6$, and $f_{Y}(y)=1/6$, $y=1,2,\ldots,6$, since
+
+\[
+f_{X}(x)=\sum_{y=1}^{6}\frac{1}{36}=\frac{1}{6},\quad x=1,\ldots,6,
+\]
+
+and the same computation with the letters switched works for $Y$.
+
+Here, and in many other ones, the joint support can be written as a product set of the support of $X$ ``times'' the support of $Y$, that is, it may be represented as a cartesian product set, or rectangle, $S_{X,Y}=S_{X}\times S_{Y}$, where $S_{X} \times S_{Y}= \{ (x,y):\ x\in S_{X},\, y\in S_{Y} \} $. This form is a necessary condition for $X$ and $Y$ to be \textbf{independent} (or alternatively \textbf{exchangeable} when $S_{X}=S_{Y}$). But please note that in general it is not required for $S_{X,Y}$ to be of rectangle form.
+
+\textbf{Example 2}: very involved example in \cite{kerns}, worth study.
+\end{fmpage}
+\end{center}
+
+
+\subsubsection{Continuous case}
+
+For random variables $X$ and $y$, the \textbf{joint cumulative pdf} is
+
+\begin{equation}
+F(a,b) = P(X\leq a, Y\leq b) \quad -\infty	< a,b<\infty
+\end{equation}
+
+The \textbf{marginal distributions} of $F_X$ and $F_Y$ are the CDFs of each of the associated RVs:
+
+\begin{enumerate}
+	\item The CDF of $X$:
+
+	\begin{equation}
+	F_X(a) = P(X\leq a) = F_X(a,\infty)	
+	\end{equation}
+
+	\item The CDF of $Y$:
+
+	\begin{equation}
+	F_Y(a) = P(Y\leq b) = F_Y(\infty,b)	
+	\end{equation}
+	
+\end{enumerate}
+
+\begin{definition}\label{def:jointcont}
+\textbf{Jointly continuous}: Two RVs $X$ and $Y$ are jointly continuous if there exists a function $f(x,y)$ defined for all real $x$ and $y$, such that for every set $C$:
+
+\begin{equation} \label{jointpdf}
+P((X,Y)\in C) =
+\iintop_{(x,y)\in C} f(x,y)\, dx\,dy 	
+\end{equation}
+
+
+$f(x,y)$ is the \textbf{joint PDF} of $X$ and $Y$.
+
+Every joint PDF satisfies
+\begin{equation}
+f(x,y)\geq 0\mbox{ for all }(x,y)\in S_{X,Y},
+\end{equation}
+and
+\begin{equation}
+\iintop_{S_{X,Y}}f(x,y)\,\mathrm{d} x\,\mathrm{d} y=1.
+\end{equation}
+	
+\end{definition}
+
+For any sets of real numbers $A$ and $B$, and if $C=\{(x,y): x\in A, y\in B  \}$, it follows from equation~\ref{jointpdf} that
+
+\begin{equation} 
+P((X\in A,Y\in B)\in C) = \int_B \int_{A} f(x,y)\, dx\,dy 	
+\end{equation}
+
+Note that
+
+\begin{equation}
+F(a,b) = P(X\in (-\infty,a]),Y\in (-\infty,b]))	= \int_{-\infty}^b \int_{-\infty}^a f(x,y)\, dx\,dy 	
+\end{equation}
+
+Differentiating, we get the joint pdf:
+
+\begin{equation}
+f(a,b) = \frac{\partial^2}{\partial a\partial b} F(a,b)	
+\end{equation}
+
+One way to understand the joint PDF:
+
+\begin{equation}
+P(a<X<a+da,b<Y<b+db)=\int_b^{d+db}\int_a^{a+da} f(x,y)\, dx\, dy \approx f(a,b) da db
+\end{equation}
+
+[to-do: show this graphically]
+
+Hence, $f(x,y)$ is a measure of how probable it is that the random vector $(X,Y)$ will be near $(a,b)$.
+
+\subsubsection{Marginal probability distribution functions}
+ 
+If X and Y are jointly continuous, they are individually continuous, and their PDFs are:
+
+\begin{equation}
+\begin{split}
+P(X\in A) = & P(X\in A, Y\in (-\infty,\infty))	\\
+= & \int_A \int_{-\infty}^{\infty} f(x,y)\,dy\, dx\\
+= & \int_A f_X(x)\, dx
+\end{split}	
+\end{equation}
+
+\noindent
+where
+
+\begin{equation}
+f_X(x) = \int_{-\infty}^{\infty} f(x,y)\, dy	
+\end{equation}
+
+Similarly:
+
+\begin{equation}
+f_Y(y) =  \int_{-\infty}^{\infty} f(x,y)\, dx		
+\end{equation}
+
+\subsubsection{Independent random variables}
+
+Random variables $X$ and $Y$ are independent iff, for any two sets of real numbers $A$ and $B$:
+
+\begin{equation}
+P(X\in A, Y\in B)	= P(X\in A)P(Y\in B)
+\end{equation}
+
+In the jointly continuous case:
+
+\begin{equation}
+f(x,y) = f_X(x)f_Y(y) \quad \hbox{for all } x,y	
+\end{equation} 
+
+A necessary and sufficient condition for the random variables $X$ and $Y$ to be
+independent is for their joint probability density function (or joint probability mass function in the discrete case) $f(x,y)$ to factor into two terms, one depending only on
+$x$ and the other depending only on $y$. This can be stated as a proposition:
+
+\begin{proposition}\label{pro:jointindep}
+	
+\end{proposition}
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Easy-to-understand example from \cite{kerns}}:	
+Let the joint PDF of $(X,Y)$ be given by
+\[
+f_{X,Y}(x,y)=\frac{6}{5}\left(x+y^{2}\right),\quad 0 < x < 1,\ 0 < y < 1.
+\]
+The marginal PDF of $X$ is
+\begin{eqnarray*}
+f_{X}(x) & = & \int_{0}^{1}\frac{6}{5}\left(x+y^{2}\right)\,\mathrm{d} y,\\
+ & = & \left.\frac{6}{5}\left(xy+\frac{y^{3}}{3}\right)\right|_{y=0}^{1},\\
+ & = & \frac{6}{5}\left(x+\frac{1}{3}\right),
+\end{eqnarray*}
+for $0 < x < 1$, and the marginal PDF of $Y$ is
+\begin{eqnarray*}
+f_{Y}(y) & = & \int_{0}^{1}\frac{6}{5}\left(x+y^{2}\right)\,\mathrm{d} x,\\
+ & = & \left.\frac{6}{5}\left(\frac{x^{2}}{2}+xy^{2}\right)\right|_{x=0}^{1},\\
+ & = & \frac{6}{5}\left(\frac{1}{2}+y^{2}\right),
+\end{eqnarray*}
+for $0 < y < 1$. 
+
+In this example the joint support set was a rectangle $[0,1]\times[0,1]$, but it turns out that $X$ and $Y$ are not independent. 
+This is because $\frac{6}{5}\left(x+y^{2}\right)$ cannot be stated as a product of two terms ($f_X(x)f_Y(y)$).
+\end{fmpage}
+\end{center}
+
+\subsubsection{Sums of independent random variables}
+
+[Taken nearly verbatim from Ross.]
+
+Suppose that X and Y are
+independent, continuous random variables having probability density functions $f_X$
+and $f_Y$. The cumulative distribution function of $X + Y$ is obtained as follows:
+
+\begin{equation}
+\begin{split}
+F_{X+Y}(a) =& P(X+Y\leq a)\\
+           =& \iintop_{x+y\leq a} f_{XY}(x,y)\, dx\, dy\\
+           =& \iintop_{x+y\leq a} f_X(x)f_Y(y)\, dx\, dy\\
+           =& \int_{-\infty}^{\infty}\int_{-\infty}^{a-y} f_X(x)f_Y(y)\, dx\, dy\\ 
+           =& \int_{-\infty}^{\infty}\int_{-\infty}^{a-y}f_X(x)\,dx f_Y(y)\, dy\\ 
+           =& \int_{-\infty}^{\infty}F_X(a-y) f_Y(y)\, dy\\ 
+\end{split}	
+\end{equation}
+
+The CDF $F_{X+Y}$ is the \textbf{convolution} of the distributions $F_X$ and $F_Y$. 
+
+
+If we differentiate the above equation, we get the pdf $f_{X+Y}$:
+
+\begin{equation}
+\begin{split}	
+f_{X+Y} =& \frac{d}{dx}\int_{-\infty}^{\infty}F_X(a-y) f_Y(y)\, dy	\\
+=& \int_{-\infty}^{\infty}\frac{d}{dx}F_X(a-y) f_Y(y)\, dy	\\
+=& \int_{-\infty}^{\infty}f_X(a-y) f_Y(y)\, dy
+\end{split}	
+\end{equation}
+
+to-do: don't know how a differential can be moved inside an integral (never seen that before and I didn't know that was possible to do).
+
+to-do: examples of diff. distributions
+
+\subsection{Conditional distributions}
+
+\subsubsection{Discrete case}
+
+Recall that the conditional probability of $B$ given $A$, denoted $\mathbb{P}(B\mid A)$, is defined by
+
+\begin{equation}
+\mathbb{P}(B\mid A)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(A)},\quad \mbox{if }\mathbb{P}(A)>0.
+\end{equation}
+
+If $X$ and $Y$ are discrete random variables, then we can define the conditional PMF of $X$ given that $Y=y$ as follows:
+
+
+\begin{equation}
+\begin{split}
+p_{X\mid Y}(x\mid y) =& P(X=x\mid Y=y)\\
+                     =& \frac{P(X=x, Y=y)}{P(Y=y)}\\
+                     =& \frac{p(x,y)}{p_Y(y)}
+\end{split}	
+\end{equation}
+
+\noindent
+for all values of $y$ where $p_Y(y)=P(Y=y)>0$.
+
+The \textbf{conditional cumulative distribution function} of $X$ given $Y=y$ is defined, for all $y$ such that $p_Y(y)>0$, as follows:
+
+\begin{equation}
+\begin{split}
+F_{X\mid Y}	=& P(X\leq x\mid Y=y)\\
+            =& \underset{a\leq x}{\overset{}{\sum}} p_{X\mid Y}(a\mid y)
+\end{split}	
+\end{equation}
+
+If $X$ and $Y$ are independent then
+
+\begin{equation}
+p_{X\mid Y}(x\mid y) = P(X=x)=p_X(x)	
+\end{equation}
+
+See the examples starting p.\ 264 of Ross.
+
+An important thing to understand is the phrasing of the question (e.g., in P-Ass3): ``Find the conditional distribution of $X$ given all the possible values of $Y$''.
+
+\subsubsection{Continuous case}
+
+[Taken almost verbatim from Ross.]
+
+If $X$ and $Y$ have a joint probability density function $f(x, y)$, then the conditional probability density function of $X$ given that $Y = y$ is defined, for all values of $y$ such that $f_Y(y) > 0$,by
+
+\begin{equation}
+f_{X\mid Y}(x\mid y) = \frac{f(x,y)}{f_Y(y)}	
+\end{equation}
+
+We can understand this definition by considering what 
+$f_{X\mid Y}(x\mid y)\, dx$ amounts to: 
+
+\begin{equation}
+\begin{split}
+f_{X\mid Y}(x\mid y)\, dx =& \frac{f(x,y)}{f_Y(y)} \frac{dxdy}{dy}\\
+		=& \frac{f(x,y)dxdy}{f_Y(y)dy} \\
+		=& \frac{P(x<X<d+dx,y<Y<y+dy)}{y<P<y+dy}
+\end{split}	
+\end{equation}
+
+\subsection{Joint and marginal expectation}
+
+[Taken nearly verbatim from \cite{kerns}.]
+
+Given a function $g$ with arguments $(x,y)$ we would like to know the long-run average behavior of $g(X,Y)$ and how to mathematically calculate it. Expectation in this context is computed by integrating (summing) with respect to the joint probability density (mass) function.
+
+Discrete case:
+
+\begin{equation}
+\mathbb{E}\, g(X,Y)=\mathop{\sum\sum}\limits _{(x,y)\in S_{X,Y}}g(x,y)\, f_{X,Y}(x,y).
+\end{equation}
+
+Continuous case:
+
+\begin{equation}
+\mathbb{E}\, g(X,Y)=\iintop_{S_{X,Y}}g(x,y)\, f_{X,Y}(x,y)\,\mathrm{d} x\,\mathrm{d} y,
+\end{equation}
+
+
+
+
+\subsubsection{Covariance and correlation}
+
+There are two very special cases of joint expectation: the \textbf{covariance} and the \textbf{correlation}. These are measures which help us quantify the dependence between $X$ and $Y$. 
+
+\begin{definition}
+The \textbf{covariance} of $X$ and $Y$ is
+\begin{equation}
+\mbox{Cov}(X,Y)=\mathbb{E}(X-\mathbb{E} X)(Y-\mathbb{E} Y).
+\end{equation}
+\end{definition}
+
+Shortcut formula for covariance:
+
+
+\begin{equation}
+\mbox{Cov}(X,Y)=\mathbb{E}(XY)-(\mathbb{E} X)(\mathbb{E} Y).
+\end{equation}
+
+The \textbf{Pearson product moment correlation} between $X$ and $Y$ is the covariance between $X$ and $Y$ rescaled to fall in the interval $[-1,1]$. It is formally defined by 
+\begin{equation}
+\mbox{Corr}(X,Y)=\frac{\mbox{Cov}(X,Y)}{\sigma_{X}\sigma_{Y}}.
+\end{equation}
+
+The correlation is usually denoted by $\rho_{X,Y}$ or simply $\rho$ if the random variables are clear from context. There are some important facts about the correlation coefficient: 
+
+\begin{enumerate}
+	\item The range of correlation is $-1\leq\rho_{X,Y}\leq1$.
+	\item Equality holds above ($\rho_{X,Y}=\pm1$) if and only if $Y$ is a linear function of $X$ with probability one.
+\end{enumerate}
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Discrete example}:
+to-do
+\end{fmpage}
+\end{center}
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Continuous example from \cite{kerns}}:
+Let us find the covariance of the variables $(X,Y)$ from an example numbered 7.2 in Kerns. The expected value of $X$ is
+\[
+\mathbb{E} X=\int_{0}^{1}x\cdot\frac{6}{5}\left(x+\frac{1}{3}\right)\mathrm{d} x=\left.\frac{2}{5}x^{3}+\frac{1}{5}x^{2}\right|_{x=0}^{1}=\frac{3}{5},
+\]
+and the expected value of $Y$ is
+\[
+\mathbb{E} Y=\int_{0}^{1}y\cdot\frac{6}{5}\left(\frac{1}{2}+y^{2}\right)\mathrm{d} x=\left.\frac{3}{10}y^{2}+\frac{3}{20}y^{4}\right|_{y=0}^{1}=\frac{9}{20}.
+\]
+Finally, the expected value of $XY$ is
+\begin{eqnarray*}
+\mathbb{E} XY & = & \int_{0}^{1}\int_{0}^{1}xy\,\frac{6}{5}\left(x+y^{2}\right)\mathrm{d} x\,\mathrm{d} y,\\
+ & = & \int_{0}^{1}\left.\left(\frac{2}{5}x^{3}y+\frac{3}{10}xy^{4}\right)\right|_{x=0}^{1}\mathrm{d} y,\\
+ & = & \int_{0}^{1}\left(\frac{2}{5}y+\frac{3}{10}y^{4}\right)\mathrm{d} y,\\
+ & = & \frac{1}{5}+\frac{3}{50},
+\end{eqnarray*}
+which is 13/50. Therefore the covariance of $(X,Y)$ is
+\[
+\mbox{Cov}(X,Y)=\frac{13}{50}-\left(\frac{3}{5}\right)\left(\frac{9}{20}\right)=-\frac{1}{100}.
+\]
+\end{fmpage}
+\end{center}
+
+\subsection{Conditional expectation}
+
+Recall that
+
+\begin{equation}
+f_{X\mid Y} (x\mid y) = P(X = x\mid Y = y) = \frac{p_{X,Y}(x,y)}{p_Y(y)}	
+\end{equation}
+
+\noindent 
+for all $y$ such that $P(Y=y)>0$.
+
+It follows that
+
+\begin{equation}
+\begin{split}
+	E[X\mid Y=y] =& \underset{x}{\overset{}{\sum}} xP(X=x\mid Y=y)\\
+	=& \underset{x}{\overset{}{\sum}} xp_{X\mid Y}(x\mid y)
+\end{split}	
+\end{equation}
+
+$E[X\mid Y]$ is that \textbf{function} of the random variable $Y$ whose value at $Y=y$ is $E[X\mid Y=y]$. $E[X\mid Y]$ is a random variable.
+
+\subsubsection{Relationship to `regular' expectation}
+
+Conditional expectation given that $Y = y$ can be
+thought of as being an ordinary expectation on a reduced sample space consisting
+only of outcomes for which $Y = y$. All properties of expectations hold. Two examples (to-do: spell out the other equations): 
+
+\textbf{Example 1}: to-do: develop some specific examples.
+
+\begin{equation*}
+E[g(X)\mid Y=y]=  \left\{ 	
+\begin{array}{l l}
+       \underset{x}{\sum} g(x)p_{X\mid Y}(x,y) & \quad \textrm{in the discrete case}\\
+       \int_{-\infty}^{\infty} g(x)f_{X\mid Y}(x\mid y)\, dx & \quad \textrm{in the continuous case}\\
+\end{array} \right.
+\end{equation*}
+
+\textbf{Example 2}:
+
+\begin{equation}
+E\left[ \underset{i=1}{\overset{n}{\sum}} X_i\mid Y=y \right] = 
+\underset{i=1}{\overset{n}{\sum}} E[X_i\mid Y=y]	
+\end{equation}
+
+\begin{proposition}\label{pro:condexp}
+\textbf{Expectation of the conditional expectation}
+
+\begin{equation}
+	E[X] = E[E[X\mid Y]]	
+\end{equation}
+
+\end{proposition}
+
+If $Y$ is a discrete random variable, then the above proposition states that 
+
+\begin{equation}
+E[X] = \underset{y}{\overset{}{\sum}} E[X\mid Y = y] P(Y=y)	
+\end{equation}
+
+\subsection{Multinomial coefficients and multinomial distributions}
+
+[Taken almost verbatim from \cite{kerns}, with some additional stuff from Ross.]
+
+We sample $n$ times, with replacement, from an urn that contains balls of $k$ different types. Let $X_{1}$ denote the number of balls in our sample of type 1, let $X_{2}$ denote the number of balls of type 2, ..., and let $X_{k}$ denote the number of balls of type $k$. Suppose the urn has proportion $p_{1}$ of balls of type 1, proportion $p_{2}$ of balls of type 2, ..., and proportion $p_{k}$ of balls of type $k$. Then the joint PMF of $(X_{1},\ldots,X_{k})$ is
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}\, p_{1}^{x_{1}}p_{2}^{x_{2}}\cdots p_{k}^{x_{k}},
+\end{eqnarray}
+for $(x_{1},\ldots,x_{k})$ in the joint support $S_{X_{1},\ldots X_{K}}$. We write
+\begin{equation}
+(X_{1},\ldots,X_{k})\sim\mathsf{multinom}(\mathtt{size}=n,\,\mathtt{prob}=\mathbf{p}_{\mathrm{k}\times1}).
+\end{equation}
+
+Note:
+
+First, the joint support set $S_{X_{1},\ldots X_{K}}$ contains all nonnegative integer $k$-tuples $(x_{1},\ldots,x_{k})$ such that $x_{1}+x_{2}+\cdots+x_{k}=n$. A support set like this is called a \textit{simplex}. Second, the proportions $p_{1}$, $p_{2}$, ..., $p_{k}$ satisfy $p_{i}\geq0$ for all $i$ and $p_{1}+p_{2}+\cdots+p_{k}=1$. Finally, the symbol
+\begin{equation}
+{n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}=\frac{n!}{x_{1}!\, x_{2}!\,\cdots x_{k}!}
+\end{equation}
+is called a \emph{multinomial coefficient} which generalizes the notion of a binomial coefficient.
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Example from Ross}:
+
+Suppose a fair die is rolled nine times. The probability that 1 appears three times, 2 and 3 each appear twice, 4 and 5 each appear once, and 6 not at all, can be computed using the multinomial distribution formula.
+
+Here, for $i=1,\dots,6$, it is clear that  $p_i==\frac{1}{6}$. And it is clear that $n=9$, and $x_1=3$, $x_2=2$, $x_3=2$, $x_4=1$, $x_5=1$, and $x_6=0$. We plug in the values into the formula:
+
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}\, p_{1}^{x_{1}}p_{2}^{x_{2}}\cdots p_{k}^{x_{k}}
+\end{eqnarray}
+
+Plugging in the values:
+
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {9 \choose 3\,2\,2\,1\,1\,0}\, \frac{1}{6}^{3}\frac{1}{6}^{2}\frac{1}{6}^2 \frac{1}{6}^1 \frac{1}{6}^1 \frac{1}{6}^{0} 
+\end{eqnarray}
+
+Answer: $\frac{9!}{3!2!2!} \left(\frac{1}{6}\right)^9$
+
+%If we had thrown the die only two times, we have the binomial distribution.
+\end{fmpage}
+\end{center}
+
+
+\subsection{Multivariate normal distributions}
+
+
+Recall that in the univariate case:
+
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi \sigma^2} e\{ - \frac{(\frac{(x-\mu)}{\sigma})^2}{2}\}}	 \quad -\infty < x < \infty
+\end{equation}
+
+We can write the power of the exponential as:
+
+\begin{equation}
+(\frac{(x-\mu)}{\sigma})^2 = (x-\mu)(x-\mu)(\sigma^2)^{-1} = (x-\mu)(\sigma^2)^{-1}(x-\mu) = Q
+\end{equation}
+
+Generalizing this to the multivariate case: 
+
+\begin{equation}
+Q= (x-\mu)' \Sigma ^{-1} (x-\mu)	
+\end{equation}
+
+
+
+
+So, for multivariate case:
+
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi det \Sigma } e\{ - Q/2\}}	 \quad -\infty < x_i < \infty, i=1,\dots,n
+\end{equation}
+
+
+Properties of normal MVN X:
+
+\begin{itemize}
+	\item Linear combinations of X are normal distributions.
+	\item All subset's of X's components have a normal distribution.
+	\item Zero covariance implies independent distributions.
+	\item Conditional distributions are normal.
+\end{itemize}
+
+
+\chapter{Statistics}
+
+\section{Histograms by hand}
+
+\begin{equation}
+\hbox{density}=\frac{frequency}{class width}
+\end{equation}
+
+
+\section{Means for grouped data}
+
+
+\begin{equation}
+\bar{x}=\frac{\sum_j f_i y_j}{\sum_j f_j}=\sum (relfreq)_j y_j
+\end{equation}
+
+$f_j$=freq of class $j$; $y_j$ midpoint of class $j$; relfreq$_j$ relative freq.\ of class $j$.
+
+\section{Standard deviation shortcut for ungrouped data}
+
+\begin{equation}
+s^2 = \frac{1}{n-1} \left\{\ \underset{i=1}{\overset{n}{\sum}} x_i^2 - \frac{(\underset{i=1}{\overset{n}{\sum}} x_i )^2}{n} \right\} = \frac{s_{xx}}{n-1}
+\end{equation}
+
+\begin{equation}
+s_{xx} = \underset{i=1}{\overset{n}{\sum}} x_i^2 - \frac{(\underset{i=1}{\overset{n}{\sum}} x_i )^2}{n}  = \sum (x-\bar{x})^2
+\end{equation}
+
+\section{Variance approximation for grouped data}
+
+The variance for grouped data can be computed/approximated by the formula:
+
+\begin{equation}
+s^2 = \frac{1}{n-1}
+%\left{ 
+(\sum_j f_j y_j^2 - \frac{(\sum f_j y_j)^2}{n} 
+)
+%\right}	
+\end{equation}
+
+\section{Pearson correlation coefficient}
+
+\begin{equation}
+r = \frac{\underset{i=1}{\overset{n}{\sum}} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\underset{i=1}{\overset{n}{\sum}} (x_i - \bar{x})^2 \times \underset{i=1}{\overset{n}{\sum}} (y_i - \bar{y})^2}}
+\end{equation}
+
+The  left-hand side in the denominator is 
+
+\begin{equation}
+s_{xx}=\underset{i=1}{\overset{n}{\sum}} (x_i - \bar{x})^2
+\end{equation}
+
+The right-hand side in the denominator is
+
+\begin{equation}
+s_{yy}=\underset{i=1}{\overset{n}{\sum}} (y_i - \bar{y})^2
+\end{equation}
+
+The term in the numerator is hybrid of the other two, and is called $s_{xy}$:
+
+\begin{equation}
+s_{xy} = \underset{i=1}{\overset{n}{\sum}} (x_i - \bar{x})(y_i - \bar{y}) = \sum x_i y_i - \frac{\sum x_i \sum y_i}{n}
+\end{equation}
+
+Note that $\frac{\sum x_i \sum y_i}{n} = n\bar{x}\bar{y}$.
+
+It follows that the formula for $r$ can be written as:
+
+\begin{equation}
+r= \frac{s_{xy}}{\sqrt{s_{xx}\times s_{yy}}}
+\end{equation}
+
+\textbf{Linear regression parameter estimates by hand:}
+
+Given a regression line
+
+\begin{equation}
+y=a + b.x
+\end{equation}
+
+Moore and McCabe have the slope of a regression line $b$ as:
+
+\begin{equation}
+b=r \times \frac{s_y}{s_x}
+\end{equation}
+
+We can rewrite this as
+
+\begin{equation}
+b=\frac{s_{xy}}{s_{xx}}
+\end{equation}
+
+The intercept $a$ is
+
+\begin{equation}
+a=\bar{y}-b.\bar{x}
+\end{equation}
+
+
+
+\section{Contingency tables}
+
+marginal distribution, joint distribution, and conditional distribution.
+
+\section{The distribution of the mean}
+
+\begin{definition}
+If $X_1$,\dots,$X_n$ are independent and identically distributed random variables, we say that they constitute a \textbf{random sample} from the infinite population given by their common distribution.
+\end{definition}
+
+\begin{definition}
+If $X_1$,\dots,$X_n$ constitute a random sample, then
+
+\begin{equation}
+	\bar{X}=\sum X_i/n
+\end{equation}
+
+is the \textbf{sample mean} and 
+
+\begin{equation}
+	S^2=\sum (X_i-\bar{X})^2/n-1
+\end{equation}
+
+is the \textbf{sample variance}.
+
+The sample mean and sample variance are called \textbf{statistics}.
+\end{definition}
+
+\begin{theorem}
+If $X_1$,\dots,$X_n$ constitute a random sample from an infinite population with mean $\mu$ and variance $\sigma^2$, then
+
+\begin{equation}
+	E[\bar{X}] = \mu
+\end{equation}
+
+and
+
+\begin{equation}
+	Var(\bar{X}) = \frac{\sigma^2}{n}
+\end{equation}
+
+[See p.\ 266 of \cite{millermiller} for proof.]
+
+\end{theorem}
+
+It is customary to write $E[\bar{X}]$ as $\mu_{\bar{X}}$ and $Var(\bar{X})$ as $\sigma^2_{\bar{X}}$ and to call $\sigma_{\bar{X}}$ the \textbf{standard error of the mean}.
+
+\section{Point estimation}
+
+$\bar{X}$ is the point estimator (a random variable; a statistic), and $\mu$ is the point (not an RC) we are trying to estimate, and $\bar{x}$ is a point estimate of $\mu$ (in one single sample, this is a single value).
+
+$S^2$ is the point estimator (a random variable; a statistic), and $\sigma^2$ is the point (not an RV) we are trying to estimate, and $s^2$ is a point estimate of $\sigma^2$ (in one single sample, this is a single value).
+
+Properties of estimators:
+
+\begin{enumerate}
+	\item Unbiased
+	\item Efficient (Minimum variance)
+	\item Consistent
+	\item Sufficient
+	\item Robust
+\end{enumerate}
+
+\subsection{Unbiased estimators}
+
+\subsubsection{$S^2$}
+
+\begin{theorem}
+If $S^2$ is the variance of a random sample from an infinite population with the finite variance $\sigma^2$, then $E(S^2)=\sigma^2$
+\end{theorem}
+
+[Proof on p. 321 of Freund.]
+
+Note that $S^2$ is not an unbiased estimator of $\sigma^2$ if the population is finite, and in both infinite and finite population cases, $S$ is not an unbiased estimator of $\sigma$.
+
+\subsubsection{Efficiency, minimum variance}
+
+If we have to choose between several unbiased estimators of a given parameter, we usually take the one with the minimum variance; i.e., we check whether the unbiased estimator is the
+minimum variance unbiased estimator (best unbiased estimator).
+
+\begin{fact}
+\textbf{Cram\'er-Rao inequality}:
+
+If $\hat{\theta}$ is an unbiased estimator of $\theta$, the variance of 
+$\hat{\theta}$ must satisfy the inequality
+
+\begin{equation}
+var(\hat{\theta}) \geq \frac{1}{n\dot E\left[ \left( \frac{\partial \ln f(X)}{\partial \theta} \right)^2 \right]}
+\end{equation}
+
+\noindent
+where $f(x)$ is the value of the population density at $X$ and $n$ is the size of the random sample. 
+\end{fact}
+
+\begin{theorem}\label{thm:cramerrao}
+
+$\hat{\theta}$ is a minimum variance unbiased estimator of $\theta$ if $\hat{\theta}$ is an unbiased estimator of $\theta$ and 
+
+\begin{equation}
+var(\hat{\theta}) = \frac{1}{n\dot E\left[ \left( \frac{\partial \ln f(X)}{\partial \theta} \right)^2 \right]}	
+\end{equation}	
+\end{theorem}
+
+The denominator $\frac{1}{n\dot E\left[ \left( \frac{\partial \ln f(X)}{\partial \theta} \right)^2 \right]}$ is the information about $\theta$ that is supplied by the sample. The smaller the variance, the greater the information.
+
+Given two unbiased estimators $\hat{\theta}_1$ and $\hat{\theta}_2$ of the parameter $\theta$ of a given population, and the variance of the first is less than the variance of the second, we say that the first one is relatively more efficient. We use the ratio of the variances as a measure of relative efficiency.
+
+\begin{equation}
+	\frac{var(\hat{\theta}_1)}{var(\hat{\theta}_2)}
+\end{equation}
+
+\section{Type I, II, power}
+
+Definitions:
+
+Type I error probability:
+
+\begin{equation}
+\alpha = P(\hbox{reject }H_0\mid H_0 \hbox{ true}) = P(R\mid H_0)
+\end{equation} 
+
+Type II error probability:
+
+\begin{equation}
+\beta = P(\hbox{accept }H_0\mid H_0 \hbox{ false}) = P(A\mid not H_0)
+\end{equation} 
+
+Power:
+
+\begin{equation}
+1-\beta = P(\hbox{reject }H_0\mid H_0 \hbox{ false}) = P(R\mid not H_0)
+\end{equation} 
+
+\subsection{Computing the power function}
+
+As an example, let $H_0: \mu = 93$, and let $H_1: \mu \neq 93$. Assume that population sd $\sigma$ and sample size $n$ are given. Note that in realistic situations we don't know $\sigma$ but we can estimate it using $s$.
+
+We can get a sample mean that is greater than $\mu$ or one that is smaller than $\mu$. Call these $\bar{x}_g$ and $\bar{x}_s$ respectively. 
+
+In the case where we know $\sigma$, the test \textbf{under the null hypothesis} is:
+
+\begin{equation}
+\frac{\bar{x}_g-93}{\sigma / \sqrt{n}} > 1.96
+\quad \hbox{ or }
+\quad
+\frac{\bar{x}_s-93}{\sigma / \sqrt{n}} > -1.96
+\end{equation}
+
+Solving for the two $\bar{x}$'s, we get:
+
+\begin{equation}
+\bar{x}_g > 1.96\frac{\sigma}{\sqrt{n}} + 93  
+\quad \hbox{ or }
+\quad
+\bar{x}_s > -1.96\frac{\sigma}{\sqrt{n}} + 93  
+\end{equation}
+
+Now, power is the probability of rejecting the null hypothesis when the mean is whatever the alternative hypothesis mean is (say some specific value $\mu$).
+
+That, the test \textbf{under the alternative hypothesis} is:
+
+\begin{equation}
+\frac{\bar{x}_g - \mu}{\sigma / \sqrt{n}} > 1.96 
+\quad
+or 
+\quad 
+\frac{\bar{x}_s - \mu}{\sigma / \sqrt{n}} < -1.96 
+\end{equation}
+
+We can replace the $\bar{x}_g$ with its full form, and do the same with $\bar{x}_s$.
+
+\begin{equation}
+\frac{1.96\frac{\sigma}{\sqrt{n}} + 93 - \mu}{\sigma / \sqrt{n}} > 1.96 
+\quad
+or 
+\quad 
+\frac{-1.96\frac{\sigma}{\sqrt{n}} + 93 - \mu}{\sigma / \sqrt{n}} < -1.96 
+\end{equation}
+
+I can rewrite the above as:
+
+\begin{equation}
+\frac{1.96\frac{\sigma}{\sqrt{n}} - (\mu - 93)}{\sigma / \sqrt{n}} > 1.96 
+\quad
+or 
+\quad 
+\frac{-1.96\frac{\sigma}{\sqrt{n}} - (\mu - 93}{\sigma / \sqrt{n}} < -1.96 
+\end{equation}
+
+Simplifying:
+
+\begin{equation}
+1.96 - \frac{(\mu - 93)}{\sigma / \sqrt{n}} > 1.96 
+\quad
+or 
+\quad 
+-1.96 - \frac{(\mu - 93)}{\sigma / \sqrt{n}} < -1.96 
+\end{equation}
+
+This is now easy to solve! I will use R's pnorm function in the equation below, simply because we haven't introduced a symbol for pnorm in this course. 
+We can rewrite the above expression as:
+
+\begin{equation}
+[1 - pnorm(1.96 - \frac{(\mu - 93)}{\sigma / \sqrt{n}})] + pnorm(-1.96 - \frac{(\mu - 93)}{\sigma / \sqrt{n}})
+\end{equation}
+
+The above equation allows us to 
+
+\begin{itemize}
+\item
+compute sample size for any given null and alternative hypotheses, provided I have the population standard deviation.
+\item 
+compute power given a null and alternative hypothesis, population standard deviation, and sample size.
+\end{itemize}
+
+Example: 
+suppose I need power of $0.99$ for
+$H_0: \mu=93$ 
+and $H_1: \mu=98$, $\sigma=5$. 
+
+For this example, what sample size do I need? I take the above equation and fill in the values:
+
+\begin{equation}
+[1 - pnorm(1.96 - \frac{(98 - 93)}{5 / \sqrt{n}})] + pnorm(-1.96 - \frac{(98 - 93)}{5 / \sqrt{n}})
+\end{equation}
+
+Simplifying, this gives us:
+
+\begin{equation}
+[1 - pnorm(1.96 - \sqrt{n})] + pnorm(-1.96 - \sqrt{n})
+\end{equation}
+
+Note that the second term will be effectively zero for some reasonable n like 10:
+
+<<>>=
+pnorm(-1.96-sqrt(10))
+@
+
+So we can concentrate on the first term:
+
+\begin{equation}
+[1 - pnorm(1.96 - \sqrt{n})]
+\end{equation}
+
+If the above has to be equal to $0.99$, then 
+
+\begin{equation}
+pnorm(1.96 - \sqrt{n})=0.01
+\end{equation}
+
+So, we just need to find the value of the z-score that will give us a probability of approximately 0.01. You can do this analytically (exercise), but you could also play with some values of n to see what you get. The answer is $n=18$.
+
+<<>>=
+pnorm(1.96-sqrt(18))
+@
+
+
+\section{Methods of inference}
+
+\subsection{Methods of Moments}
+
+The methods of moments consists of equating the first few moments of a population to the corresponding moments of a sample, thus getting as many equations as are needed to solve for the unknown parameters of the population.
+
+\begin{definition}
+The $k$th \textbf{sample moment} of a set of observations $x_1,x_2,\dots,x_n$ is the mean of their $k$th powers and it is denoted by $m_k'$.
+
+\begin{equation}
+m_k' =  \frac{\underset{i=1}{\overset{n}{\sum}}  x_i^k}{n}
+\end{equation}
+
+ \end{definition}
+
+
+
+
+If a population has $r$ parameters, the method of moments consists of solving the following system of equations for the $r$ parameters:
+
+\begin{equation}
+m_k' = \mu_k' \quad k=1,2,\dots,r	
+\end{equation}
+
+\subsection{Method of maximum likelihood}
+
+Here, we look at the sample values and then choose as our estimates of the unknown parameters the values for which the probability or probability density of getting the sample values is a maximum. 
+
+\textbf{Discrete case}: Suppose the observed sample values are $x_1, x_2,\dots, x_n$. The probability of getting them is
+
+\begin{equation}
+P(X_1=x_1,X_2=x_2,\dots,X_n=x_n) = f(X_1=x_1,X_2=x_2,\dots,X_n=x_n;\theta)	
+\end{equation} 
+
+\noindent
+i.e., the function $f$ is the value of the joint probability \textbf{distribution} of the random variables $X_1,\dots,X_n$ at $X_1=x_1,\dots,X_n=x_n$. Since the sample values have been observed and are fixed, $f(x_1,\dots,x_n;\theta)$ is a function of $\theta$. The function $f$ is called a \textbf{likelihood function}.
+
+\textbf{Continuous case}
+
+Here, $f$ is the joint probability \textbf{density}, the rest is the same as above.
+
+\begin{definition}\label{def:lik}
+If $x_1, x_2,\dots, x_n$ are the values of a random sample from a population with parameter $\theta$, the \textbf{likelihood function} of the sample is given by 
+
+\begin{equation}
+L(\theta) = f(x_1, x_2,\dots, x_n; \theta)	
+\end{equation}
+
+\noindent
+for values of $\theta$ within a given domain. Here, $f(X_1=x_1,X_2=x_2,\dots,X_n=x_n;\theta)$ is the joint probability distribution or density of the random variables $X_1,\dots,X_n$ at $X_1=x_1,\dots,X_n=x_n$.
+
+\end{definition}
+
+So, the method of maximum likelihood consists of maximizing the likelihood function with respect to $\theta$. The value of $\theta$ that maximizes the likelihood function is the \textbf{MLE} (maximum likelihood estimate) of $\theta$.
+
+
+\subsubsection{Finding maximum likelihood estimates for different distributions}
+
+\paragraph{Example 1}
+
+Let $X_i$, $i=1,\dots,n$ be a random variable with PDF $f(x; \sigma) = \frac{1}{2\sigma} exp (-\frac{\mid x \mid}{\sigma})$. Find $\hat \sigma$, the MLE of $\sigma$.
+
+
+\begin{equation}
+	L(\sigma) = \prod f(x_i; \sigma) = \frac{1}{(2\sigma)^n} exp (-\sum \frac{\mid x_i \mid}{\sigma})
+\end{equation}
+
+Let $\ell$ be log likelihood. Then:
+
+\begin{equation}
+	\ell (x; \sigma) = \sum \left[ - \log 2 - \log \sigma - \frac{\mid x_i \mid}{\sigma} \right]
+\end{equation}
+
+Differentiating and equating to zero to find maximum:
+
+\begin{equation}
+	\ell ' (\sigma) = \sum \left[- \frac{1}{\sigma} + \frac{\mid x_i \mid}{\sigma^2}  \right] = - \frac{n}{\sigma} + \frac{\mid x_i \mid}{\sigma^2} =
+	 0
+\end{equation}
+
+Rearranging the above, the MLE for $\sigma$ is:
+
+\begin{equation}
+	\hat \sigma = \frac{\sum \mid x_i \mid}{n}
+\end{equation}
+
+\paragraph{Exponential}
+
+
+\begin{equation}
+	f(x; \lambda)= \lambda exp (- \lambda x)
+\end{equation}
+
+Log likelihood:
+
+\begin{equation}
+	\ell = n \log \lambda - \sum \lambda x_i
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+	\ell ' (\lambda) = \frac{n}{\lambda} - \sum x_i = 0
+\end{equation}
+
+\begin{equation}
+	\frac{n}{\lambda} =  \sum x_i
+\end{equation}
+
+I.e., 
+
+\begin{equation}
+	\frac{1}{\hat \lambda} =  \frac{\sum x_i}{n}
+\end{equation}
+
+\paragraph{Cauchy}
+
+Given:
+\begin{equation}
+	f(x) = \frac{1}{\pi} \frac{1}{1+(x-a)^2}
+\end{equation}
+
+\begin{equation}
+\ell (a) = n \log \pi - \sum [1 + (x_i - a)^2]	
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+\ell ' (a) =    \sum \frac{2 (x_i - a)^2}{1 + (x_i - a)^2} = 0
+\end{equation}
+
+``This is an equation of degree $2N-1$ in a, and up to $2N-1$ different solutions may exist, N of which will correspond to maxima of the Likelihood Function. Usually the best value corresponding to the highest maximum of L is near to the sample median. This median may therefore be taken as the starting value in a iterative search for the maximum of L.'' (source: notes found on internet, course5.pdf)
+
+\paragraph{Poisson}
+
+\begin{eqnarray}
+	L (\mu; x) & = \prod \frac{\exp^{-\mu} \mu ^{x_i}}{x_i!}\\
+	           & = \exp^{-\mu} \mu^{\sum x_i} \frac{1}{\prod x_i !} 
+\end{eqnarray}
+
+
+Log lik:
+
+\begin{equation}
+\ell (\mu; x) = -n\mu + \sum x_i \log \mu - \sum \log y!	
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+\ell ' (\mu) = -n + \frac{\sum x_i}{\mu}	= 0
+\end{equation}
+
+Therefore:
+
+\begin{equation}
+\hat \lambda = \frac{\sum x_i}{n}
+\end{equation}
+
+\paragraph{Uniform}
+
+\paragraph{Binomial}
+
+
+
+\begin{equation}
+L(\theta) = {n \choose x} \theta^x (1-\theta)^{n-x}	
+\end{equation}
+
+Log lik:
+
+\begin{equation}
+\ell (\theta) = \log {n \choose x} + x \log \theta + (n-x)	\log (1-\theta)
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+\ell ' (\theta) = \frac{x}{\theta} - \frac{n-x}{1-\theta} = 0	
+\end{equation}
+
+Thus:
+
+\begin{equation}
+\hat \theta = \frac{x}{n}	
+\end{equation}
+
+
+\paragraph{Normal}
+
+Let $X_1,\dots,X_n$ constitute a random variable of size $n$ from a normal population with mean $\mu$ and variance $\sigma^2$, find joint maximum likelihood estimates of these two parameters.
+
+\begin{eqnarray}
+L(\mu; \sigma^2) & = \prod N(x_i; \mu, \sigma)	\\
+                 & = (\frac{1}{\sigma \sqrt{2 \pi}})^n \exp (-\frac{1}{2\sigma^2} \sigma (x_i \mu)^2)\\ 
+\end{eqnarray}
+
+
+Taking logs and differentiating with respect to $\mu$ and $\sigma$, we get:
+
+\begin{equation}
+	\hat \mu = \frac{1}{n}\sum x_i = \bar{x}	
+\end{equation}
+
+and
+
+\begin{equation}
+	\hat \sigma ^2 = \frac{1}{n}\sum (x_i-\bar{x})^2
+\end{equation}
+ 
+
+Note that we did not show that $\hat\sigma$ is an MLE of $\sigma$. But MLEs have the invariance property: if $ \hat \Theta$ is a maximum likelihood estimator of $\theta$, and the function $g(\hat \Theta)$ is continuous, then $g(\hat \Theta)$  is also an ML estimator of $g(\theta)$. 
+
+\paragraph{Geometric}
+
+\begin{equation}
+f(x; p) = (1-p)^{x-1} p	
+\end{equation}
+
+\begin{equation}
+L(p) = p ^ n (1-p)^{\sum x - n}
+\end{equation}
+
+Log lik:
+
+\begin{equation}
+\ell (p) = n \log p + (\sum x -n ) \log (1-p)
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+\ell ' (p)	\frac{n}{p} - \frac{\sum x - n }{1-p} = 0
+\end{equation}
+
+
+\begin{equation}
+\hat p = \frac{1}{\bar{x}}	
+\end{equation}
+
+
+
+
+\paragraph{Rayleigh}
+
+\paragraph{Pareto}
+
+
+
+
+\section{Hypothesis testing}
+
+\subsection{Neyman-Pearson lemma}
+
+[Taken almost verbatim from this (best) presentation I could find:
+ https://onlinecourses.science.psu.edu/stat414/]
+
+The Neyman Pearson Lemma guarantees to us that each of the tests we use is the most powerful test for testing statistical hypotheses about the parameter under the assumed probability distribution.
+
+Simple vs composite hypotheses: $H_0: \mu=\mu_0$ is simple, $\mu > \mu_0$ composite.
+
+\textbf{Best critical region}:
+
+
+Consider the test of the simple null hypothesis $H_0: \theta = \theta_0$ against the simple alternative hypothesis $H_A: \theta = \theta_A$. Let C and D be critical regions of size $\alpha$, that is, let:
+
+\begin{equation}
+\alpha = P(C; \theta_0)	\hbox{ and } \alpha = P(D; \theta_0)
+\end{equation}
+
+
+Then, C is a best critical region of size $\alpha$ if the power of the test at 
+$\theta=\theta_0$ is the largest among all possible hypothesis tests. More formally, C is the best critical region of size $\alpha$ if, for every other critical region D of size $\alpha$, we have:
+
+\begin{equation}
+P(C; \theta_a) \geq P(D; \theta_a)	
+\end{equation}
+
+That is, C is the best critical region of size $\alpha$ if the power of C is at least as great as the power of every other critical region D of size $\alpha$. We say that C is the most powerful size $\alpha$ test.
+
+\textbf{Neyman-Pearson Lemma}
+
+The Neyman Pearson Lemma. Suppose we have a random sample $X_1, X_2, \dots, X_n$ from a probability distribution with parameter $\theta$. Then, if C is a critical region of size $\alpha$ and k is a constant such that:
+
+\begin{equation}
+L(\theta_0)/L(\theta_a) \leq k \hbox{ inside the critical region C }	
+\end{equation}
+
+and:
+
+\begin{equation}
+L(\theta_0)/L(\theta_a) \geq k \hbox{ outside the critical region C }	
+\end{equation}
+
+then C is the best, that is, most powerful, critical region for testing the simple null hypothesis $H_0: \theta = \theta_0$ against the simple alternative hypothesis $H_A: \theta = \theta_a$.
+
+to-do: proof, also of the discrete case
+
+\textbf{Example to clarify what the Lemma means}:
+
+Suppose X is a single observation (that's one data point!) from a normal population with unknown mean $\mu$ and known standard deviation $\sigma = 1/3$. Then, we can apply the Neyman Pearson Lemma when testing the simple null hypothesis $H_0: \mu = 3$ against the simple alternative hypothesis $H_A: \mu = 4$. The lemma tells us that, in order to be the most powerful test, the ratio of the likelihoods:
+
+\begin{equation}
+L(\theta_0)/L(\theta_a) = L(3)/L(4) 
+\end{equation}
+
+
+should be small for sample points X inside the critical region C (``less than or equal to some constant k'') and large for sample points X outside of the critical region (``greater than or equal to some constant k''). In this case, because we are dealing with just one observation X, the ratio of the likelihoods equals the ratio of the normal probability curves:
+
+\begin{equation}
+L(3)/L(4) = f(x; 3, 1/9)/f(x; 4, 1/9)
+\end{equation}
+
+Then, the following drawing summarizes the situation:
+
+\begin{figure}[!htbp]
+	\centering
+\includegraphics[width=6cm]{neymanpearsonillustration}
+\caption{Illustration of Neyman-Pearson lemma (figure from the PSU website mentioned above).}
+\label{fig:NPL}
+\end{figure}
+
+In short, it makes intuitive sense that we would want to reject $H_0: \mu = 3$ in favor of $H_A: \mu = 4$ if our observed x is large, that is, if our observed x falls in the critical region C. Well, as the drawing illustrates, it is those large X values in C for which the ratio of the likelihoods is small; and, it is for the small X values not in C for which the ratio of the likelihoods is large. Just as the Neyman Pearson Lemma suggests!
+
+\textbf{Two examples of how the Lemma is used}:
+
+to-do
+
+\subsubsection{Uniformly most powerful tests}
+
+to-do
+
+\subsection{Likelihood ratio tests}
+
+
+
+% fdl.tex 
+% This file is a chapter.  It must be included in a larger document to work
+% properly.
+
+
+
+\chapter{Notes from Statistical Inference by Juarez}
+
+p.\ 4 notes on notation for $P(x\mid \theta)$.
+
+\section{Likelihood vs probability}
+
+In a pure likelihood framework, `likelihood (L)' is not the same as `probability P', and `based on' (;) is not the same as `given' ($\mid$), although there are similarities. $L(\theta; x)$ is a function of $\theta$ for given $x$. It is not a probability distribution, and can sum or integrate to any positive value at all. By contrast, $f(x\mid \theta)$ is a function of $x$, it is the probability distribution of X for given $\theta$. It sums or integrates to one:
+
+\begin{equation}
+\int_X f(x\mid \theta)\, dx = 1 \quad \hbox{ or } \sum_X p(x\mid \theta) = 1
+\end{equation}
+
+
+\chapter{Linear modelling notes (6003)}
+
+\begin{equation}
+\begin{split}
+L(\beta, \sigma^2; y) =& f(y; \beta,\sigma^2)\\
+=& \frac{1}{2\pi \sigma^2}^{n/2} exp\left( -\frac{1}{2\sigma^2} (\mathbf{y}-\mathbf{X}\boldsymbol\beta)^T(\mathbf{y}-\mathbf{X}\boldsymbol\beta) \right)
+\end{split}	
+\end{equation}
+
+Taking logs and dropping constant:
+
+\begin{equation}
+\ell \propto	-n\log \sigma - \frac{1}{2\sigma^2} (\mathbf{y}-\mathbf{X}\boldsymbol\beta)^T(\mathbf{y}-\mathbf{X}\boldsymbol\beta)
+\end{equation}
+
+Differentiating with respect to $\sigma$ and equating to zero:
+
+\begin{equation}
+\frac{d\ell}{d\sigma} \propto	-\frac{n}{\sigma} + \frac{\cancel{2}}{\cancel{2}\sigma^3} (\mathbf{y}-\mathbf{X}\boldsymbol\beta)^T(\mathbf{y}-\mathbf{X}\boldsymbol\beta) = 0
+\end{equation}
+
+Rearranging terms:
+
+\begin{equation}
+ \frac{1}{\sigma^3} (\mathbf{y}-\mathbf{X}\boldsymbol\beta)^T(\mathbf{y}-\mathbf{X}\boldsymbol\beta) = \frac{n}{\sigma}
+\end{equation}
+
+This gives us:
+
+\begin{equation}
+	\sigma^2 =   (\mathbf{y}-\mathbf{X}\boldsymbol\beta)^T(\mathbf{y}-\mathbf{X}\boldsymbol\beta)n^{-1}
+\end{equation}
+
+
+\section{Chapter 2 notes}
+
+\newpage
+
+Given the tractor data, let's say we have the model:
+
+\begin{equation}
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2+\epsilon_i	
+\end{equation}
+
+<<>>=
+data<-read.table("data/tractordata.txt",header=T)
+
+colnames(data)<-c("Age","Maint")
+
+fm0<-lm(Maint~Age+I(Age^2)+I(Age^3)+I(Age^4),data)
+#summary(fm0)
+@
+
+
+Three ways to test the hypothesis $H_0: \beta_3=\beta_4=0$.
+
+\subsection{Method 1: Using contrast matrix}
+
+<<>>=
+## Method 1: Using C matrix specification:
+y<-data$Maint
+X<-model.matrix(fm0)
+(XT.X <- t (X)%*%X)
+(XT.y <- t(X)%*%y)
+(G<-solve(XT.X))
+(beta.hat <- G%*%XT.y)
+
+C<-matrix(c(0,0,0,1,0,0,0,0,0,1),byrow=T,ncol=5)
+c<-matrix(c(0,0),byrow=T,ncol=1)
+
+(yT.y <- t(y)%*%y)
+(bT.XT.y<-t(beta.hat)%*%t(X)%*%y) 
+
+## by definition of S_r:
+(Sr <- yT.y - bT.XT.y)
+n<-17
+p<-5  ## num parameters
+(sigma.hat.2 <- (1/(n-p)) * Sr)
+sqrt(sigma.hat.2)
+(num<-t(C %*% beta.hat - c) %*% 
+          solve(C %*% G %*% t(C) ) %*% 
+          (C %*% beta.hat -c ))
+q<-2
+(F<-num/(sigma.hat.2*q))
+@
+
+The above answer matches the lecture notes.
+
+\subsection{Method 2: Using model comparison}
+
+<<>>=
+## Method 2: using model comparison:
+fm0a<-lm(Maint~Age+I(Age^2),data)
+fm0b<-fm0
+(aov.output<-anova(fm0a,fm0b))
+@
+
+%Question: What is \Sexpr{anova(fm0a,fm0b)$RSS[1]}?
+
+\subsection{Method 3: Using ANOVA}
+
+Here, I get an answer that is slightly different from the lecture notes, and it has  to do with the fact that I use exact values from the anova output.
+
+<<>>=
+## H0: b3=b4=0
+## Method 2: using anova:
+ss<-anova(fm0)$"Sum Sq"
+df<-anova(fm0)$Df
+
+## getting exact nos. gives a slightly different result:
+(f<-(ss[3]+ss[4]/2)/(ss[5]/12))
+1-pf(f,2,12)
+
+## cf. taking ceiling of each number as in lecture notes:
+f.2<-((31195+405902)/2)/(766079/12)
+1-pf(f.2,2,12)
+@
+
+Does it matter if I have this much deviation from the lecture notes results?
+
+
+\subsection{Residuals, leverage, outliers}
+
+\begin{itemize}
+	\item If sample size is small, then use scaled or standardized residuals.
+	\item MSc lecture notes: ``If the [QQ] plot is clearly bowed, it suggests a skew distribution (whereas the normal distribution
+	is symmetric). If the plotted points curve down at the left and up at the right, it suggests a
+	distribution with heavier tails than the normal (and therefore one that is prone to produce
+	outliers).''
+	\item Histogram plot is useful only for larger samples.
+	\item Index plot or I-chart. MSc lecture notes: ``plots residual against observation number,
+	and indicates whether the observations might be correlated. Specifically, it helps to assess
+	whether adjacent observations are correlated. Such a correlation would show up by observations
+	that are adjacent in the sequence having very similar residuals. The plot would then
+	tend to move slowly up and down. Like most diagnostics, it is not very sensitive for a sample
+	as small as the tractor data, and in this case there is no reason to suspect this kind of correlation.
+	However, sometimes we might suspect that observations made adjacently in time or
+	space would show correlation, and the index plot will show this if we order the observations
+	appropriately.''
+	
+	An alternative is to compute correlation of adjacent residuals.
+	
+	\item Residuals against fitted values: Checks homoscedasticity. MSc lecture notes: ``The most common form of heteroscedasticity
+	arises when larger observations are also more variable. This often happens when the response
+	variable is necessarily positive. In this case, if the response is just above 0 its variance is likely
+	to be less than if the response was much larger since the response is bounded below by zero.
+	We would observe this kind of heteroscedasticity in the plot by seeing the residuals appearing
+	to fan out as we move from left to right. Other patterns might indicate other ways
+	in which the response variance its related to its mean.''
+	
+	Bartlett's test. (MSc lecture notes: ``This statistic
+	is officially for testing the equality of variances of a number of normal samples, and so the
+	standard case is the one factor model. However, it can be applied as an approximation to
+	variances derived from groups of residuals in a more general linear model. An example might
+	be dividing the data into two groups according to the size of the fitted values. Note, however,
+	that you should not use the data to identify groupings to be tested.'')
+	
+	\item Plot residuals against explanatory variables. Here we look for extra regression structures. From lecture notes:
+	
+``Note, however, than we would never expect to see a straight line relationship when plotting
+	residuals against any explanatory variable used in the fitted model. This is because of the
+	fundamental property that $X^T e = 0$. This means
+	that if we multiply residuals by any column in the X matrix and sum, the result must always
+	be zero. So the residuals and the explanatory variables are always uncorrelated.''	
+	\item Leverage:
+	
+	``leverage measures the \textit{potential} influence of an observation to affect the
+	parameter estimates but we need to take into account whether the observation is outlying to
+	assess its \textit{actual} influence.''
+		
+	``An observation will generally have high influence if it is both outlying and of high
+	leverage. It is possible for an observation to have high influence if it is extremely outlying
+	but not of high leverage or of extremely high leverage but not very outlying; though this is
+	somewhat less likely.''	
+		
+		
+\end{itemize}
+
+
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{/Users/shravanvasishth/Dropbox/Bibliography/bibcleaned}
+\end{document}
+
+\chapter{GNU Free Documentation License}
+
+Version 1.1, March 2000\\
+
+ Copyright \copyright\ 2000  Free Software Foundation, Inc.\\
+     59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\\
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+\section*{Preamble}
+
+The purpose of this License is to make a manual, textbook, or other
+written document ``free'' in the sense of freedom: to assure everyone
+the effective freedom to copy and redistribute it, with or without
+modifying it, either commercially or noncommercially.  Secondarily,
+this License preserves for the author and publisher a way to get
+credit for their work, while not being considered responsible for
+modifications made by others.
+
+This License is a kind of ``copyleft'', which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft
+license designed for free software.
+
+We have designed this License in order to use it for manuals for free
+software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals;
+it can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.
+
+\section{Applicability and Definitions}
+
+This License applies to any manual or other work that contains a
+notice placed by the copyright holder saying it can be distributed
+under the terms of this License.  The ``Document'', below, refers to any
+such manual or work.  Any member of the public is a licensee, and is
+addressed as ``you''.
+
+A ``Modified Version'' of the Document means any work containing the
+Document or a portion of it, either copied verbatim, or with
+modifications and/or translated into another language.
+
+A ``Secondary Section'' is a named appendix or a front-matter section of
+the Document that deals exclusively with the relationship of the
+publishers or authors of the Document to the Document's overall subject
+(or to related matters) and contains nothing that could fall directly
+within that overall subject.  (For example, if the Document is in part a
+textbook of mathematics, a Secondary Section may not explain any
+mathematics.)  The relationship could be a matter of historical
+connection with the subject or with related matters, or of legal,
+commercial, philosophical, ethical or political position regarding
+them.
+
+The ``Invariant Sections'' are certain Secondary Sections whose titles
+are designated, as being those of Invariant Sections, in the notice
+that says that the Document is released under this License.
+
+The ``Cover Texts'' are certain short passages of text that are listed,
+as Front-Cover Texts or Back-Cover Texts, in the notice that says that
+the Document is released under this License.
+
+A ``Transparent'' copy of the Document means a machine-readable copy,
+represented in a format whose specification is available to the
+general public, whose contents can be viewed and edited directly and
+straightforwardly with generic text editors or (for images composed of
+pixels) generic paint programs or (for drawings) some widely available
+drawing editor, and that is suitable for input to text formatters or
+for automatic translation to a variety of formats suitable for input
+to text formatters.  A copy made in an otherwise Transparent file
+format whose markup has been designed to thwart or discourage
+subsequent modification by readers is not Transparent.  A copy that is
+not ``Transparent'' is called ``Opaque''.
+
+Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, \LaTeX~input format, SGML
+or XML using a publicly available DTD, and standard-conforming simple
+HTML designed for human modification.  Opaque formats include
+PostScript, PDF, proprietary formats that can be read and edited only
+by proprietary word processors, SGML or XML for which the DTD and/or
+processing tools are not generally available, and the
+machine-generated HTML produced by some word processors for output
+purposes only.
+
+The ``Title Page'' means, for a printed book, the title page itself,
+plus such following pages as are needed to hold, legibly, the material
+this License requires to appear in the title page.  For works in
+formats which do not have any title page as such, ``Title Page'' means
+the text near the most prominent appearance of the work's title,
+preceding the beginning of the body of the text.
+
+
+\section{Verbatim Copying}
+
+You may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies
+to the Document are reproduced in all copies, and that you add no other
+conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further
+copying of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+
+You may also lend copies, under the same conditions stated above, and
+you may publicly display copies.
+
+
+\section{Copying in Quantity}
+
+If you publish printed copies of the Document numbering more than 100,
+and the Document's license notice requires Cover Texts, you must enclose
+the copies in covers that carry, clearly and legibly, all these Cover
+Texts: Front-Cover Texts on the front cover, and Back-Cover Texts on
+the back cover.  Both covers must also clearly and legibly identify
+you as the publisher of these copies.  The front cover must present
+the full title with all words of the title equally prominent and
+visible.  You may add other material on the covers in addition.
+Copying with changes limited to the covers, as long as they preserve
+the title of the Document and satisfy these conditions, can be treated
+as verbatim copying in other respects.
+
+If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.
+
+If you publish or distribute Opaque copies of the Document numbering
+more than 100, you must either include a machine-readable Transparent
+copy along with each Opaque copy, or state in or with each Opaque copy
+a publicly-accessible computer-network location containing a complete
+Transparent copy of the Document, free of added material, which the
+general network-using public has access to download anonymously at no
+charge using public-standard network protocols.  If you use the latter
+option, you must take reasonably prudent steps, when you begin
+distribution of Opaque copies in quantity, to ensure that this
+Transparent copy will remain thus accessible at the stated location
+until at least one year after the last time you distribute an Opaque
+copy (directly or through your agents or retailers) of that edition to
+the public.
+
+It is requested, but not required, that you contact the authors of the
+Document well before redistributing any large number of copies, to give
+them a chance to provide you with an updated version of the Document.
+
+
+\section{Modifications}
+
+You may copy and distribute a Modified Version of the Document under
+the conditions of sections 2 and 3 above, provided that you release
+the Modified Version under precisely this License, with the Modified
+Version filling the role of the Document, thus licensing distribution
+and modification of the Modified Version to whoever possesses a copy
+of it.  In addition, you must do these things in the Modified Version:
+
+\begin{itemize}
+
+\item Use in the Title Page (and on the covers, if any) a title distinct
+   from that of the Document, and from those of previous versions
+   (which should, if there were any, be listed in the History section
+   of the Document).  You may use the same title as a previous version
+   if the original publisher of that version gives permission.
+\item List on the Title Page, as authors, one or more persons or entities
+   responsible for authorship of the modifications in the Modified
+   Version, together with at least five of the principal authors of the
+   Document (all of its principal authors, if it has less than five).
+\item State on the Title page the name of the publisher of the
+   Modified Version, as the publisher.
+\item Preserve all the copyright notices of the Document.
+\item Add an appropriate copyright notice for your modifications
+   adjacent to the other copyright notices.
+\item Include, immediately after the copyright notices, a license notice
+   giving the public permission to use the Modified Version under the
+   terms of this License, in the form shown in the Addendum below.
+\item Preserve in that license notice the full lists of Invariant Sections
+   and required Cover Texts given in the Document's license notice.
+\item Include an unaltered copy of this License.
+\item Preserve the section entitled ``History'', and its title, and add to
+   it an item stating at least the title, year, new authors, and
+   publisher of the Modified Version as given on the Title Page.  If
+   there is no section entitled ``History'' in the Document, create one
+   stating the title, year, authors, and publisher of the Document as
+   given on its Title Page, then add an item describing the Modified
+   Version as stated in the previous sentence.
+\item Preserve the network location, if any, given in the Document for
+   public access to a Transparent copy of the Document, and likewise
+   the network locations given in the Document for previous versions
+   it was based on.  These may be placed in the ``History'' section.
+   You may omit a network location for a work that was published at
+   least four years before the Document itself, or if the original
+   publisher of the version it refers to gives permission.
+\item In any section entitled ``Acknowledgements'' or ``Dedications'',
+   preserve the section's title, and preserve in the section all the
+   substance and tone of each of the contributor acknowledgements
+   and/or dedications given therein.
+\item Preserve all the Invariant Sections of the Document,
+   unaltered in their text and in their titles.  Section numbers
+   or the equivalent are not considered part of the section titles.
+\item Delete any section entitled ``Endorsements''.  Such a section
+   may not be included in the Modified Version.
+\item Do not retitle any existing section as ``Endorsements''
+   or to conflict in title with any Invariant Section.
+
+\end{itemize}
+
+If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version's license notice.
+These titles must be distinct from any other section titles.
+
+You may add a section entitled ``Endorsements'', provided it contains
+nothing but endorsements of your Modified Version by various
+parties -- for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.
+
+You may add a passage of up to five words as a Front-Cover Text, and a
+passage of up to 25 words as a Back-Cover Text, to the end of the list
+of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or
+through arrangements made by) any one entity.  If the Document already
+includes a cover text for the same cover, previously added by you or
+by arrangement made by the same entity you are acting on behalf of,
+you may not add another; but you may replace the old one, on explicit
+permission from the previous publisher that added the old one.
+
+The author(s) and publisher(s) of the Document do not by this License
+give permission to use their names for publicity for or to assert or
+imply endorsement of any Modified Version.
+
+
+\section{Combining Documents}
+
+You may combine the Document with other documents released under this
+License, under the terms defined in section 4 above for modified
+versions, provided that you include in the combination all of the
+Invariant Sections of all of the original documents, unmodified, and
+list them all as Invariant Sections of your combined work in its
+license notice.
+
+The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by
+adding at the end of it, in parentheses, the name of the original
+author or publisher of that section if known, or else a unique number.
+Make the same adjustment to the section titles in the list of
+Invariant Sections in the license notice of the combined work.
+
+In the combination, you must combine any sections entitled ``History''
+in the various original documents, forming one section entitled
+``History''; likewise combine any sections entitled ``Acknowledgements'',
+and any sections entitled ``Dedications''.  You must delete all sections
+entitled ``Endorsements.''
+
+
+\section{Collections of Documents}
+
+You may make a collection consisting of the Document and other documents
+released under this License, and replace the individual copies of this
+License in the various documents with a single copy that is included in
+the collection, provided that you follow the rules of this License for
+verbatim copying of each of the documents in all other respects.
+
+You may extract a single document from such a collection, and distribute
+it individually under this License, provided you insert a copy of this
+License into the extracted document, and follow this License in all
+other respects regarding verbatim copying of that document.
+
+
+
+\section{Aggregation With Independent Works}
+
+A compilation of the Document or its derivatives with other separate
+and independent documents or works, in or on a volume of a storage or
+distribution medium, does not as a whole count as a Modified Version
+of the Document, provided no compilation copyright is claimed for the
+compilation.  Such a compilation is called an ``aggregate'', and this
+License does not apply to the other self-contained works thus compiled
+with the Document, on account of their being thus compiled, if they
+are not themselves derivative works of the Document.
+
+If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one quarter
+of the entire aggregate, the Document's Cover Texts may be placed on
+covers that surround only the Document within the aggregate.
+Otherwise they must appear on covers around the whole aggregate.
+
+
+\section{Translation}
+
+Translation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License provided that you also include the
+original English version of this License.  In case of a disagreement
+between the translation and the original English version of this
+License, the original English version will prevail.
+
+
+\section{Termination}
+
+You may not copy, modify, sublicense, or distribute the Document except
+as expressly provided for under this License.  Any other attempt to
+copy, modify, sublicense or distribute the Document is void, and will
+automatically terminate your rights under this License.  However,
+parties who have received copies, or rights, from you under this
+License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+
+\section{Future Revisions of This License}
+
+The Free Software Foundation may publish new, revised versions
+of the GNU Free Documentation License from time to time.  Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns. See
+http://www.gnu.org/copyleft/.
+
+Each version of the License is given a distinguishing version number.
+If the Document specifies that a particular numbered version of this
+License "or any later version" applies to it, you have the option of
+following the terms and conditions either of that specified version or
+of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.
+
+\section*{ADDENDUM: How to use this License for your documents}
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+
+\begin{quote}
+
+      Copyright \copyright\ YEAR  YOUR NAME.
+      Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1
+      or any later version published by the Free Software Foundation;
+      with the Invariant Sections being LIST THEIR TITLES, with the
+      Front-Cover Texts being LIST, and with the Back-Cover Texts being LIST.
+      A copy of the license is included in the section entitled ``GNU
+      Free Documentation License''.
+
+\end{quote}
+
+If you have no Invariant Sections, write ``with no Invariant Sections''
+instead of saying which ones are invariant.  If you have no
+Front-Cover Texts, write ``no Front-Cover Texts'' instead of
+``Front-Cover Texts being LIST''; likewise for Back-Cover Texts.
+
+If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License,
+to permit their use in free software.
+
+
+\begin{equation}
+
+\end{equation}
+
+%\begin{figure}[!htbp]
+\begin{center}
+\begin{fmpage}{0.5\linewidth}
+\textbf{Example}:	
+$$ P(t) = 180 \cdot (1.1150)^t $$ Note: Population is measured here in millions and t=0 corresponds to Jan. 1, 2000.
+%\caption{Population Model \#1}\label{fig:figure1}
+\end{fmpage}
+\end{center}
+%\end{figure}
+
