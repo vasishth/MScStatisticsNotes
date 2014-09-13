@@ -1,0 +1,1125 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}
+
+\usepackage{algorithm2e}
+
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+\SweaveOpts{prefix.string=CompInffigs/CompInffig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Computational Inference Summary}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+\footnotesize
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\begin{multicols}{2}
+
+
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Computational Inference Summary} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+<<echo=F>>=
+options(width=60)
+options(continue=" ")
+@
+
+\section{Very basic math}
+
+Product rule: $(uv)' = uv' + vu'$
+
+Quotient role: $(u/v)' = (vu'-uv')/v^2$
+
+$\Gamma(1/2)=\sqrt{\pi}$.
+
+$\exp(-1)=0.36788$.
+
+Inverse of a matrix: 
+
+$\begin{pmatrix}
+a & b\\
+c & d
+\end{pmatrix}^{-1}= \frac{1}{ad-bc}
+\begin{pmatrix}
+d & -b\\
+-c & a
+\end{pmatrix}
+$
+
+\subsection{Solving quadratics}
+
+$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$
+
+\subsection{Taylor series expansions: The Delta Method}
+
+%[Also see Casella and Berger p.\ 240.]
+
+Let X be a random variable, and $g(\cdot)$ some function. Calculating the mean and variance of g(X) will involve integration. The Delta method allows us to approximate variance of g(X).
+
+Let $E(X)=\mu$, and $Var(X)=\sigma^2$. 
+
+
+
+The Taylor series expansion of a function about a value $a$:
+
+\begin{equation}
+f(x)= f(a) + f'(a)(x-a) + f''(a)\frac{(x-a)^2}{2!}
+\end{equation}
+
+Then,
+
+\begin{equation}
+f(x) \approx f(a) + f'(a)(x-a) 
+\end{equation}
+
+Let $a=\mu_x$, the mean of x. Then
+
+\begin{equation}
+y=f(x) \approx f(\mu_x) + f'(\mu_x)(x-\mu_x) 
+\end{equation}
+
+Since $y=f(x), E[y] = E[f(x)] = \mu$. Var(y)=Var(f(x))= $[f'(\mu)]^2 Var(X)$.
+
+\textbf{Example}: 
+
+Suppose we have $X\sim t_3$, i.e., a Student's t-distribution with df=3:
+
+\begin{equation}
+f(x)= \frac{4\sqrt{3}}{\pi} \left(1+\frac{x^2}{3} \right)^{-2}
+\end{equation}
+
+[Note that for $t_3$, $\mu=0$ and $\sigma^2= 3/(3-2)=3$.] 
+
+If we want to use importance sampling to sample from this distribution by using the normal as the importance density, we first need to know what the mean and variance of the Normal is going to be.
+
+We can obtain the mean and variance of the importance density by approximating the mean and variance of $\log f(x)$ (about 0) using the Delta method. 
+
+\begin{equation}
+g(x)=\log f(x)= \log 4\sqrt{3} - \log \pi 
+- 2\log \left(1+\frac{x^2}{3} \right)
+\end{equation}
+
+The first derivative is:
+
+\begin{equation}
+g'(x)=\log f'(x)= - \frac{2}{1+\frac{x^2}{3}} \times \frac{2x}{3} = \frac{4x}{3+x^2}
+\end{equation}
+
+Equating the above to 0, we see that the MLE is x=0.
+
+The variance: $g''(x)=\frac{8x^2 - 12-4x}{3+x^2}=-12/3 = -4$ (we plug in the MLE for x=0).  So variance is 1/4.
+
+<<>>=
+x<-seq(-10,10,by=0.01)
+plot(x,dt(x,df=3),ylim=c(0,0.9))
+lines(x,dnorm(x,mean=0,sd=1/2))
+
+## testing:
+x<-rnorm(10000,mean=0,sd=1/2)
+w<-dt(x,df=3)/dnorm(x,mean=0,sd=1/2)
+mean(w*x)
+## prob. of x<2; seems OK
+mean(w*(x<2))
+## by comparison:
+pt(2,df=3)
+
+## importance samples given two uniform RVs, 0.9, and 0.45:
+(x1<-qnorm(0.9,mean=0,sd=1/2))
+dt(x1,df=3)/dnorm(x1,mean=0,sd=1/2)
+
+(x2<-qnorm(0.45,mean=0,sd=1/2))
+dt(x2,df=3)/dnorm(x2,mean=0,sd=1/2)
+@
+
+\section{Monte Carlo Integration: Express integral as expectation}
+
+\begin{equation}
+R = \int \frac{f(x)}{g(x)}g(x)\,dx = \int h(x) g(x)\, dx = E[h(X)]
+\end{equation}
+
+\begin{equation}
+\hat{R}= \frac{1}{n} \sum h(X) \quad \hat{R}\sim N(R,\frac{\sigma^2}{n}) \quad \sigma^2 = Var(h(X))
+\end{equation}
+
+$Var(h(X))$ is the usual definition of variance: $\frac{1}{n-1}\sum (h(X)-\hat R)^2$. 
+
+SEs can be computed with $SE=\sigma/\sqrt{n}$, and so CIs can also be computed.
+
+\subsection{Example}
+
+\begin{equation}
+R = \int_{-1}^{1} \exp (-x^2)\, dx  
+\end{equation}
+
+Let $g(x)=Unif(-1,1)$ (g(x) needs to mimic f(x)). Then:
+
+\begin{equation}
+\hat{R} = \frac{1}{n} \frac{\sum \exp (-x^2)}{g(x)}\, dx  =
+\frac{1}{n} \sum 2 \exp (-x^2)
+\end{equation}
+
+
+
+Bayesian application: When unable to work with conjugate priors, the calculation of the expectation is a special case of MCI.
+
+\subsection{An important example of MC integration}
+
+Let $h(\theta,\phi)$ be some function where $\theta\sim Beta(5,95)$, and $\phi\sim Beta(3,1)$. The function h delivers the expected number of new infections for some disease, say. The user wants to determine
+
+\begin{equation}
+M=\int \int h(\theta,\phi) f(\theta)f(\phi)\, d\theta \,d\phi
+\end{equation}
+
+If $Z_1,\dots,Z_{100}$ are the values generated by $h(\cdots)$, and if an alternative distribution is considered for $\theta\sim Unif(0,0.10)$, explain how MC integration can be used to get an estimate of M with the new distribution (without recomputing h).
+
+Here, note that $h(\theta,\phi)$ is a function of $\theta$ and $\phi$. So, when we compute M, we are computing the joint expectation of $\theta$ and $\phi$:
+
+\begin{equation}
+M=\int \int h(\theta,\phi) \mathbf{f(\theta)f(\phi)}\, d\theta \,d\phi
+\end{equation}
+
+If we want to replace $f(\theta)$ with $g(\theta)$, then we can eliminate $f(\theta)$ as follows:
+
+\begin{equation}
+M=\int \int h(\theta,\phi) \mathbf{f(\theta)}f(\phi)\  \frac{g(\theta)}{\mathbf{f(\theta)}}, d\theta \,d\phi
+\end{equation}
+
+Therefore, given an estimate of M, you just have to do:
+
+\begin{equation}
+M \times \frac{g(\theta)}{f(\theta)}
+\end{equation}
+
+In the above example, we would get:
+
+\begin{equation}
+\hat M = \sum_{i=1}^{100} Z_i \frac{10}{f(x_i)}
+\end{equation}
+
+The numerator is 10 on the right side of the equation because $Unif(0,0.10)$ has height 10.
+
+\section{Monte Carlo Hypothesis Tests}
+
+\begin{enumerate}
+\item Generate n-1 test statistics under $H_0$. 
+\item Let $m=n\alpha$.
+\item If $T_{obs}$ is one of m largest $\{T_1,\dots,T_{n-1},T_{obs}\}$, reject null.
+\end{enumerate}
+
+Examples: Spatial stats, Chi-sq tests. 
+
+\section{Randomization tests}
+
+\begin{enumerate}
+\item
+No distributional assumptions
+\item 
+No random sampling assumption
+\end{enumerate}
+
+\subsection{Two-sample case}
+
+Sample from x,y together, without replacement, and randomly create new x and y.
+
+<<>>=
+A<-c(233,291,312,250,246,197,268,224)
+B<-c(185,263,246,224,212,188,250,148)
+T_val<-abs(t.test(A,B)$statistic)
+## randomly shuffle:
+n_sim<-1000
+T_samp<-rep(NA,n_sim)
+for(i in 1:n_sim){
+samp<-sample(c(A,B),replace=FALSE)
+T_samp[i]<-abs(t.test(samp[1:8],
+                  samp[9:16])$statistic)}
+mean(T_samp>=T_val)
+@
+
+Other examples: Cholesterol and diet, outliers, ANOVA.
+
+\subsection{Single sample}
+
+Special assumptions:
+
+\begin{enumerate}
+\item Random samples
+\item Symmetric distribution about mean of population
+\end{enumerate}
+
+Steps:
+
+\begin{enumerate}
+\item If $H_0: \mu = k$, then subtract $k$ from data: $y= x- k$
+\item Let observed mean be $T_{obs}$.
+\item With p=0.5 change sign of each observation; compute T.
+\item Significance test $mean(T>=T_{obs})$.
+\end{enumerate}
+
+See Fisher Randomization Test p.\ 34.
+
+\section{Bootstrap}
+
+No distributional assumptions.
+
+\subsection{Two sample bootstrap hyp.\ testing}
+
+Note: sampling \textbf{with replacement}, cf.\ Randomization, which has sampling without replacement.
+
+Null hypothesis: $H_0: F_x=F_y = F$.
+
+<<>>=
+T_val<-abs(t.test(A,B)$statistic)
+n_sim<-1000
+T_samp<-rep(NA,n_sim)
+for(i in 1:n_sim){
+samp<-sample(c(A,B),replace=TRUE)
+T_samp[i]<-abs(t.test(samp[1:8],
+                  samp[9:16])$statistic)
+}
+mean(T_samp >= T_val)
+@
+
+Examples: Heart attack study, law school data
+
+\subsection{One sample bootstrap hyp.\ testing}
+
+Let $H_0: \mu=k$. Transform data $y= x-mean(x) + k$.
+Then sample with replacement from transformed data $y$.
+
+\subsection{Parametric bootstrap}
+
+Procedure:
+
+\begin{enumerate}
+\item 
+From data x, create estimates $\theta_1$,$\theta_2$ (etc.).
+\item 
+Get fitted distribution $f(\theta_1,\theta_2)$.
+\item Create new bootstrap samples from this distribution.
+\item 
+Get estimates from bootstrap samples to obtain sampling distribution of parameters.
+\end{enumerate}
+
+\subsection{Non-parametric bootstrap}
+
+Create new bootstrap samples by sampling from x with replacement.
+
+\begin{enumerate}
+\item Estimate ECDF of data x.
+\item Sample $x^*_i$ from ECDF by sampling from replacement from x.
+\item Estimate parameter of interest from $x^*_i$.
+\item Find percentile CI.
+\end{enumerate}
+
+\section{Generating random variables}
+
+\subsection{The inversion method}
+
+This method works when we can know the closed form of the pdf we want to simulate from and can derive the inverse of that function.
+
+Steps:
+
+
+%\begin{enumerate}
+%\item Sample one number $u$ from $Unif(0,1)$. Let $u=F(z)=\int_L^z f(x)\, dx $ (here, $L$ is the lower bound of the pdf f).
+%\item Then $z=F^{-1}(u)$ is a draw from $f(x)$.
+%\end{enumerate}
+
+
+
+\begin{algorithm}[H]
+ \KwData{Given: iid sequence of $U_1,\dots,U_n \sim Uniform(0,1)$}
+% \KwResult{Inversion sampling algorithm}
+%  $n$ \;
+ \For{i in 1:n}{
+%   Sample one number $u_i$ from $Unif(0,1)$\;
+   Let $u_i=F(z)$\;
+   Store $z_i=F^{-1}(u_i)$ as a draw from $f(x)$\;
+ }
+ \caption{Inversion sampling algorithm.}
+\end{algorithm}
+
+
+\textbf{Example}: let $f(x) = \frac{1}{40} (2x + 3)$, with $0<x<5$. We have to draw a number from the uniform distribution and then solve for z, which amounts to finding the inverse function:
+
+\begin{equation}
+u = \int_0^z \frac{1}{40} (2x + 3)
+\end{equation}
+
+<<>>=
+u<-runif(1000,min=0,max=1) 
+
+z<-(1/2) * (-3 + sqrt(160*u +9))
+@
+\textbf{Example: Exponential distribution}
+
+\textbf{Example: Binomial distribution}
+
+\textbf{Example: Sampling from normal distribution}
+
+This method can't be used if we can't find the inverse, and it can't be used with multivariate distributions.
+
+
+
+\subsection{Box Muller method to generate RVs}
+
+The normal CDF $\Phi(\cdot)$ does not have closed form, so we can't use inversion sampling. 
+
+Take two RVs $u_1,u_2\sim Unif(0,1)$, then compute
+
+\begin{equation}
+X_1 = \sqrt{-2 ln (u_1)} \cos(2\pi u_2)
+\end{equation}
+
+\begin{equation}
+X_2 = \sqrt{-2 ln (u_1)} \sin(2\pi u_2)
+\end{equation}
+
+Then $X_1, X_2$ are N(0,1).
+
+\subsubsection{Generating chi-sq RVs using Box-Muller}
+
+If Y follows a standard normal distribution, then $X=Y^2 \sim \chi^2_1$.
+
+If $Y_i, i=1,\dots,n$ follow a standard normal distribution, then $X=\sum Y_i^2 \sim \chi^2_n$.
+
+\textbf{To generate $\chi^2_n$}:
+
+\begin{enumerate}
+\item
+Generate $Y_i, i=1,\dots,n$ using Box-Muller method.
+\item
+Then compute $X=\sum Y_i^2\sim \chi^2_n$.
+\end{enumerate}
+
+\subsubsection{Generating Student's t-distribution using Box-Muller}
+
+\begin{enumerate}
+\item
+Generate $Y\sim N(0,1)$ using Box-Muller method.
+\item
+Generate $Z \sim \chi^2_n$ as above.
+\item 
+Then $X=\frac{Y}{\sqrt{Z/n}}\sim t_n$. 
+\end{enumerate}
+
+
+\subsubsection{Generating F-distribution using Box-Muller}
+
+\begin{enumerate}
+\item
+Generate $Y\sim \chi^2_m$ as above.
+\item
+Generate $Z\sim \chi^2_n$ as above.
+\item 
+Then $X= \frac{Y/m}{Z/n}\sim F_{m,n}$. 
+\end{enumerate}
+
+\subsection{The rejection method}
+
+If $F^{-1}(u)$ can't be computed, we sample from $f(x)$ as follows:
+
+\begin{enumerate}
+\item 
+Sample a value $z$ from a distribution $g(z)$ from which sampling is easy, and for which 
+
+\begin{equation}
+m g(z) > f(z) \quad m \hbox{ a constant}
+\end{equation}
+
+$m g(z)$ is called an envelope function because it envelops $f(z)$.
+
+
+\item 
+Compute the ratio
+
+\begin{equation}
+R = \frac{f(z)}{mg(z)}
+\end{equation}
+
+\item Sample $u\sim Unif(0,1)$.
+\item If $R>u$, then $z$ is treated as a draw from $f(x)$. Otherwise return to step 1. 
+\end{enumerate}
+
+
+For example, consider f(x) as above: 
+$f(x) = \frac{1}{40} (2x + 3)$, with $0<x<5$. The maximum height of $f(x)$ is $0.325$ (why?). So we need an envelope function that exceeds $0.325$. The uniform density $Unif(0,5)$ has maximum height 0.2, so if we multiply it by 2 we have maximum height $0.4$, which is greater than $0.325$.
+
+In the first step, we sample a number x from a uniform distribution Unif(0,5). This serves to locate a point on the x-axis between 0 and 5 (the domain of $x$). The next step involves locating a point in the y direction once the x coordinate is fixed. If we draw a number u from Unif(0,1), then 
+$m g(x) u =2*0.2 u$ is a number between $0$ and $2*0.2$.  If this number is less than f(x), that means that the y value falls within f(x), so we accept it, else reject.
+Checking whether $m g(x) u$ is less than $f(x)$ is the same as checking whether 
+
+\begin{equation}
+R=f(x)/mg(z) > u
+\end{equation}
+
+<<>>=
+#R program for rejection method of sampling 
+## From Lynch book, adapted by SV.
+count<-0
+k<-1 
+accepted<-rep(NA,1000) 
+rejected<-rep(NA,1000)
+while(k<1001)
+{
+z<-runif(1,min=0,max=5) 
+r<-((1/40)*(2*z+3))/(2*.2)
+if(r>runif(1,min=0,max=1)) {
+  accepted[k]<-z
+  k<-k+1} else {
+    rejected[k]<-z
+  }
+count<-count+1
+}
+@
+
+<<fig=FALSE,label=rejectionsampling>>=
+hist(accepted,freq=F,
+     main="Example of rejection sampling")
+
+fn<-function(x){
+  (1/40)*(2*x+3)
+}
+
+x<-seq(0,5,by=0.01)
+
+lines(x,fn(x))
+@
+
+<<fig=FALSE,echo=F>>=
+<<rejectionsampling>>
+@
+
+<<>>=
+## acceptance rate:
+table(is.na(rejected))[2]/
+  sum(table(is.na(rejected)))
+@
+
+Rejection sampling can be used with multivariate distributions. 
+
+Some limitations of rejection sampling: finding an envelope function may be difficult; the acceptance rate would be low if the constant m is set too high and/or if the envelope function is too high relative to f(x), making the algorithm inefficient.   
+
+\subsubsection{Rejection sampling: special case of truncated distributions}
+
+\textbf{Example}:
+
+Find k in the pdf:
+
+\begin{equation}
+\int_2^{\infty} \frac{k}{\sqrt{2\pi}} \exp^{-\frac{1}{2} x^2} \, dx
+\end{equation}
+
+This is a truncation of the standard normal. Since
+
+<<>>=
+## the area to the right of 2:
+(pval<-pnorm(2,lower.tail=F))
+@
+
+$k=\frac{1}{\Sexpr{round(pval,digits=4)}}=
+\Sexpr{round(1/pval,digits=4)}$.
+
+For rejection sampling, sample from the full standard normal. Then:
+
+\begin{equation}
+f(x)/g(x)=
+\begin{cases}
+k, & x > 2,\\
+0 , & \hbox{otherwise}
+\end{cases}
+\end{equation}
+
+So $sup f(x)/g(x) = k$.
+
+Normally, we would sample $u\sim Unif(0,1)$ and
+$y$ from $g(\cdot)$, and accept if $u\leq f(y)/kg(y)$.
+But since
+
+\begin{equation}
+f(x)/kg(x)=
+\begin{cases}
+1, & x > 2,\\
+0 , & \hbox{otherwise}
+\end{cases}
+\end{equation}
+
+\noindent
+it will always be true that $u\leq f(x)/kg(x)$ if $y>2$ and it will always be true that $u> f(x)/kg(x)$ if $y\leq 2$. So we don't need u. 
+
+\begin{enumerate}
+\item Generate y from g(y)
+\item if y>2, accept as sample.
+\item else return to 1.
+\end{enumerate}
+
+The acceptance probability will be large if c is small; so if the truncation region is large, sampling will be inefficient. So in this case, since c is large (43.9), sampling is inefficient. Cf.\ below.
+
+\textbf{Truncated example continued}:
+
+Given $u=0.6$, use inversion sampling to sample from 
+$\frac{k}{\sqrt{2\pi}} \exp^{-\frac{1}{2} x^2}$.
+
+If u=0.60, this means that the upper bound z of the above distribution is at a location that is 
+
+<<>>=
+(prob<-0.60*pnorm(2,lower.tail=F))
+@
+
+That means that the upper bound is at
+
+<<>>=
+pnorm(2)
+qnorm(pnorm(2)+prob)
+@
+
+Hence, the sample given u=0.6 is 2.3615.
+
+\textbf{Truncated exponential (example continued)}
+
+Given a truncated exponential distribution, $f(y)= \exp(-0.5 y)$, where $y>2$, and given one random uniform draw 0.60, produce one random variable from the distribution of Y using the inversion method.
+
+Steps:
+
+\begin{enumerate}
+\item We can work out $\int_0^2 1/2 \exp (-1/2 y)\, dy=0.6321$.
+\item Therefore, $\int_2^\infty 1/2 \exp (-1/2 y)\, dy=1-0.6321=0.3678$.
+\item 60\% of 0.3678 is 0.22.
+\item Therefore, we have to find z in 
+$\int_0^z 1/2 \exp (-1/2 y)\, dy=0.6321+0.22$.
+\item Answer: $z=3.83$.
+\end{enumerate}
+
+You can generate a negatively correlated value by taking $u=1-0.6=0.4$ and then repeating the above. Instead of 60\% of 0.3678, take 40\% of 0.3678, which is 0.14712. So, we have to find z in $\int_0^z 1/2 \exp (-1/2 y)\, dy=0.6321+0.14712$. Answer is $z=3.01$.
+
+Now we use rejection sampling to sample from
+$\frac{k}{\sqrt{2\pi}} \exp^{-\frac{1}{2} x^2}$
+using
+the above truncated exponential as envelope: 
+$g(x) = 1/2 \exp (-1/2 x)$.
+
+Note that we can find $k_2$ the normalizing constant for g(x):
+
+\begin{equation}
+\begin{split}
+\int_2^{\infty} k_2 \frac{1}{2} \exp(-\frac{1}{2} y)\, dy=& 1\\
+=& k_2\left[ -\exp(-\frac{1}{2} y) \right]_2^{\infty} \\
+=& k_2 \times 0.3678\\
+\end{split}
+\end{equation}
+
+So $k_2=2.718$.
+
+Now we have:
+
+\begin{equation}
+f(x)=\frac{k}{\sqrt{2\pi}} \exp^{-\frac{k_2}{2} x^2} \quad g(x) =  1/2 \exp (-1/2 x)
+\end{equation}
+
+Taking ratios:
+
+\begin{equation}
+\frac{f(x)}{g(x)} = \frac{2k}{k_2 \sqrt{2\pi}} \exp(\frac{1}{2} x-\frac{1}{2} x^2)
+\end{equation}
+
+To get supremum, take logs, ignoring terms not involving x, then differentiate and equate to 0. We get: $x=1/4$. Replace x in the ratio with this number:
+
+\begin{equation}
+\frac{f(x)}{g(x)}= \frac{2k}{k_2 \sqrt{2\pi}} \exp(-1/2 \times 1/4 - 1/2 \times 1/16)= 9.42
+\end{equation}
+
+So c=9.42, which is much more efficient than using the standard normal with c=43.9.
+
+\subsection{Why rejection sampling works}
+
+Let $R=\frac{f(y)}{mg(y)}$.
+
+Algorithm: repeat n times:
+
+\begin{enumerate}
+\item Generate $Y\sim g(\cdot)$, and $u \sim Unif(0,1)$.
+\item 
+if $u \leq R$, accept $X = Y$; else return to 1. 
+\end{enumerate}
+
+Why does it work (Robert and Casella p.\ 52, explain this)? We need to show that: 
+%%to-do
+
+\begin{equation}
+P(Y \leq x \mid U \leq R)=P(X\leq x)
+\end{equation}
+
+By the definition of conditional probability:
+
+\begin{equation}
+P(Y \leq x \mid U \leq R)= \frac{P(Y \leq x, U \leq R)}{P(U \leq R)}
+\end{equation}
+
+Note that $P(Y \leq x, U \leq R)=\int_{-\infty}^{x} \int_0^{R}\, du g(y) \, dy$, and $P(U \leq R)=\int_{-\infty}^{\infty} \int_{0}^{R} \, du g(y) \, dy$ (Why the double integral? Because R depends on y).
+
+This means that we can write:
+
+\begin{equation}
+\frac{P(Y \leq x, U \leq R)}{P(U \leq R)} = \frac{\int_{-\infty}^{x} \int_0^{R}\, du g(y) \, dy}{\int_{-\infty}^{\infty} \int_{0}^{R} \, du g(y) \, dy}
+\end{equation}
+
+Also note that $\int_0^{R}\, du=R$. This allows us to write:
+
+\begin{equation}
+ \frac{\int_{-\infty}^{x} \int_0^{R}\, du g(y) \, dy}{\int_{-\infty}^{\infty} \int_{0}^{R} \, du g(y) \, dy} = 
+ \frac{\int_{-\infty}^{x} R g(y) \, dy}{\int_{-\infty}^{\infty} R g(y) \, dy}
+\end{equation}
+
+Expanding out $R=\frac{f(y)}{mg(y)}$:
+
+\begin{equation}
+ \frac{\int_{-\infty}^{x} \int_0^{R}\, du g(y) \, dy}{\int_{-\infty}^{\infty} \int_{0}^{R} \, du g(y) \, dy} = 
+ \frac{\int_{-\infty}^{x} [\frac{f(y)}{mg(y)}] g(y) \, dy}{\int_{-\infty}^{\infty} [\frac{f(y)}{mg(y)}] g(y) \, dy}
+\end{equation}
+
+$m$ is a constant and cancels out in the numerator and denominator, and $g(y)$ also cancels out, giving us:
+
+\begin{equation}
+\frac{\int_{-\infty}^{x} [f(y)] \, dy}{\int_{-\infty}^{\infty} [f(y)] \, dy} = P(X\leq x)
+\end{equation}
+
+\subsection{Efficiency of the rejection method}
+
+Need to make c as small as possible because probability of rejection is $1-\frac{1}{c}$. 
+
+Expected number of samples needed to generate an RC is c.
+
+\subsection{Sampling from multivariate distributions}
+
+Let $X\sim N_2(m,V)$. Let U be the Cholesky square root of V. Generate two independent normal RVs Z, then generate X by doing $m+U^T Z$. See p.\ 65 of notes. 
+
+\subsection{Example of generating normal from Cauchy}
+
+to-do
+
+\subsection{Exercise 7.4: Beta(2,2) from Unif}
+
+c should be 1.5:
+
+<<fig=FALSE>>=
+x<-seq(0,1,by=0.01)
+plot(x,dbeta(x,2,2))
+@
+
+Derive this: (done)
+
+\section{Exercise 7.6.4}
+
+<<>>=
+library(MASS)
+Sigma<-matrix(c(1,0.5,0.5,1),ncol=2)
+x<-mvrnorm(100000,mu=c(0,1),Sigma=Sigma)
+plot(x[,1],x[,2])
+var(x)
+@
+
+\section{Exercise 7.7.5}
+Importance sampling exercise:
+
+<<>>=
+x<-runif(10000,min=0,max=1)
+w<-dbeta(x,10,15)/dunif(x)
+
+mean(w*x)
+mean(rbeta(10000,10,15))
+
+x.unweighted<-sample(x,replace=TRUE,
+                     prob=w)
+
+quantile(x.unweighted,c(0.05,0.95))
+qbeta(c(0.05,0.95),10,15)
+@
+
+\subsection{Latin Hypercube sampling}
+
+``We first divide the sample space of X into n regions of equal probability, and then sample one value at random from each region, to get $X_1,\dots,X_n$. 
+We then do likewise for Y to get $Y_1,\dots,Y_n$. Finally, we randomly permute  the	order	of	
+the Ys
+before	pairing	the	X	and	Y	values,	so	that	each	$X_i$	will	be randomly paired with one value from the set of Ys. The idea is that by stratifying into regions of equal probability, we can obtain a small sample that is `more representative' of the distribution of X and Y .''
+
+\textbf{Monotonicity}: 
+
+``If we have some scalar function Y = h(X) and an LHS X (a vector), then it possible to prove that 
+$1/n \sum g(Y)$ is an unbiased estimator of E[g(Y)], where $Y_i = h(X_i)$. Additionally, if h is
+monotone with respect to each element of X, and g is a monotone function of Y, then it also
+possible to prove that this estimator has smaller variance than the usual estimator based on a simple random sample of the same size. Note that even if these conditions do not hold, Latin hypercube may still be more efficient than simple Monte Carlo sampling.''
+
+\textbf{Example}: Exercise 7.9.4 Latin Hypercube:
+
+<<>>=
+n<-100
+## create strata:
+z<-seq(from=0,to=1-1/n,length=n)
+## generate probs within each stratum:
+u1<-z+runif(n,0,1/n)
+## inversion sampling to generate x2:
+x1<-qgamma(u1,3,4)
+
+## inversion sampling to generate x2:
+u2<-z+runif(n,0,1/n)
+logx2<-qlnorm(u2,0,1)
+## permute x2:
+logx2<-sample(logx2)
+plot(x1,logx2,type="p")
+
+## cf. ``regular'' sampling:
+x1<-rgamma(100,3,4)
+x2<-rlnorm(100,0,1)
+plot(x1,x2)
+@
+
+M divisions, N variables, the maximum number of combinations is $(M!)^{N-1}$.
+
+\subsection{Antithetic variables}
+
+For generating correlated variables, used in conjunction with inversion method.
+To get $m$ MC samples from $f(x)$:
+
+\begin{enumerate}
+\item Generate $U_1,\dots,U_n\sim Unif(0,1)$. Call this u1.
+\item Create correlated values: $u2\leftarrow 1-u1$.
+\item Generate each sample j using inversion sampling: $Y_j = f(F^{-1}(u1j))$, $Y_j' = f(F^{-1}(1-ui))$. j=m/2.
+\item Mean is $\frac{1}{m/2} \sum ((Y_j + Y_j')/2)$.
+\item Variance is $\frac{\sigma^2}{n} (1+\rho)$ see page 79 of notes.
+\end{enumerate}
+
+\section{Profile likelihood}
+
+To compute profile log likelihood for a parameter $\theta_1$, first find MLE for $\theta_2$ treating $\theta_1$ as constant. Then plug in MLE for $\theta_2$ into full log likelihood to find profile log lik for $\theta_1$. 
+
+Profile deviance for k parameter log lik:
+
+$D_p(\theta_1*)= 2\times (\ell(\hat\theta; x) - \ell_p (\theta_1*; x) ) \sim \chi^2_k$
+
+If null hypothesis is that $\theta=\theta_0$ and $\hat\theta$ is the MLE, then hypothesis test is:
+
+\begin{equation}
+D_p(\theta_1*)= 2\times (\ell_p(\hat\theta; x) - \ell_p (\theta_0; x) ) \sim \chi^2_k
+\end{equation}
+
+
+
+\section{Maximum likelihood estimation notes}
+
+\subsection{Example 1: Binomial}
+
+Instead of calling the parameter $\theta$ I will call it $p$.
+
+\begin{equation}
+L(p) = {n \choose x} p^x (1-p)^{n-x}  
+\end{equation}
+
+Log lik:
+
+\begin{equation}
+\ell (p) = \log {n \choose x} +  x \log p + (n-x)  \log (1-p)
+\end{equation}
+
+Differentiating:
+
+\begin{equation}
+\ell ' (p) = \frac{x}{p} - \frac{n-x}{1-p} = 0	
+\end{equation}
+
+Taking the second partial derivative with respect to p:
+
+\begin{equation}
+\ell '' (p) = -\frac{x}{p^2} - \frac{n- x}{(1-p)^2} 
+\end{equation}
+
+The quantity $-\ell '' (p)$ is called \textbf{observed Fisher information}.
+
+Taking expectations:
+
+\begin{equation}
+E(\ell '' (p)) = E(-\frac{x}{p^2} - \frac{n- x}{(1-p)^2} )  
+\end{equation}
+
+
+
+Exploiting that fact the $E(x/n)=p$ and so $E(x)=E(n\times x/n)=np$, we get
+
+
+\begin{equation}
+E(\ell '' (p)) = E(-\frac{x}{p^2} - \frac{n- x}{(1-p)^2} )  = - \frac{np}{p^2}-\frac{n-np}{(1-p)^2} \explain{=}{exercise} -\frac{n}{p(1-p)} 
+\end{equation}
+
+Next, we negate and invert the expectation:
+
+\begin{equation}
+-\frac{1}{E(\ell '' (\theta))}=\frac{p(1-p)}{n}
+\end{equation}
+
+Evaluating this at $\hat p$, the estimated value of the parameter, we get:
+
+\begin{equation}
+-\frac{1}{E(\ell '' (\theta))}=\frac{\hat p(1-\hat p)}{n} = \frac{1}{I(p)}
+\end{equation}
+
+[Here, $I(p)$ is called \textbf{expected Fisher Information}.]
+
+If we take the square root of the inverse Information Matrix
+
+\begin{equation}
+\sqrt{\frac{1}{I(p)}} = \sqrt{\frac{\hat p(1-\hat p)}{n}}
+\end{equation}
+
+we have the \textbf{estimated standard error}. 
+
+Another example using the normal distribution:
+
+\subsection{Example 2: Normal distribution}
+
+
+This example is based on Khuri
+%\cite{khuri2003advanced}
+(p.\ 309). Let 
+$X_1,\dots,X_n$ be a sample of size $n$ from $N(\mu,\sigma^2)$, both parameters of the normal unknown. 
+
+\begin{equation}
+L(x\mid \mu, \sigma^2)= 
+\frac{1}{(2\pi \sigma^2)^{n/2}} \exp[-\frac{1}{2\sigma^2} \sum (x-\mu)^2]
+\end{equation}
+
+
+Taking log likelihood:
+
+\begin{equation}
+\ell = -\frac{n}{2} \log \frac{1}{(2\pi \sigma^2)}-
+\frac{1}{2\sigma^2} \sum (x-\mu)^2
+\end{equation}
+
+Taking partial derivatives with respect to $\mu$ and $\sigma^2$ we have:
+
+\begin{equation}
+\frac{\partial \ell}{\partial \mu} = \frac{1}{\sigma^2} \sum (x-\mu) = 0 \Rightarrow n(\bar{x}-\mu)= 0
+\end{equation}
+
+\begin{equation}
+\frac{\partial \ell}{\partial \sigma^2} 
+= \frac{1}{2\sigma^4} \sum (x-\mu)^2 - \frac{n}{2\sigma^2} = 0 \Rightarrow \sum (x-\mu)^2 - n\sigma^2 = 0
+\end{equation}
+
+Simplifying we get the maximum likelihood estimates of $\mu$ and $\sigma^2$: $\hat \mu= \bar{x}$ and $\hat \sigma^2 = \frac{1}{n}\sum (x-\bar{x})^2$. Note that these are unique values.
+
+We can verify that $\hat \mu$ and $\hat \sigma^2$ are the values of $\mu$ and $\sigma^2$ that maximize $L(x\mid \mu,\sigma^2)$.
+
+This can be done by taking the second order partial derivatives and finding out whether we are at a maxima or not. It is convenient to write the four partial derivatives in the above example as a matrix, and this matrix is called a Hessian matrix. 
+
+If this matrix is positive definite (i.e., if the determinant 
+of the matrix is greater than 0), we are at a maximum. 
+
+The Hessian is also going to   
+lead us to the information matrix as in the previous example: we just take the negative of the expectation of the Hessian, and invert
+it to get the variance covariance matrix.
+
+(This is just like in the binomial example above, except that we have two parameters to worry about rather than one.)
+
+Consider the Hessian matrix $H$ of the second partial derivatives of the log likelihood $\ell$.
+
+\begin{equation}
+H = \begin{pmatrix}
+\frac{\partial^2 \ell}{\partial \mu^2} & \frac{\partial^2 \ell}{\partial \mu\partial \sigma^2}\\
+\frac{\partial^2 \ell}{\partial \mu\partial \sigma^2} & 
+\frac{\partial^2 \ell}{\partial \sigma^4} \\
+\end{pmatrix}
+\end{equation}
+
+Now, if we compute the second-order partial derivatives replacing $\mu$ with $\hat \mu$ and $\sigma^2$ with $\hat \sigma^2$ (i.e., the values that we claim are the MLEs of the respective parameters), we will get:
+\begin{equation}
+\frac{\partial^2 \ell}{\partial \mu^2}=
+-\frac{n}{\hat \sigma^2}
+\end{equation}
+
+\begin{equation}
+\frac{\partial^2 \ell}{\partial \mu\partial \sigma^2} = -\frac{1}{\hat \sigma^2}\sum (x - \hat\mu) = 0
+\end{equation}
+
+\begin{equation}
+\frac{\partial^2 \ell}{\partial \sigma^4}= -\frac{n}{2\hat \sigma^2}
+\end{equation}
+
+The determinant of the Hessian is $\frac{n^2}{2\hat \sigma^6}>0$. Hence, $(\hat \mu, \hat \sigma^2)$ is a point of local maximum of $\ell$. Since it's the only maximum (we established that when we took the first derivative), it must also be the absolute maximum.
+
+As mentioned above, if we take the negation of the expectation of the Hessian, we get the Information Matrix, and if we invert the Information Matrix, we get the variance-covariance matrix.
+
+Once we take the negation of the expectation, we get ($\theta=(\mu,\sigma^2)$):
+
+\begin{equation}
+I(\theta)= 
+\begin{pmatrix}
+\frac{n}{\sigma^2} & 0 \\
+0 & \frac{n}{2\sigma^4}
+\end{pmatrix}
+\end{equation}
+
+Finally, if we take the inverse and evaluate it at the MLEs, we will get:
+
+\begin{equation}
+\frac{1}{I(\theta)}= 
+\begin{pmatrix}
+\frac{\hat \sigma^2}{n} & 0 \\
+0 & \frac{2\hat \sigma^4}{n}
+\end{pmatrix}
+\end{equation}
+
+And finally, if we take the square root of each element in the matrix, we get the estimated standard error of $\hat \mu$ to be 
+$\frac{\hat \sigma}{\sqrt{n}}$, and the standard error of the $\hat \sigma^2$ to be 
+$\hat \sigma^2 \sqrt{2/n}$.
+
+
+\end{multicols}
+
+\end{document}
+
+
+
+<<>>=
+fun<-function(x){
+  return(2.04*exp(-2*x))
+}
+
+integrate(fun,lower=0,upper=2)
+
+fun2<-function(x){
+  return(-2*x)
+}
+
+fun3<-function(x){
+  return((43.86/(sqrt(2*pi)))*exp(-.5*x^2))
+}
+
+x<-seq(2,1000,by=0.01)
+
+plot(x,fun3(x))
+
+integrate(fun3,lower=2,upper=2.2063)
+
+x<-seq(0,2,length=100)
+
+hist(fun(x),freq=F)
+plot(x,fun(x))
+plot(x,fun2(x),add=T)
+
+fun4<-function(x){
+  return(x^3/3 - x^2/2 + 1/2)
+}
+
+x<-seq(0,2,by=0.01)
+
+plot(x,fun4(x),type="l")
+lines(x,dunif(x,min=0,max=2))
+abline(a=.5,b=.33)
+
+fun5<-function(x){
+  return(exp(-1/8 * abs(x)^(1.5)))
+}
+
+x<-seq(-4,4,by=0.01)
+plot(x,fun5(x))
+
+fun6<-function(x){
+  
+}
+
+@

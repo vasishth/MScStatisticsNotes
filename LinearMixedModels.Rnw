@@ -1,0 +1,1011 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+\makeatother
+
+\SweaveOpts{prefix.string=LMMfigs/LMMfig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Linear Mixed Models Summary}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+%\maketitle
+\footnotesize
+\begin{multicols}{3}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Linear Mixed Models Summary Sheet} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+<<echo=F>>=
+load("MAS473.RData")
+library(lme4)
+@
+
+\section{Background and review of linear model theory}
+
+In linear modelling we model the mean of a response $Y_1,\dots,Y_n$ as a function of a vector of predictors $x_1,\dots,x_n$. We assume that the $Y_i$ are conditionally independent given $\mathbf{x}, \mathbf{\beta}$. When $Y$'s are not marginally independent, we have $Cor(Y_1,Y_2)\neq 0$, or $P(Y_2\mid Y_1)\neq P(Y_2)$.
+
+Linear mixed models are useful for correlated data where $\mathbf{Y}\mid \mathbf{X}, \mathbf{\beta}$ are not independently distributed. 
+
+%\begin{equation}
+%P(Y_1,\dots,Y_n\mid x_1,\dots,x_n,\beta) = 
+%\prod P(Y_i,\dots,x_i,\beta)
+%\end{equation}
+
+
+\section{Basic specification of LMMs}
+
+\begin{equation}
+\explain{Y_i}{n\times 1} = \explain{X_i}{n\times p}~~\explain{\beta}{p\times 1} + \explain{Z_i}{n\times q}~~\explain{b_i}{q\times 1} + \explain{\epsilon_i}{n\times 1}
+\end{equation}
+
+where $i=1,\dots,m$, let $n$ be total number of data points.
+
+Distributional assumptions:
+
+$ b_i \sim N(0,D)$ and $\epsilon_i \sim N(0,\sigma^2 I)$. $D$ is a $q\times q$ matrix that does not depend on $i$, and $b_i$ and $\epsilon_i$ are assumed to be independent.
+
+$Y_i$ has a multivariate normal distribution:
+
+\begin{equation}
+Y_i \sim N(X_i \beta, V(\alpha))
+\end{equation}
+
+where $V(\alpha)=Z_i D Z_i^T+\sigma^2 I$, and $\alpha$ is the variance component parameters.
+
+Note:
+\begin{enumerate}
+\item
+D has to be symmetric and positive definite. 
+\item
+The $Z_i$ matrix columns are a subset of $X_i$. In the random intercept model, $Z_i = 1_i$.
+\item
+In the varying intercepts and varying slopes model, $X_i = Z_i = (1_i, X_i)$. Then:
+
+\begin{equation}
+Y_i = X_i (\beta+b_i) +\epsilon_i
+\end{equation}
+
+or
+
+\begin{equation}
+Y_i = X_i \beta_i +\epsilon_i \quad \beta_i \sim N(\beta,D)
+\end{equation}
+
+\begin{equation}
+\begin{split}
+D=&
+\begin{pmatrix}
+d_{00} & d_{01}\\
+d_{10} & d_{11}\\
+\end{pmatrix}\\
+=& 
+\begin{pmatrix}
+d_{00}=Var(\beta_{i0}) & d_{01}=Cov(\beta_{i0},\beta_{i1})\\
+d_{10}=Cov(\beta_{i0},\beta_{i1}) & d_{11}=Var(\beta_{i1})\\
+\end{pmatrix}
+\end{split}
+\end{equation}
+
+\item
+The conditional mean of $Y$ given the block effect $b_i$ is:
+
+\begin{equation}
+E(Y\mid b_i) = X_i \beta + Z_i b_i
+\end{equation}
+
+\item
+The marginal mean for $Y$:
+
+\begin{equation}
+\begin{split}
+E(Y_i) = & E(E(Y_i\mid b_i))\\
+      = & E(X_i \beta + Z_i b_i) \\
+      = & X_i \beta
+\end{split}
+\end{equation}
+
+\item
+The conditional variance of $Y$ given the block effect $b_i$ is:
+
+\begin{equation}
+Cov(Y_i \mid b_i) = Cov(\epsilon_i) = \sigma^2 I
+\end{equation}
+
+\item The marginal variance of $Y$ averaged over the distributions of $b_i$ is
+
+\begin{equation}
+\begin{split}
+Cov(Y_i) =& Cov(Z_i b_i) + Cov(\epsilon_i)\\
+ =& Z_i Cov(b_i) Z_i^T + Cov(\epsilon_i)\\
+ =& Z_i D Z_i^T + \sigma^2 I
+\end{split}
+\end{equation}
+
+\end{enumerate}
+
+\section{$\sigma_b^2$ describes both between-block variance, and within block covariance}
+
+Consider the following model, a varying intercepts model:
+
+\begin{equation}
+Y_{ij} = \mu + b_i + e_{ij},
+\end{equation}
+
+
+with $b_i\sim N(0,\sigma^2_b)$, $e_{ij}~N(0,\sigma^2)$.
+
+Note that variance is a covariance of a random variable with itself, and then consider the model formulation. If we have
+
+\begin{equation}
+Y_{ij} = \mu + b_i + \epsilon_{ij}
+\end{equation}
+
+where i is the group, j is the replication, if we \textit{define} $b_i\sim N(0, \sigma^2_b)$, and refer to $\sigma^2_b$ as the between group variance, then we must have
+
+
+\begin{equation}
+\begin{split}
+Cov(Y_{i1}, Y_{i2}) =& Cov(\mu + b_i + \epsilon_{i1} , \mu + b_i + \epsilon_{i2})\\
+=& \explain{Cov(\mu, \mu)}{=0} + 
+ \explain{Cov(\mu, b_i)}{=0} +
+ \explain{Cov(\mu, \epsilon_{i2})}{=0}+ \\
+ ~~& \explain{Cov(b_i,\mu)}{=0} +
+  \explain{Cov(b_i,b_i)}{+ve} \dots\\
+  =&  Cov(b_i, b_i) = Var(b_i) = \sigma^2_b\\
+\end{split}
+\end{equation}
+
+\section{Some basic types of linear mixed model and their variance components}
+
+\subsection{Varying intercepts model}
+
+\begin{fmpage}{\linewidth}
+The model for a categorical predictor is:
+
+\begin{equation}
+Y_{ijk} = \beta_j + b_{i}+\epsilon_{ijk}
+\end{equation}
+\end{fmpage}
+
+\noindent
+$i=1,\dots,10$ is subject id, $j=1,2$ is the factor level, $k$ is the number of replicates (here 1).
+$b_i \sim N(0,\sigma_b^2), \epsilon_{ijk}\sim N(0,\sigma^2)$.
+
+\begin{fmpage}{\linewidth}
+For a continuous predictor:
+
+\begin{equation}
+Y_{ijk} = \beta_0 + \beta_1 t_{ijk} + b_{ij} +\epsilon_{ijk}
+\end{equation}
+\end{fmpage}
+
+The general form for any model in this case is:
+
+\begin{equation}
+\begin{pmatrix}
+Y_{i1}\\
+Y_{i2}
+\end{pmatrix}
+\sim
+N\left(
+\begin{pmatrix}
+\beta_1\\
+\beta_2\\
+\end{pmatrix}
+,
+V
+\right)
+\end{equation}
+
+where 
+
+\begin{equation}
+V =\begin{pmatrix}
+\sigma_b^2 + \sigma^2 & \sigma_b^2\\
+\sigma_b^2 & \sigma_b^2 + \sigma^2\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sigma^2_{b} + \sigma^2  &  \rho\sigma_{b}\sigma_{b}\\
+\rho\sigma_{b}\sigma_{b} & \sigma^2_{b}+\sigma^2  \\       
+\end{pmatrix}
+\end{equation}
+
+Note also that the mean response for the subject, i.e., \textit{conditional} mean of $Y_{ij}$ given the subject-specific effect $b_i$ is:
+
+\begin{equation}
+E(Y_{ij}\mid b_i)= X_{ij}^T \beta + b_i
+\end{equation}
+
+The mean response in the population, i.e., the marginal mean of $Y_{ij}$:
+
+\begin{equation}
+E(Y_{ij})= X_{ij}^T \beta
+\end{equation}
+
+The marginal variance of each response is:
+
+\begin{equation}
+\begin{split}
+Var(Y_{ij})=& Var(X_{ij}^T \beta+b_i + \epsilon_{ij})\\
+ =& Var(\beta+b_i + \epsilon_{ij})\\
+ =& \sigma_b^2 + \sigma^2\\
+\end{split}
+\end{equation}
+
+the covariance between any pair of responses $Y_{ij}$ and $Y_{ij'}$ is given by
+
+\begin{equation}
+\begin{split}
+Cov(Y_{ij},Y_{ij'}) =& Cov(X_{ij}^T\beta + b_i + \epsilon_{ij},X_{ij'}^T\beta + b_i + \epsilon_{ij'})\\
+=& Cov(b_i + e_{ij},b_i + e_{ij'})\\
+=& Cov(b_i,b_i)=\sigma_b^2
+\end{split}
+\end{equation}
+
+The correlation is
+
+\begin{equation}
+Corr(Y_{ij},Y_{ij'})= \frac{\sigma_b^2}{\sigma_b^2+\sigma^2}
+\end{equation}
+
+In other words, introducing a random intercept induces a correlation among repeated measurements.
+
+$\hat{V}$ is therefore:
+
+\begin{equation}
+\begin{pmatrix}
+\hat{\sigma}^2_{b} + \hat{\sigma}^2  &  \hat{\rho}\hat{\sigma}_{b}\hat{\sigma}_{b}\\
+\hat{\rho}\hat{\sigma}_{b}\hat{\sigma}_{b} & \hat{\sigma}^2_{b}+\hat{\sigma}^2  \\       
+\end{pmatrix}
+\end{equation}
+
+Note: $\hat{\rho}=1$. But this correlation is not \textit{estimated} in the varying intercepts model.
+
+\subsection{Varying intercepts and slopes (with correlation)}
+
+\begin{fmpage}{\linewidth}
+The model for a categorical predictor is:
+
+\begin{equation}
+Y_{ij} = \beta_1+b_{1i}+(\beta_2+b_{2i})x_{ij}+\epsilon_{ij} \quad i=1,...,M, j=1,...,n_i
+\end{equation}
+\end{fmpage}
+
+with $b_{1i}\sim N(0,\sigma_1^2), b_{2i}\sim N(0,\sigma_2^2)$, and $\epsilon_{ij}\sim N(0,\sigma^2)$.
+
+
+\textit{Note: I have seen this presentation elsewhere}:
+
+\begin{equation}
+Y_{ijk} = \beta_j + b_{ij}+\epsilon_{ijk}
+\end{equation}
+
+\noindent
+$b_{ij}\sim N(0,\sigma_b)$. The variance $\sigma_b$ must be a $2\times 2$ matrix:
+
+\begin{equation}
+\begin{pmatrix}
+\sigma_1^2 & \rho \sigma_1 \sigma_2\\
+\rho \sigma_1 \sigma_2 & \sigma_2^2\\
+\end{pmatrix}
+\end{equation}
+
+The general form for the model is:
+
+\begin{equation}
+\begin{pmatrix}
+Y_{i1}\\
+Y_{i2}
+\end{pmatrix}
+\sim
+N\left( 
+\begin{pmatrix}
+\beta_1\\
+\beta_2\\
+\end{pmatrix}
+,
+V
+\right)
+\end{equation}
+
+where 
+
+\begin{equation}
+V =
+%\begin{pmatrix}
+%\sigma_b^2 + \sigma^2 & \sigma_b^2\\
+%\sigma_b^2 & \sigma_b^2 + \sigma^2
+%\end{pmatrix}=
+\begin{pmatrix}
+\sigma^2_{b,A} + \sigma^2  &  \rho\sigma_{b,A}\sigma_{b,B}\\
+\rho\sigma_{b,A}\sigma_{b,B} & \sigma^2_{b,B}+\sigma^2  \\       
+\end{pmatrix}
+\end{equation}
+
+\subsection{No varying intercepts, only slopes for each level}
+
+\begin{fmpage}{\linewidth}
+The model is
+
+\begin{equation}
+Y_{ijk} = \beta_j + b_{ij} + \epsilon_{ijk} 
+\end{equation}
+\end{fmpage}
+
+The random effects are:
+
+$b_{ij}=\begin{pmatrix}
+b_{i1}\\
+b_{i12}
+\end{pmatrix}
+\sim N(0,\sigma_b^2)$, where $\sigma_b^2=
+\begin{pmatrix}
+\sigma_1^2 & \rho\sigma_1 \sigma_2 \\
+\rho\sigma_1 \sigma_2 & \sigma_2^2 \\
+\end{pmatrix}$. 
+
+Here, V is
+
+\begin{equation}
+V =
+%\begin{pmatrix}
+%\sigma_b^2 + \sigma^2 & \sigma_b^2\\
+%\sigma_b^2 & \sigma_b^2 + \sigma^2
+%\end{pmatrix}=
+\begin{pmatrix}
+\sigma^2_{b,A} + \sigma^2  &  \rho\sigma_{b,A}\sigma_{b,B}\\
+\rho\sigma_{b,A}\sigma_{b,B} & \sigma^2_{b,B}+\sigma^2  \\       
+\end{pmatrix}
+\end{equation}
+
+\textbf{Note that here, a random effect is computed for each material separately.}
+
+
+One insight is that V can be derived from the random effects variance components, and the error term's variance component:
+
+\begin{equation}
+V=
+\begin{pmatrix}
+\sigma^2_{b,A} &\rho\sigma_{b,A}\sigma_{b,B}\\
+\rho\sigma_{b,A}\sigma_{b,B} & \sigma^2_{b,B}\\
+\end{pmatrix}
++
+\begin{pmatrix}
+\sigma^2 & 0\\
+0 & \sigma^2\\
+\end{pmatrix}
+\end{equation}
+
+\subsection{Nested models (e.g., Worker/Machine)}
+
+\begin{fmpage}{\linewidth}
+The model is:
+
+\begin{equation}
+Y_{ijk} = \beta_j + b_i + b_{ij} + \epsilon_{ijk}
+\end{equation}
+\end{fmpage}
+
+Here, we force all random effects to be independent.
+Observations between workers are independent, but observations on the same worker are correlated.
+
+$b_i \sim N(0,\sigma_1^2), b_{ij} \sim N(0,\sigma_2^2)$, and $\epsilon\sim N(0,\sigma^2)$. $i$ is Worker, $j$ is machine, and $k$ is replicate.  
+
+<<>>=
+fm1<-lmer(score~Machine-1+(1|Worker/Machine),
+data=Machines)
+@
+
+The term Worker/Machine is estimating machine variance within worker:
+
+\begin{verbatim}
+xyplot(score~Machine|Worker,Machines)
+\end{verbatim}
+
+The variance components in fm1:
+
+\small
+\begin{tabular}{rlll}
+  \hline
+Comp.\ & Groups & Name & Var\\ 
+  \hline
+$\hat{\sigma}_2^2$ & Machine:Worker & (Int) & 13.909  \\ 
+$\hat{\sigma}_1^2$  & Worker & (Int) & 22.858  \\ 
+$\hat{\sigma}^2$& Res &  &  0.925 \\ 
+   \hline
+\end{tabular}
+
+Number of obs: 54, groups: Machine:Worker, 18; Worker, 6.
+
+\normalsize
+
+For observations on Worker $i$, 
+
+\begin{equation}
+Var(Y_{ijk})= \sigma_1^2 + \sigma_2^2 + \sigma^2 
+\end{equation}
+
+Variance between machines within workers:
+\begin{equation}
+Covar(Y_{ijk},Y_{ijk'})= \sigma_1^2 + \sigma_2^2
+\end{equation}
+
+Variance between workers:
+\begin{equation}
+Covar(Y_{ijk},Y_{ij'k'})= \sigma_1^2
+\end{equation}
+
+Note:
+
+1. $\hat{\sigma}_1^2$ all observations have the same variance;
+
+2. $\hat{\sigma}_2^2$: the covariance between observations corresponding to the same worker using different machines is the same, for any pair of machines.
+
+
+\begin{verbatim}
+> ranef(fm1)
+$`Machine:Worker`    $Worker
+    (Intercept)
+A:6     1.91609     6 -7.514666
+A:2     1.55253     2 -1.375925
+\end{verbatim}
+
+In this model, the sum of the random effects for Worker 1 on Machine A is
+
+$s_1 = b_1 + b_{11}$
+
+\begin{verbatim}
+> ranef(fm1)
+...
+$`Machine:Worker` $Worker
+(Intercept)
+s1 = A:1 -0.75012+1.044598=0.29448
+\end{verbatim}
+
+and for Worker 1 on machine B,
+
+$s_2=b_1+b_{21}$.
+
+\begin{verbatim}
+> ranef(fm1)
+...
+$`Machine:Worker` $Worker
+(Intercept)
+s2 = B:1 1.50002 + 1.044598 = 2.5446
+\end{verbatim}
+
+For all Workers and machines, we can obtain these random effects $s$ from this matrix:
+
+<<>>=
+mat<-matrix(
+unlist(ranef(fm1)$`Machine:Worker`),6,3) 
++ 
+matrix(unlist(ranef(fm1)$Worker),6,3)
+@
+<<echo=F>>=
+rownames(mat)<-c(6,2,4,1,3,5)
+colnames(mat)<-LETTERS[1:3]
+@
+
+<<>>=
+mat
+@
+
+Using lmer, we have $b_{i}$ and $b_{ij}$ independent, but $s_1$ and $s_2$ are
+correlated via the common term $b_1$. We can recover the \textbf{correlations between machine} through the vcov matrix of the random effects (BLUPs) (\textbf{but note that we never see this in the lmer output---what's the significance of the fact that these are correlated?}):
+
+<<>>=
+var(mat)
+@
+
+%Correlations between subjects:
+%var(t(mat))
+
+\subsection{Varying slopes, no varying intercept}
+
+\begin{fmpage}{\linewidth}
+\begin{equation}
+Y_{ijk} = \beta_j + b_{ij} + \epsilon_{ijk}
+\end{equation}
+\end{fmpage}
+
+<<>>=
+fm3<-lmer(score~Machine-1+
+            (Machine-1|Worker),
+          data=Machines)
+@
+
+<<>>=
+head(ranef(fm3))
+@
+
+The random effects for Worker 1 on Machine A is
+
+$s_1 = b_{11}=0.31199$
+
+and for Worker 1 on Machine B,
+
+$s_2 = b_{12}=2.55323$.
+
+The `Machine independent' Worker random effect (varying intercept) $b_i$ has been dropped. 
+We have $b_{11}$ correlated with $b_{12}$. We can see this when we recover the (co-)variances between machines from the random effects: 
+
+\small
+<<>>=
+var(ranef(fm3)$Worker)
+@
+\normalsize
+
+Also, the variances for each machine (16, 74, 18)
+are also allowed to be different. Here are the variance components:
+
+\tiny
+\begin{tabular}{rlllll}
+  \hline
+Comp.\ & Groups & Name & Variance  & Corr$_{1,\cdot}$ &  Corr$_{2,\cdot}$  \\ 
+  \hline
+$\hat{\sigma}_{j=1}^2$ & Worker & A & 16.640   &    \\ 
+$\hat{\sigma}_{j=2}^2$ &  & B & 74.395 & 
+$\hat{\rho}_{1,2}$ 0.803 &    \\ 
+$\hat{\sigma}_{j=3}^2$ &  & C & 19.268 &
+$\hat{\rho}_{1,3}$ 0.623 & $\hat{\rho}_{2,3}$ 0.771   \\ 
+$\hat{\sigma}^2$ & Res &  &  0.925 &  &    \\ 
+   \hline
+\end{tabular}
+\normalsize
+
+
+\begin{equation}
+Var(Y_{ijk})= \sigma_j^2 + \sigma^2
+\end{equation}
+
+\begin{equation}
+Covar(Y_{ijk},Y_{ijk'})= \sigma_j^2
+\end{equation}
+
+\begin{equation}
+Covar(Y_{ijk},Y_{ij'k'})= \rho_{j,j'} \sigma_j\sigma_{j'}
+\end{equation}
+
+
+
+Note that the BLUPs' vcov matrix reflects the estimated values:
+
+<<>>=
+diag(var(ranef(fm3)$Worker))
+cor(ranef(fm3)$Worker)
+# look at the fm3 output 
+## (the random effects table)
+@
+
+
+1. $\hat{\sigma}_j^2$ the variance of an observation depends on the machine being used; 
+
+2. $\rho_{j,j'} \sigma_j\sigma_{j'}$ the covariance between observations corresponding to the same worker using different
+machines is different, for different pairs of machines.
+
+\begin{verbatim}
+> var(ranef(fm3)$Worker)
+         MachineA MachineB MachineC
+MachineA   16.347   28.239   11.146
+MachineB   28.239   74.093   29.181
+MachineC   11.146   29.181   18.972
+\end{verbatim}
+
+\begin{equation}
+\begin{pmatrix}
+\sigma_{A}^2 & Cov_{A,B}     & Cov_{A,C}\\  
+               & \sigma_{B}^2 & Cov_{B,C} \\
+              &               & \sigma_{C}^2\\
+\end{pmatrix}
+\end{equation}
+
+Note that, for given machines $j$ and $j'$, say A, B: 
+
+$Covar(Y_{ijk},Y_{ij'k'}) = Cov_{A,B}=28.239 \approx  \rho_{A,B} \sigma_{A} \sigma_{B}
+= .803 \times \sqrt{16.347} \times \sqrt{74.093} = 27.946$.  
+
+\subsection{Comparing fm1 and fm3}
+
+The sum of fm1's (Worker/Machine) ranefs ($b_{ij}+b_i$) are roughly the same as fm3's (Machine-1$\mid$ Worker) random effects $b_{ij}$ for each machine. \textbf{In other words, the random effect $b_i$ is folded into $b_{ij}$ in fm3.}
+
+<<>>=
+fm1<-lmer(score~Machine-1+
+            (1|Worker/Machine),
+          data=Machines)
+fm3<-lmer(score~Machine-1+
+            (Machine-1|Worker),
+          data=Machines)
+@
+
+fm1's ranefs summed up:
+
+<<>>=
+#fm1's ranefs summed up are 
+## roughly the same as the fm3 ranefs:
+matrix(unlist(ranef(fm1)$`Machine:Worker`),
+       6,3) +
+matrix(unlist(ranef(fm1)$Worker),6,3)
+@
+
+The fm3 ranefs:
+
+<<>>=
+ranef(fm3)
+@
+
+
+
+\section{Parameter estimation}
+
+\subsection{Likelihood based model fitting procedure}
+
+Recall:
+
+\begin{enumerate}
+\item If we have two continuous random variables $Y$ and $Z$, with density functions $f_Y(y)$ and $f_Z(z)$ and joint density $f_{Y,Z}(y,z)$, then
+
+\begin{equation} \label{eq1}
+f_Y(y) = \int f_{Y,Z}(y,z)dz.
+\end{equation}
+
+\item
+The conditional density of $Y\mid Z$ is defined as 
+
+\begin{equation} \label{eq2}
+f_{Y\mid Z}(y\mid z) = \frac{f_{Y,Z}(y,z)}{f_Z(z)}
+\end{equation}
+
+\noindent
+so we can write 
+
+\begin{equation}
+f_{Y,Z}(y,z) = f_{Y\mid Z}(y\mid z) \times f_Z(z).
+\end{equation}
+
+\item
+Combining equations \ref{eq1} and \ref{eq2}, we have
+
+\begin{equation} \label{eq3}
+f_Y(y) = \int f_{Y\mid Z}(y\mid z) * f_Z(z)dz
+\end{equation}
+\end{enumerate}
+
+
+Equation \ref{eq3}, where we condition on a second random variable Z (note that Z could be ``non-observable'') can be helpful in deriving $f_Y(y)$, if the two densities on the RHS are easy to write down, and the integral can be solved.
+
+Returning to parameter estimation in LMMs, the model is:
+
+\begin{equation}
+Y_i = X_i \beta + Z_i \beta_i + \epsilon_i, \quad i=1,\dots,M
+\end{equation}
+
+where 
+$b_i \sim N(0,\Psi), \epsilon_i \sim N(0,\sigma^2 I)$. Let $\theta$ be the parameters that determine $\Psi$.
+
+\begin{equation}
+\begin{split}
+L(\beta,\theta,\sigma^2\mid y) =& p(y:\beta,\theta,\sigma^2)\\
+=& \prod_i^M p(y_i:\beta,\theta,\sigma^2)\\
+=& \prod_i^M \int p(y_i\mid b_i, \beta,\sigma^2)p(b_i: \theta,\sigma^2)\,db_i
+\end{split}
+\end{equation}
+
+
+we want the density of the observations ($y_i$) given the parameters $\beta, \theta$ and $\sigma^2$ only. In this case, using equation \ref{eq3} above, with $Y=y_i$ and $Z=b_i$ is helpful for deriving the density for $y_i$, because $f(y_i\mid b_i)$ (or, in the notation of (4.9), $p(y_i\mid b_i,\beta,\sigma^2)$) has a simple form, and so we can get a closed form expression for the integral.
+
+\subsection{REML estimation (REstricted/REsidual ML)}
+
+
+To estimate variance parameters, \textbf{first fit fixed effects using least squares}, and then focus attention on  residuals. 
+
+The \textbf{residuals}' distribution depends on $\sigma^2$ and variance parameters $\theta$ of random effects.  
+
+A \textbf{likelihood} for these parameters is formed based on the residuals alone. Maximization of this \textbf{marginal likelihood} gives estimates of
+$\sigma^2$ and the other variance-covariance parameters which are less biased than the full maximum likelihood estimates.
+
+Once the REML variance-covariance estimates are obtained the \textbf{fixed effects are re-estimated by maximum likelihood assuming the random effects parameters are known}, a procedure equivalent to generalized least squares.
+
+Alternatively, define a restricted likelihood:
+
+\begin{equation}
+L_R (\theta,\sigma^2\mid y) = \int L(\beta,\theta,\sigma^2\mid y)\,d\beta
+\end{equation}
+
+and maximize this to obtain estimates of these parameters.
+
+Unlike full (max.) likelihood, restricted lik.\ is not invariant to parameterization, so we cannot compare models with different fixed effects. 
+
+\subsection{How the random effects are 'predicted' when using the ranef() command}
+
+In linear mixed models, we fit models like these (the Ware-Laird formulation--see Pinheiro and Bates 2000, for example):
+
+\begin{equation} 
+Y = X\beta + Zu + \epsilon
+\end{equation}
+
+Let $u\sim N(0,\sigma_u^2)$, and this is independent from $\epsilon\sim N(0,\sigma^2)$.  
+
+Given $Y$, the ``minimum mean square error predictor'' of $u$ is the conditional expectation:
+
+\begin{equation}
+\hat{u} = E(u\mid Y)
+\end{equation}
+
+We can find $E(u\mid Y)$ as follows. We write the joint distribution of $Y$ and $u$ as:
+
+\begin{equation}
+\begin{pmatrix}
+Y \\
+u
+\end{pmatrix}
+= 
+N\left(
+\begin{pmatrix}
+X\beta\\
+0
+\end{pmatrix},
+\begin{pmatrix}
+V_Y & C_{Y,u}\\
+C_{u,Y} & V_u \\
+\end{pmatrix}
+\right)
+\end{equation}
+
+$V_Y, C_{Y,u}, C_{u,Y}, V_u$ are the various variance-covariance matrices. 
+It is a fact that
+
+\begin{equation}
+u\mid Y ~N(C_{u,Y}V_Y^{-1}(Y-X\beta)), 
+Y_u - C_{u,Y} V_Y^{-1} C_{Y,u})
+\end{equation}
+
+This allows you to derive the BLUPs:
+
+\begin{equation}
+\hat{u}= C_{u,Y}V_Y^{-1}(Y-X\beta))
+\end{equation}
+
+Substituting $\hat{\beta}$ for $\beta$, we get:
+
+\begin{equation}
+BLUP(u)= \hat{u}(\hat{\beta})C_{u,Y}V_Y^{-1}(Y-X\hat{\beta}))
+\end{equation}
+
+Here's an example with R:
+
+<<>>=
+## Calculate the predicted random 
+## effects by hand for the 
+## ergoStool data
+fm1<-lmer(effort~Type-1 + 
+            (1|Subject),ergoStool)
+
+## Here are the BLUPs we will 
+## estimate by hand:
+head(ranef(fm1))
+
+## this gives us all the 
+## variance components:
+## this could have been done 
+## ``by hand'',
+## or at least an approximation:
+VarCorr(fm1)
+@
+
+First, calculate the predicted random effect for subject 1:
+
+<<>>=
+## The variance for the random 
+## effect subject is the term C_{u,Y}:
+(covar.u.y<-VarCorr(fm1)$Subject[1])
+@
+
+Estimated covariance between $u_1$ and $Y_1$
+make up a var-covar matrix from this:
+
+<<>>=
+(cov.u.Y<-matrix(covar.u.y,1,4))
+@
+
+Estimated variance matrix for $Y_1$:
+
+<<>>=
+(V.Y<-matrix(1.7755,4,4)+
+   diag(1.2106,4,4))
+@
+
+Extract observations for subject 1:
+
+<<>>=
+(Y<-matrix(ergoStool$effort[1:4],4,1))
+@
+
+Estimated fixed effects:
+
+<<>>=
+(beta.hat<-matrix(fixef(fm1),4,1))
+@
+
+Predicted random effect:
+
+<<>>=
+cov.u.Y %*% solve(V.Y)%*%(Y-beta.hat)
+@
+
+Compare with ranef command:
+
+<<>>=
+ranef(fm1)$Subject[1,1]
+@
+
+Calculate predicted random effects for all subjects:
+<<>>=
+#t(cov.u.Y %*% solve(V.Y)%*%
+#    (matrix(ergoStool$effort,4,9)-
+#       matrix(fixef(fm1),4,9)))
+#ranef(fm1)
+@
+
+\section*{Correlation of fixed effects}
+
+For an ordinary linear model, the covariance matrix (from which we can get the correlation matrix) of $\hat{\beta}$ is:
+
+\begin{equation}
+\sigma^2 \times (X^T X)^{-1}.
+\end{equation}
+
+For a mixed effects model, the standard deviations (standard errors) and correlations for the fixed effects estimators are listed at the end of the lmer output. 
+
+<<>>=
+lm.full<-lmer(wear~material-1+
+                (1|Subject), 
+              data = BHHshoes)
+@
+
+\begin{verbatim}
+Correlation of Fixed Effects:
+          matrlA
+materialB 0.988 
+\end{verbatim}
+
+
+%(Note that you need to include the -1 term in the lmer command to match the parameterisation used in the solutions. The estimated correlation between $\hat{beta}_1$ and $\hat{beta}_2$ is $0.988$.
+%We're not going to cover how to derive the covariance matrix in general, as it's quite complicated, but as we have a balanced design, we have simple forms for the parameter estimators:
+
+\begin{equation}
+\hat{\beta}_1 = (Y_{1,1} + Y_{2,1} + \dots + Y_{10,1})/10
+\end{equation}
+
+
+\begin{equation}
+\hat{\beta}_2 = (Y_{1,2} + Y_{2,2} + \dots + Y_{10,2})/10
+\end{equation}
+
+<<>>=
+b1.vals<-subset(BHHshoes,
+                material=="A")$wear
+b2.vals<-subset(BHHshoes,
+                material=="B")$wear
+
+vcovmatrix<-var(cbind(b1.vals,b2.vals))
+
+## get covariance from off-diagonal:
+covar<-vcovmatrix[1,2]
+sds<-sqrt(diag(vcovmatrix))
+## correlation of fixed effects:
+covar/(sds[1]*sds[2])
+
+#cf:
+covar/((0.786*sqrt(10))^2)  
+@
+
+
+
+
+\end{multicols}
+\end{document}
+How does this work for multiple factors?
+
+<<>>=
+m1<-lmer(effort~Type-1+(1|Subject),
+         ergoStool)
+
+T1.vals<-subset(ergoStool,
+                Type=="T1")$effort
+T2.vals<-subset(ergoStool,
+                Type=="T2")$effort
+T3.vals<-subset(ergoStool,
+                Type=="T3")$effort
+T4.vals<-subset(ergoStool,
+                Type=="T4")$effort
+
+vals<-cbind(T1.vals,T2.vals,
+            T3.vals,T4.vals)
+
+## compute varcov matrix:
+vcovmat<-var(vals)
+## get sd's of each level:
+sds<-sqrt(diag(vcovmat))
+
+## T1.T2 correlation, the sds come 
+## from the model fit:
+1.7222/(1.728*1.728)
+@
+

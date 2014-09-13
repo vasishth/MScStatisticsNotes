@@ -1,0 +1,710 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+\SweaveOpts{prefix.string=LMMfigs/LMMfig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Generalized Linear Models Summary}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+%\maketitle
+\footnotesize
+\begin{multicols}{3}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Generalized Linear Models Summary Sheet} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+\section{Basic facts}
+
+
+
+\subsection{Common GLM distributions}
+
+\begin{figure}[!htbp]
+\includegraphics{GLMdistributions.pdf}
+\end{figure}
+
+Given the pdf:
+
+\begin{equation}
+f(y; \theta_i, \phi)= \exp[\frac{y\theta_i - b(\theta_i)}{\phi/w}+c(y,\phi)]
+\end{equation}
+
+We know that 
+
+\begin{equation}
+E(Y_i)=\mu_i = h(x_i^T \beta) = b'(\theta)
+\end{equation}
+
+
+Therefore:
+
+\begin{equation}
+x_i^T \beta =  h^{-1}(b'(\theta)) = \explain{g}{\hbox{canonical link}}b'(\theta)
+\end{equation}
+
+
+\begin{tabular}{|l|l|l|}
+\hline
+Distribution & $h(x_i^T \beta)=\mu_i$ & $g(\mu_i)=\theta_i$\\
+\hline
+Binomial & $\frac{\exp[\theta_i]}{1+\exp[\theta_i]}$ & $\log \frac{y}{1-y}$ \\
+logit link & & \\
+\hline
+Normal & $\theta$ & $g=h$ \\
+identity & & \\
+\hline
+Poisson & $\exp[\theta]$ & $\log[\mu]$ \\
+log & & \\
+\hline
+Gamma & $-\frac{1}{\theta}$ & $-\frac{1}{\mu_i}$\\
+inverse & & \\
+\hline
+Cloglog & $1-\exp[-\exp[\theta_i]]$ & $\log(-\log(1-\mu_i))$\\
+cloglog & & \\
+\hline
+Probit & $\Phi(\theta)$ & 
+$\Phi^{-1}(\theta)$ (qnorm)\\
+probit & & \\
+\hline
+\end{tabular}
+
+\medskip
+The big thing about the canonical link is that is expresses $\theta_i$ as a linear combination of the parameters: $x_i^T \beta$.  %[to-do: some other stuff on p.\ 80 I don't understand.]
+
+\textbf{Relevance of canonical link}: You can decide which link to use by plotting $g(\mu_i)$ against the predictor (in case we have only a single predictor x).
+
+
+
+\section{Iteratively reweighted least squares}
+
+
+\begin{enumerate}
+\item Specify an \textbf{initial vector of parameters}: $b^{(m)}= (\beta_0,\dots,\beta_p)^T$, where initially $m=1$:
+
+
+
+<<echo=F>>=
+load("MAS473.RData")
+@
+
+
+<<>>=
+## eta=xbeta:
+eta.i<- -60+35*beetle$conc
+@
+
+
+
+\item \textbf{Specify a weight matrix W} that depends on current parameter estimates:
+
+Given (proof on p.\  83-84):
+
+\begin{equation}
+  w_{ii} =\frac{n_i \exp[\eta_i]}{(1+\exp[\eta_i])^2}
+\end{equation}
+
+we can compute W:
+
+<<>>=
+n.i <- beetle$number
+w.ii.fn<-function(n.i,eta.i){
+  (n.i*exp(eta.i))/(1+exp(eta.i))^2
+}
+w.iis<-w.ii.fn(n.i,eta.i)
+##weights matrix:
+W<-diag(as.vector(w.iis))
+@
+
+\item
+\textbf{Specify a vector z} that depends on the current parameter estimates and response values:
+
+\begin{equation}
+z_i = \eta_i + \frac{y_i - \mu_i}{\mu_i (1-\mu_i)} 
+\quad \mu_i = \frac{exp[\eta_i]}{1+exp[\eta_i]}
+\end{equation}
+
+<<>>=
+mu.i<-exp(eta.i)/(1+exp(eta.i))
+z.i<-eta.i + ((beetle$propn.dead-mu.i))/
+              (mu.i*(1-mu.i))
+@
+
+
+\item
+Compute new estimate of parameters: $b^{(m+1)}=(X^T W X)^{-1} X^T W z$:
+
+
+
+
+<<>>=
+##The design matrix:
+col1<-c(rep(1,8))
+X<-as.matrix(cbind(col1,beetle$conc))
+## update coefs:
+eta.i<-solve(t(X)%*%W%*%X)%*%
+               t(X)%*%W%*%z.i
+@
+
+Stop at convergence. 
+\end{enumerate}
+
+
+\section{Residual deviances}
+
+\begin{enumerate}
+\item Normal: $\sum (y_i - \hat{\mu}_i)^2$
+\item Poisson: $2\sum y_i 
+\log(\frac{y_i}{\hat{\mu}_i}) - (y_i - \hat{\mu}_i$
+\item Binomial: 
+
+\begin{equation*}
+-2 \sum_i n_i [y_i\log(\frac{ \hat{\mu}_i}{y_i})+ (1-y_i)\log(\frac{1-\hat{\mu}_i}{1-y_i})]
+\end{equation*}
+
+
+\item Gamma: $-2\sum \log(\frac{ y_i}{\hat{\mu}_i}) - \frac{ y_i-\hat{\mu}_i}{\hat{\mu}_i}$
+\end{enumerate}
+
+\section{Testing model fit using pseudo $R^2$ and GLRT}
+
+Let the log likelihood of the minimal model (with only an intercept) be:
+
+\begin{equation}
+l(\tilde{\mu}, \phi; y)
+\end{equation}
+
+Pseudo $R^2$ is the proportional improvement in the log-likelihood due to the model under consideration compared to the minimal mode:
+
+\begin{equation}
+\frac{l(\tilde{\mu}, \phi; y)-l(\hat{\mu}, \phi; y)}{l(\tilde{\mu}, \phi; y)}
+\end{equation}
+
+\textbf{Example}:
+To compute pseudo $R^2$, we need the AIC value of the models. Recall that 
+
+\begin{equation}
+AIC=-2l + 2p \Leftrightarrow l = p - \frac{1}{2}AIC
+\end{equation}
+
+
+\section{Binomial distribution}
+
+${n \choose ny} p^{ny} (1-p)^{n-ny},\quad Bi(ny, \frac{\exp[\theta]}{1+\exp[\theta]}) \quad \mu = \frac{\exp[\theta]}{1+\exp[\theta]}$.
+
+\subsection*{Logit link}
+
+$f(y; \theta_i, \phi)= \exp[\frac{y\theta_i - b(\theta_i)}{\phi/w}+c(y,\phi)]$
+
+\begin{enumerate}
+\item $b(\theta)=\log (1+\exp[\theta])$
+\begin{enumerate}
+\item $b'(\theta)=\mu = \frac{\exp[\theta]}{1+\exp[\theta]}$
+\item $b''(\theta)=\mu(1-\mu)$
+\end{enumerate}
+\item $c(y,\phi)=\log {n \choose ny}$ and $\phi=1, w=n$.
+\item The model: $\log[\frac{\mu}{1-\mu}]=\beta_0 + \beta_1x= \eta$, $h(\eta)=\mu\Leftrightarrow \mu = \frac{\exp[\theta]}{1+\exp[\theta]}$ and $g(\mu)=\eta \Leftrightarrow \log[\frac{\mu}{1-\mu}]=\eta$.
+\item Mean and Variance: $E(Y)=\mu$, $Var(Y)=b''(\theta)a(\phi)=\frac{\phi}{w} V(\mu)$, where $V(\mu)=\mu(1-\mu)$.
+\item Residual deviance:
+
+\textbf{Maximal model}: $\mu_i^\diamond=y_i$. 
+Recall that:
+\begin{equation}
+\begin{split}
+\ell=& \log f_i(y;\theta_i, \phi)\\
+=&  \log \exp [ w_i \frac{y\theta_i - b(\theta_i)}{\phi} + c(y,\phi) ]\\
+=& w_i \frac{y\theta_i - b(\theta_i)}{\phi} + c(y,\phi)\\
+\end{split}
+\end{equation}
+
+For the maximal model:
+
+\begin{equation}
+\begin{split}
+\ell(y;\theta_i^\diamond, \phi)=& w_i \frac{y\theta_i^\diamond - b(\theta_i^\diamond)}{\phi} + c(y,\phi)\\
+\end{split}
+\end{equation}
+
+For the model under consideration:
+
+\begin{equation}
+\begin{split}
+\ell(y;\hat{\theta}_i, \phi)=& w_i \frac{y\hat{\theta}_i - b(\hat{\theta}_i)}{\phi} + c(y,\phi)\\
+\end{split}
+\end{equation}
+
+Then, scaled deviance for a model $\mu_i = h(x_i^T \beta)$ is defined as:
+
+\small
+\begin{equation}
+\begin{split}
+S(y,\hat{\mu}) =& 
+-2 [\ell(\hat{\mu},\phi,y) -  \ell(\hat{\mu}^{\diamond},\phi,y) ]\\
+% &=-2 \sum_i [ [w_i \frac{y\hat{\theta}_i^ - b(\hat{\theta}_i^)}{\phi} + c(y,\phi)] - [w_i \frac{y\theta_i^\diamond - b(\theta_i^\diamond)}{\phi} + c(y,\phi)] ]\\
+%&= 2 \sum_i[[w_i \frac{y\theta_i^\diamond - b(\theta_i^\diamond)}{\phi} + c(y,\phi)] - [w_i \frac{y\hat{\theta}_i - b(\hat{\theta}_i)}{\phi} + c(y,\phi)] ]\\
+&= 2\sum_i[\frac{w_i}{\phi}[y (\theta_i^\diamond-\hat{\theta}_i)] - b(\theta_i^\diamond) + b(\hat{\theta}_i)  ]\\
+\end{split}
+\end{equation}
+
+\normalsize
+Note that $\phi S(y,\hat{\mu})$ depends only on the data (including $w_i$). This is called residual deviance or deviance.
+
+\begin{equation}
+D(y,\hat{\mu})= \phi S(y,\hat{\mu}) = 
+2\sum_i w_i[y (\theta_i^\diamond-\hat{\theta}_i) - b(\theta_i^\diamond) + b(\hat{\theta}_i)  ]
+\end{equation}
+
+Asymptotically, $S(y,\hat{\mu})$ has a $\chi^2_{n-p}$ distribution. 
+\item Pearson residuals:
+
+These are approx.\ $N(0,1)$.
+
+\begin{equation}
+\begin{split}
+  e_{P,i}=& \sqrt{w_i}\frac{y_i - \hat{\mu}_i}{\sqrt{V(\hat{\mu}_i)}} \\
+  =& \frac{y_i - \hat{\mu}_i}{\sqrt{V(\hat{\mu}_i)/w_i}}= \frac{y_i - \hat{\mu}_i}{
+  \sqrt{Var(Y_i)/\phi}}
+\end{split}  
+\end{equation}
+
+\begin{enumerate}
+\item Pearson chi-sq statistic: 
+\begin{equation}
+X^2 = \sum e^2_{P,i}   
+\end{equation}
+
+This is asymptotically equivalent to the deviance (D) for a model.
+\end{enumerate}
+\item Deviance residuals
+For the binomial distribution: Deviance $D=\sum d_i$, where:
+
+\begin{equation}
+d_i = -2 \times n_i [ y_i \log(\frac{\hat{\mu}_i}{y_i}) + (1-y_i) \log (\frac{1-\hat{\mu}_i}{1-y_i}) ]  
+\end{equation}
+
+The $i$-th deviance residual is:
+
+\begin{equation}
+	e_{D,i}= sgn(y_i-\hat{\mu}_i) \times \sqrt{d_i}
+\end{equation}
+
+Note that $\sum e_{D,i} = D$.
+
+\item Log odds and odds ratio
+\begin{enumerate}
+\item
+log odds: $\lambda=\log[\frac{\mu}{1-\mu}]$. 
+
+\begin{equation}
+\begin{split}
+Var(\log \lambda) =& \frac{1}{n\mu}+\frac{1}{n(1-\mu)}\\
+est.\ Var(\log \hat{\lambda})=& \frac{1}{s}+\frac{1}{n-s}\\
+\end{split}
+\end{equation}
+
+\textbf{Example}: Beetle dataset.
+
+<<>>=
+fm1<-glm(propn.dead~conc,
+         binomial(logit),
+         weights=number,
+         data=beetle)
+#summary(first.beetle.glm)
+
+## compute log odds of death for 
+## concentration 1.7552:
+x<-as.matrix(c(1, 1.7552))
+#log odds:
+(log.odds<-t(x)%*%coef(fm1))
+
+### compute CI for log odds:
+## Get vcov matrix:
+(vcovmat<-vcov(fm1))
+## x^T VCOV x:
+(var.log.odds<-t(x)%*%vcovmat%*%x)
+##lower
+#log.odds-1.96*sqrt(var.log.odds)
+##upper
+#log.odds+1.96*sqrt(var.log.odds)
+
+## variance of log odds using 
+## formula, does not match up
+## because it's based only 
+## one data point:
+(1/18) + (1/(62-18))
+@
+
+\item
+\textbf{Odds ratio}: 
+Given: 
+
+\begin{equation}
+\frac{p(Y_i=1)}{1-p(Y_i=1)} = \frac{\mu_i}{1-\mu_i}
+\end{equation}
+
+\noindent
+taking logs:
+
+\begin{equation}
+\log\frac{\mu_i}{1-\mu_i}= \alpha + \beta x_i
+\end{equation}
+
+
+Therefore the odds of Y=1 are:
+
+\begin{equation}
+\frac{p(Y_i=1)}{1-p(Y_i=1)} = \exp[ \alpha + \beta x_i]
+\end{equation}
+
+
+
+\end{enumerate}
+
+\textbf{Computing odds ratios by hand}:
+
+Odds= no.\ successes / no.\ failures
+
+\textbf{Odds ratio}:
+
+Odds(Vaccine group gets Flu) / Odds(Control group gets Flu)
+
+\begin{tabular}{c|cc|c}
+ & A1 & A2 & Totals\\
+ \hline
+B1 & w & x&  w+x\\
+B2 & y & z  & y+z \\
+\hline
+ & w+y  & x+z & \\
+\hline
+\end{tabular}
+
+\textbf{Odds ratio (OR)}: 
+
+\begin{equation}
+\frac{w/x}{y/z}
+\end{equation}
+
+\textbf{CIs for log(OR)}: 
+
+\begin{equation}
+\log(OR) \pm 1.96 \times se(\log(OR))
+\end{equation}
+
+where
+
+\begin{equation}
+ se(\log(OR)) = \sqrt{\frac{1}{w}+\frac{1}{x}+\frac{1}{y}+\frac{1}{z}}
+\end{equation}
+
+To get CIs at odds scale just take exponents.
+
+\item Over-dispersion: 
+
+
+
+\begin{equation}
+\hat{\phi}= \frac{D}{n-p}\approx X^2/(n-p)
+\end{equation}
+
+In binomial data,
+if observations $Y_i$ have variance greater than that expected from the binomial theorem, then you need to adjust the variance estimate. If the deviance D is greater than N-p (as expected from the fact that it has an approximate chi-squared deviation and the expectation of a chi-sq distributed random variable is N-p; I think), we should suspect that we have an overdispersion problem. Also, correlated binary responses also lead to overdispersion.
+
+Here, we assume that $Var(Y_i)=\phi \frac{\mu_i(1-\mu_i)}{n_i}$.
+
+Once the dispersion parameter (e.g., 3.6185, in an example in lecture notes) has been estimated, we adjust the variance:
+
+\begin{equation*}
+Var(Y_i)=\phi \frac{\mu_i(1-\mu_i)}{n_i}=3.6185 \frac{\mu_i(1-\mu_i)}{n_i}
+\end{equation*}
+
+I.e., standard errors for the coefficients in the quasibinomial are the result of multiplying the regular SE with the square root of the dispersion parameter estimated.
+
+
+\end{enumerate}
+
+\section{Poisson}
+
+Let the random variable $X$ count the number of events occurring in the interval. Then under certain reasonable conditions it can be shown that
+
+  \begin{equation}
+  f_{X}(x)=\mathbb{P}(X=x)=\mathrm{e}^{-\mu}\frac{\mu^{x}}{x!},\quad x=0,1,2,\ldots %, E(X)=Var(X)=\mu
+	\end{equation}
+
+
+In GLM setting, there are two situations where we use the Poisson function:
+
+\begin{enumerate}
+\item \textbf{Poisson regression}: The events depend on varying amounts of exposure. Predictors can be categorical or continuous.
+\item \textbf{Log-linear models}: Exposure is constant. Predictors are usually categorical. 
+\end{enumerate}
+
+$f(y; \theta_i, \phi)= \exp[\frac{y\theta_i - b(\theta_i)}{\phi/w}+c(y,\phi)]$
+
+\begin{enumerate}
+\item $b(\theta)=\exp[\theta]$
+\begin{enumerate}
+\item $b'(\theta)=\mu = \exp[\theta]$
+\item $b''(\theta)=\exp[\theta]$
+\end{enumerate}
+\item $c(y,\phi)=-\log y!$ and $\phi=1, w=n$.
+\item The model: $\log \mu = \beta_0 + \beta_1x=\eta$, $h(\eta)=\mu 
+\Leftrightarrow \mu = \exp[\eta]$ and $g(\mu) = \eta \Leftrightarrow 
+\log \mu = \eta$.
+\item Mean and Variance: $E(Y)=\mu$, $Var(Y)=b''(\theta)a(\phi)=\frac{\phi}{w} V(\mu)$, where $V(\mu)=\mu$.
+
+If $Y_i$ are independent RVs, each denoting the number of events observed from exposure $n_i$ (example: numbers of smoking doctors in each age group). 
+
+\textbf{Offset}: Let $E(Y_i)= \mu_i = n_i \theta_i$. Here, $Y_{-i}$ is a count, and $\theta_i$ a function of the predictors $X\beta$: $\theta_i = \exp[x_i^t \beta]$.
+
+Therefore, the GLM is:
+
+\begin{equation}
+E(Y_i)= \mu_i = n_i  \exp[x_i^t \beta] \quad Y_i \sim Po(\mu_i)
+\end{equation}
+
+The link function is:
+
+\begin{equation}
+\log \mu_i = \log n_i + x_i^t \beta
+\end{equation}
+
+\noindent
+where
+$\log n_i$: offset. 
+
+\textbf{Fitted values}:
+$\hat{Y}_i=\hat{\mu}_i = n_i \exp[x_iT\beta]=e_i$, where $e_i$ refers to \textbf{expected value} for $i$.
+
+Since $Var(Y_i)=\mu$, $SE(Y_i)=\sqrt{e_i}$.
+
+\begin{enumerate}
+\item
+\textbf{Pearson residuals}: $r_i=\frac{o_i-e_i}{\sqrt{e_i}}$.
+\item
+\textbf{Chi-squared statistic and $r_i$}: $X^2=\sum r_i^2 = \sum \frac{(o_i-e_i)^2}{e_i}$. 
+\item
+\textbf{Deviance}: $D=2\sum[o_i \log(o_i/e_i)-(o_i-e_i)]
+$; note that ``for most models'' $\sum o_i=\sum e_i$, so the last two terms cancel out.
+\item
+\textbf{Deviance residuals}: $d_i = sign(o_i-e_i)\sqrt{2o_i \log(o_i/e_i)-(o_i-e_i)} \rightarrow D=\sum d_i^2$.
+\item
+\textbf{Likelihood ratio chi-sq statistic}: $2[l_{current}-l_{min}]$.
+\item
+\textbf{Pseudo $R^2$}: $\frac{l_{min}-l_{current}}{l_{min}}$.
+\item
+\textbf{Rate ratio}: $\exp[\beta_i]$. Shows, for example, that the risk of coronary death (example below) is $\exp[\beta_i]$ times higher for smokers vs non-smokers, controlling for other factors.
+\end{enumerate}
+\end{enumerate}
+
+\section{Contingency tables}
+
+\subsection{A+B}
+
+This is the standard chi-squared analysis, so use that for $\hat{\mu}$:
+
+\begin{equation}
+\hat{\mu}=e_{jk}=(y_{j\cdot}y_{\cdot k})/n \quad (row\times col)/total
+\end{equation}
+
+\begin{equation}
+X^2 = \sum_{jk}\frac{(y_{jk}-e_{jk})^2}{e_{jk}} \quad \chi^2_{(J-1)(K-1)}
+\end{equation}
+
+For three-way tables:
+
+\begin{enumerate}
+\item Ignore C, compute sums for A, B levels, make a two-way table.
+\item Compute fitted values for the above two-way table and then partition the values equally to the two levels of C.
+\end{enumerate}
+
+\subsection{A+B*C}
+
+Algorithm: 
+\begin{enumerate}
+\item Ignore A, compute sums of 
+\begin{verbatim}
+B1            B2 
+  C1            C1   
+  C2            C2
+\end{verbatim}
+\item Then compute A sums: A1, A2.
+\item Use probability p=A1/(A1+A2) and 1-p to multiply with sums of step 1 to get fitted values.
+\end{enumerate}
+
+\subsection{(A+B)*C}
+
+Let A be the response.
+
+\begin{enumerate}
+\item 
+For each level of C, find the proportions of B regardless of A. 
+\item Then multiply the proportions by the row sums of the A levels. 
+\end{enumerate}
+
+\subsection{Families checklist}
+
+\begin{enumerate}
+\item
+The \textbf{gaussian family}: identity, log and inverse.
+\item
+The \textbf{binomial family}: logit, probit, cauchit (Cauchy CDFs) log and cloglog (complementary log-log).
+\item
+The \textbf{Gamma family}: inverse, identity and log.
+\item
+The \textbf{Poisson family}: log, identity, and sqrt.
+\item
+The \textbf{inverse.gaussian} family: 1/mu\^2, inverse, identity and log.
+\item
+The \textbf{quasi family}: logit, probit, cloglog, identity, inverse, log, 1/mu\^2 and sqrt, and the function power can be used to create a power link function.
+\end{enumerate}
+
+\begin{verbatim}
+binomial(link = "logit")
+gaussian(link = "identity")
+Gamma(link = "inverse")
+inverse.gaussian(link = "1/mu^2")
+poisson(link = "log")
+## the overdispersion models:
+quasi(link = "identity", variance = "constant")
+## or variance = "mu"
+quasibinomial(link = "logit")
+quasipoisson(link = "log")
+\end{verbatim}
+
+\section{Contingency table examples}
+
+\begin{verbatim}
+           M           F
+       N     D      N     D
+Y      2     22     4     6      
+N      8      2    11     2
+\end{verbatim}
+
+<<>>=
+counts<-c(2,22,4,6,8,2,11,2)
+G<-factor(rep(c("M","F"),each=2,2))
+R<-factor(rep(c("Y","N"),each=4))
+T<-factor(rep(c("N","D"),4))
+m1<-glm(counts~G*T,family=poisson)
+#fitted(m1)
+m2<-glm(counts~G*T+R,family=poisson)
+#fitted(m2)
+m3<-glm(counts~(T+R)*G,family=poisson)
+#fitted(m3)
+
+m4<-glm(counts~(G+R)*T,family=poisson)
+fitted(m4)
+@
+
+\end{multicols}
+
+\includegraphics{glmdistributions}
+
+<<echo=F>>=
+y<-seq(0,1,by=0.001)
+g.logit<-function(y){
+  log(y/(1-y))
+}
+g.cloglog<-function(y){
+  log(-log(1-y))
+}
+g.probit<-function(y){
+  qnorm(y)
+}
+g.log<-function(y){
+  log(y)
+}
+@
+
+<<fig=F,echo=F>>=
+op<-par(mfrow=c(2,2),pty="s")
+
+plot(g.logit(y),y,main="logit")
+plot(g.probit(y),y,main="probit")
+plot(g.cloglog(y),y,main="cloglog")
+plot(g.log(y),y,main="log")
+@
+
+
+
+
+\end{document}
+
