@@ -4,13 +4,20 @@ MScStatisticsNotes
 These are summary sheets and notes I made as part of an MSc in Statistics, at the University of Sheffield, UK.
 
 *Year 0: Graduate certificate in statistics (2011-12)*
+	Website for grad cert: https://www.sheffield.ac.uk/maths/prospectivepg/taughtpg/pgstats/gradcert
+	Math: https://www.sheffield.ac.uk/polopoly_fs/1.139681!/file/M-contentsMap.pdf
+	Prob: https://www.sheffield.ac.uk/polopoly_fs/1.139682!/file/P-contentsMap.pdf
+	Stat: https://www.sheffield.ac.uk/polopoly_fs/1.139683!/file/S-contentsMap.pdf
+1. GraduateCertificateNotes.{Rnw,pdf} Covering Mathematics, Probability, and Statistics
 
 *Year 1 (2012-13)*
-1. LinearModels.{tex,pdf}
+	http://maths.dept.shef.ac.uk/maths/module_info_1417.html
+1. LinearModels.{tex,pdf}  
 2. GeneralizedLinearModels.{Rnw,pdf}
 3. LinearMixedModels.{Rnw,pdf}
 
 *Year 2 (2013-14)*
+	http://maths.dept.shef.ac.uk/maths/module_info_1421.html
 1. BayesianDataAnalysis.{Rnw,pdf}
 2. ComputationaInference.{Rnw,pdf}
 
