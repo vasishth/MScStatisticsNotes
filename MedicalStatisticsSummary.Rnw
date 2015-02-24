@@ -1,0 +1,1131 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+\usepackage{framed}
+
+\usepackage{blkarray}
+\usepackage{multirow}
+
+
+\usepackage{tabu}
+
+\usepackage[table]{xcolor}
+
+\newcommand\x{\times}
+\newcommand\y{\cellcolor{green!10}}
+
+\newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
+
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}
+
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+%\SweaveOpts{prefix.string=MedStatfigs/MedStatfig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Medical Statistics Summary Sheet}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+
+
+\usepackage{float}
+\setkeys{Gin}{width=0.25\textwidth}
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+
+\footnotesize
+\maketitle
+\tableofcontents
+
+\newpage
+
+\begin{multicols}{2}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Medical Statistics Summary Sheet} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+<<echo=F>>=
+options(width=60)
+options(continue=" ")
+@
+
+\section{Types of expt designs}
+
+\subsection{Parallel Group Designs}: To compare k treatments,
+divide patients, at random, into k groups,
+the $n_i$ patients in group $i$ receive treatment $i$. Each patient receives just one treatment. Comparisons are between patients. 
+$n_i$ not necessarily the same across groups.
+
+\subsection{In Series Designs}
+Each patient receives all k treatments in the same order. 
+Comparisons made within patients.
+
+Problems: 
+Patients enter when disease is bad, hence likely to improvement regardless of treatment, so later treatments appear better.
+Reverse occurs for a progressive disease, i.e. problems occur if underlying disease is not stable.
+
+Advantages
+\begin{enumerate}
+\item Need fewer patients than parallel designs
+\item Patients can state ?preferences? between treatments
+\item  Might be able to allocate treatments simultaneously e.g. skin cream on left and right hands
+\end{enumerate}
+
+Disadvantages
+
+\begin{enumerate}
+\item
+ Treatment effect might depend on when it is given
+\item Treatment effect may persist into subsequent periods
+and mask/modify effects of later treatments
+\item Withdrawals cause problems (i.e. if a patient leaves
+before trying all treatments)
+\item Not universally applicable, e.g. drug treatment
+compared with surgery
+\item Can only use for short term effects
+\end{enumerate}
+
+\subsection{Crossover trials}
+
+Period, Treatment and Period:Treatment (Carrover) effects
+
+\begin{enumerate}
+\item
+All patients get all treatments but in different orders.
+\item
+Period and Carryover effects are nuisance variables, the main interest is in Treatment effects.
+\end{enumerate}
+
+
+\subsection{Factorial designs}
+
+\subsection{Sequential designs}
+
+ Advantages
+ 
+\begin{enumerate}
+\item
+ Detect large differences quickly
+\item 
+Avoids ethical problem of fixed size designs (no patient
+should receive treatment known to be inferior)
+\end{enumerate}
+
+Disadvantages
+\begin{enumerate}
+\item
+ Responses needed quickly (before next pair arrive) 
+\item
+Drop-outs cause difficulties
+\item 
+Constant surveillance necessary
+\item Requires pairing of patients
+\item Calculation of boundaries highly complex
+\end{enumerate}
+
+\section{Per protocol vs intention to treat analyses}
+
+Per protocol: only analyze patients who conform to original protocol
+
+Intention to treat: analyze all data, including dropouts etc. (This has lower risk of bias).
+
+\section{Randomization}
+
+Randomization protects against accidental and selection bias, and provides a basis for statistical tests
+
+Types of randomization include
+
+\begin{enumerate}
+\item
+simple (but may be unbalanced over treatments) 
+\item
+blocked (but small blocks may be decoded) 
+\item 
+stratified (but may require small blocks) 
+\item 
+minimization (but lessens randomness)
+\end{enumerate}
+
+\section{Adjustment of p-value under repeated analyses as data comes in}
+
+Pocock 1983
+
+\section{Crossover trials}
+
+carryover, treatment, period
+
+\section{Randomization}
+
+Historical/database controls: use previous data as control and assign all patients to treatment. As a compromise, one could have a small number of controls to compare with historical controls.
+
+\textbf{Unequal allocation} (4.3.2)
+
+May decide we need most information on B to get more accurate estimates of the B effect; variation A is probably known reasonably well already if it is the standard.
+
+\textbf{Stratified randomization}: Suppose we have patients in different age ranges and either M or F. Then find all possible combinations of each level, and then produce separate randomization lists for each level.
+
+Adaptive randomization/minimization:
+
+\section{Crossover trials}
+
+\section{Combining trials}
+
+\subsection{Manten-Haenszel Test}
+
+Here, we assume a data format as follows:
+
+\begin{table}[htdp]
+\caption{The format assumed for the Manten-Haenszel Test.}
+\begin{center}
+\begin{tabular}{c|ccc}
+        & \multicolumn{2}{c}{heart problems}                & \\
+        \hline
+glucose:        & yes  & no        & Total\\  
+elevated & $Y_1$ & $n_1 - Y_1$ & $n_1$ \\
+not elevated&  $Y_2$ & $n_2 - Y_2$ & $n_2$ \\
+\hline
+Total   & $t$      & $n-t$ & $n$\\ 
+\end{tabular}
+\end{center}
+\label{default}
+\end{table}%
+
+For each study we can compute the mean and variance using the formulas from the lecture notes:
+
+\begin{equation}
+E[Y_1]=\frac{n_1 t}{n} \quad Var(Y_1) = \frac{n_1 n_2 t(n-t)}{n^2(n-1)}
+\end{equation}
+
+Then, the statistic is 
+
+\begin{equation}
+T_{MH}=(Y_i - E[Y_i])^2/Var(Y_i) \sim \chi^2_1
+\end{equation}
+
+
+If we have multiple studies $i$, we use the above procedure to get all the $E[Y_i]$, and $Var(Y_i)$, and compute $W=\sum Y_i, E[W]=\sum E[Y_i], Var(W)=\sum Var(Y_i)$, and then use the above test again on the W's.
+
+\begin{equation}
+T_{MH}=(W - E[W])^2/Var(W) \sim \chi^2_1
+\end{equation}
+
+This summing up procedure avoids Simpson's paradox (combining studies can give different results than separate analyses, due (inter alia) to sample size differences), but not sure why. 
+
+Some notes on MH test:
+
+\begin{enumerate}
+\item This test is appropriate when treatment differences are consistent across tables.
+\item Logistic regression gives you the same results.
+\item ``The Mantel-Haenszel test is simpler if one has just two qualitative prognos- tic factors to adjust for and wishes only to assess significance, not magnitude, of a treatment difference.'' (p.\ 97)
+\item
+``The logistic approach is more general and can include other covariates, further, it can test whether treatment differ- ences are consistent across tables.'' (p.\ 97)
+\item If treatments across trials is inconsistent or if success rates differ markedly.
+\item Logistic regression can solve Simpson's paradox because we can include trial effect.
+\end{enumerate}
+
+\section{Survival analysis}
+
+\begin{verbatim}
+                   right censoring:
+t0 ----------o t1   t0 ---------- c
+start       dead    start       lost
+\end{verbatim}
+
+Survival time $t\geq 0$. Define a random variable $T\sim f(x)$ where the cdf is 
+
+\begin{equation}
+F(x) = P(T < t) = \int_0^t f(u)\, du
+\end{equation}
+
+The probability that survival is $\geq$ t is 
+
+\begin{equation}\label{eq:probsurvival}
+S(t)= 1- F(t)=P(T\geq t)
+\end{equation}
+
+\textbf{Hazard function}: Consider 
+$P(t \leq T < t+\delta t\mid T \geq t)$. Divide by $\delta t$ to get probability \textit{per unit time} = rate. 
+
+
+
+\textbf{Hazard rate definition}:
+
+\begin{equation}
+h(t) =  \lim_{\delta t \to 0} \left\{ 
+\frac{P(t \leq T < t+\delta t \mid T \geq t)}{\delta t} \right\}
+\end{equation}
+
+
+
+If we rearrange terms, we get:
+
+\begin{equation}
+h(t) \delta t =  \lim_{\delta t \to 0} \left\{ P(t\leq T < t+\delta t \mid T \geq t) \right\}
+\end{equation}
+
+This is the probability of dying during $t+\delta t$; or the risk of death \textit{at time t}.
+
+Focusing on the right-hand side $P(t\leq T < t+\delta t \mid T \geq t)$, we can use the conditional probability rule to determine that:
+
+\begin{equation}
+\begin{split}
+ P(t\leq T < t+\delta t \mid T \geq t) =& 
+ \frac{P(t\leq T < t+\delta t)}{P(T\geq t)}\\
+ =& \frac{F(t+\delta t)-F(t)}{P(T\geq t)}
+ \end{split}
+ \end{equation}
+
+From equation~\ref{eq:probsurvival} we know that  $P(T\geq t)=S(t)$. So we can restate $h(t)$ as:
+
+\begin{equation}
+h(t) =  \lim_{\delta t \to 0} \left\{ 
+\frac{F(t+\delta t)-F(t)}{\delta t} \frac{1}{S(t)} \right\}
+\end{equation}
+
+Now, 
+
+\begin{equation}
+\lim_{\delta t \to 0} \left\{ 
+\frac{F(t+\delta t)-F(t)}{\delta t} \right\} 
+= \frac{d(F(t))}{dt} = f(t)
+\end{equation}
+
+Therefore: 
+
+\begin{equation}
+\boxed{h(t) = \frac{f(t)}{S(t)}}
+\end{equation}
+
+Now, 
+
+\begin{equation}
+\frac{d(\log(S(t)))}{dt} = -\frac{f(t)}{S(t)}
+\end{equation}
+
+\begin{leftbar}
+This is because 
+
+\begin{equation}
+S(t)=1-F(t) = 1 - \int_0^t f(t)\, dt)
+\end{equation}
+
+Taking logs:
+
+\begin{equation}
+\log S(t)= \log(1-F(t))=\log(1 - \int_0^t f(t)\, dt)
+\end{equation}
+
+If we now take the derivative of $\log S(t)$ with respect to $t$:
+
+\begin{equation}
+\frac{d(\log S(t))}{dt}= \frac{d(\log(1-F(t)))}{dt}=\frac{d(\log(1 - \int_0^t f(t)\, dt))}{dt}
+\end{equation}
+
+We use the chain rule to solve this derivative: Let $u=1 - \int_0^t f(t)\, dt=S(t)$. We can write:
+
+\begin{equation}
+\frac{d(\log(1 - \int_0^t f(t)\, dt))}{dt}=
+\frac{d(\log(u))}{dt}
+\end{equation}
+
+Now, $\frac{du}{dt}= -f(t)$; also, $\frac{d(\log u)}{du}= \frac{1}{u}=\frac{1}{S(t)}$. So, by the chain rule:
+
+\begin{equation}
+\frac{d(\log u)}{du} \frac{du}{dt} = \frac{d(\log u)}{dt} = -\frac{f(t)}{S(t)}
+\end{equation}
+\end{leftbar}
+
+Therefore:
+
+\begin{equation}
+h(t)= \frac{f(t)}{S(t)}= -\frac{d(\log(S(t)))}{dt} 
+\end{equation}
+
+The cumulative distribution function H(t):
+
+\begin{equation}
+H(t) = \int_0^t h(u) \, du = - \log (S(t))
+\end{equation}
+
+Since $\log (S(t)) = - H(t)$, if we take exponents on both sides:
+
+\begin{equation}
+\boxed{S(t) = \exp(-H(t))}
+\end{equation}
+
+Since $f(t) = h(t) S(t)$, replacing S(t), we get:
+
+\begin{equation}
+\boxed{f(t) = h(t)S(t)=h(t)\exp(-H(t))}
+\end{equation}
+
+In summary, for any random variable T, we will define, f(t), S(t), and h(t). 
+
+\begin{center}
+$\begin{tabu}{lll}
+     & Exponential  & Weibull \\
+     \hline
+f(t) & \lambda \exp(-\lambda t)  & \lambda \gamma t^{\gamma -1 } \exp(-\lambda t^{\gamma})\\
+S(t) & \exp(-\lambda t)  & \exp(-\lambda t^\gamma) \\
+h(t) & \lambda  &  \lambda \gamma t^{\gamma-1}\\
+& & Alternative: \lambda \gamma (\lambda t)^{\gamma -1}= 
+\lambda^\gamma \gamma t^{\gamma -1}\\ 
+\end{tabu}$
+\end{center}
+
+In Weibull, if $\gamma>1$ hazard is increasing, and if $\gamma<1$ hazard is decreasing. If $\gamma=1$, then the Weibull reduces to the exponential.
+
+\subsubsection{Life tables}: to-do
+
+
+\subsubsection{Kaplan-Meier product estimates of S(t)}
+
+Here, we estimate the survival distribution without making any assumptions. The estimator is a \textbf{non-parametric MLE}.
+
+\begin{enumerate}
+\item
+k: number of failures
+\item
+$t_1,\dots,t_k$ unique event times (ordered)
+\item 
+$d_i$: deaths at $t_i$ 
+\item
+$n_i$: number at risk (still alive) at $t_i$
+\end{enumerate}
+
+\begin{equation}
+\hat S(t) = \prod_{i: t_i < t} (1-\frac{d_i}{n_i})=\prod_{i: t_i < t} (n_i - \frac{d_i}{n_i})
+\end{equation}
+
+\begin{equation}
+\hat H(t) = - \log \hat S(t)
+\end{equation}
+
+\underline{With censoring}:
+
+\begin{enumerate}
+\item
+$j$ is the time index: $j=1,\dots,k$, i.e.,  $t_1, \dots, t_k$. 
+\item 
+$d_j$ is the failure at time index $j$.
+\item 
+$n$ is total number of observations $\sum d_j$
+\item
+$I_j$: number of individuals censored during $t_{j-1} < t < t_j$.
+\item 
+$r_j$ is the number at risk (the number alive) just before time $t_j$.
+%, so that $r_{j+1} = r_j - d_j$.   
+\item
+Note that $r_1 = n - I_1$.
+\item
+For $j\geq 2, r_j = r_j - d_j - I_{j+1} = n- (d_1 + \dots + d_{j-i}) - (I_1 + \dots + I_j)$.
+\end{enumerate}
+
+\begin{equation}
+\hat S(t) = \prod_{j=1}^{s} (1-\frac{d_j}{r_j}) \hbox{ for } 
+t_{(s)}<t<t_{(s+1)}
+\end{equation}
+
+\textbf{Note}: 
+
+\begin{enumerate}
+\item
+This assumes that $I_j$ censoring survive up to the preceding time period $t_{j-1}$ and then are removed immediately; this is different from life tables. 
+\item
+KM estimates are used when the intervals between events are quite short and the number of withdrawals in any interval is therefore quite small.
+\end{enumerate}
+
+
+Greenwood's variance formula:
+
+\begin{equation}
+Var(\hat S(t)) = (\hat S(t))^2 
+\sum_{j=1}^{s} \frac{d_j}{r_j (r_j - d_j)} 
+\hbox{ for } 
+t_{(s)}<t<t_{(s+1)}
+\end{equation}
+
+\begin{equation}
+\hat H(t) =\sum_{j=1}^{s} \frac{d_j}{r_j} 
+\hbox{ for } 
+t_{(s)}<t<t_{(s+1)}
+\end{equation}
+
+\textbf{Simple example from Harrell's Regression Modeling Strategies (p.\ 402)}
+
+Given failure times (+ denotes censoring): $1, 3, 3, 6^+, 8^+, 9, 10^+$.
+
+\begin{center}
+\begin{tabular}{ccccccrr}
+j & $t_i$ & $I_j$ &  $r_i$ & $d_i$ & $(r_i - d_i)/r_i$ & S(t) & interval \\
+0 & 0 & 0 &      &   &      &  1 &  $0\leq t< 1$\\
+1 & 1 & 0 & 7 & 1 & 6/7 & 6/7=0.85 & $1\leq t< 3$\\
+2 & 3 & 0  & 6 & 2 & 4/6 & $(6/7) \times (4/6)=0.57$ & $3\leq t< 9$\\
+3 & 9 & 2  & 2 & 1 & 1/2 & $(6/7) \times (4/6) \times (1/2)=0.29$ & $9\leq t< 10$ \\
+\end{tabular}
+\end{center}
+
+In R:
+
+<<>>=
+library(survival)
+time<-c(1,3,3,6,8,9,10)
+censor<-c(1,1,1,0,0,1,0)
+df<-data.frame(time=time,censor=censor)
+harrell_sv<-with(df,Surv(time,censor,
+                         type="right"))
+harrell_sv
+harrell_fit<-survfit(harrell_sv~1,data=df)
+summary(harrell_fit)
+@
+
+\begin{figure}[H]
+\caption{Kaplan-Meier plot for Harrell example.}
+<<fig=TRUE>>=
+plot(harrell_fit)
+@
+\end{figure}
+
+Note that the estimate of $S(t)$ is undefined for $t>10$.
+
+\textbf{Example from lecture notes (p.\ 19)}:
+
+<<>>=
+library(survival)
+load("data/tumour.Rdata")
+## Note:
+## censor: 0=censored, 1=complete
+head(tumour)
+tumour_sv<-with(tumour,Surv(time,censor,
+                            type="right"))
+tumour_sv
+tumour_fit<-survfit(tumour_sv~1,data=tumour)
+summary(tumour_fit)
+@
+
+to-do? (not sure if needed): Computing CIs by hand. See Harrell.
+
+\subsubsection{R code: Representative examples}
+
+The \texttt{survival} package has the following key functions:
+
+\begin{enumerate}
+\item \texttt{Surv}
+\item \texttt{survfit}
+\item \texttt{survreg}
+\item \texttt{survdiff} (log rank two sample test)
+\end{enumerate}
+
+The package \texttt{coin} does conditional tests (\texttt{surv\_test}): to-do. See ??survival for a reference to an excellent vignette by Hothorn and Everett.
+
+\subsubsection{Parametric models (single-sample data)}
+
+Given non-negative failure times $T\sim f(t)$, cdf, $F(t)$, and $S(t)=1-F(t), h(t)=\frac{f(t)}{S(t)}$. The pdf $f(t)$ depends on some parameter $\theta$; we use MLE to estimate $\theta$ and get its variance and therefore get CIs for the parameter.
+
+\paragraph{Exponential}
+
+Recall that for the exponential distribution:
+
+\begin{equation}
+f(t) = \lambda \exp(-\lambda t) \quad S(t)=
+\exp(-\lambda t)  \quad h(t)=\lambda
+\end{equation}
+
+If the data are \textbf{uncensored}:
+
+\begin{equation}
+\hat \lambda = \frac{n}{\sum t} \quad 95\% CI: \left[\frac{\chi_{2n, 0.025}^2}{2\sum t}, 
+\frac{\chi_{2n, 0.975}^2}{2\sum t} \right]
+\end{equation}
+
+Also:
+
+\begin{equation}
+\hat S(t) = \exp(-\hat \lambda t)
+\end{equation}
+
+\begin{leftbar}
+How the above comes about:
+
+\begin{equation}
+L(\lambda; t_1, t_2, \dots, t_n) = \prod f(t_i) = \lambda^n e^{-\lambda}\sum t_i
+\end{equation}
+
+\begin{equation}
+\ell (\lambda) = n \log (\lambda) - \lambda \sum t_i \Rightarrow 
+\hat \lambda = \frac{n}{\sum t} 
+\end{equation}
+
+
+Confidence intervals: 
+
+Recall two facts: $Y = \sum T_i \sim Gamma(n,\lambda)$ and 
+$Z = 2 \lambda Y \sim \chi_{2n}^2$.
+
+$P(\chi_{2n, 0.025}^2 < 2\lambda \sum T_i < \chi_{2n, 0.975}^2=0.95$, and so a 95\% CI CI is 
+
+$\left[\frac{\chi_{2n, 0.025}^2}{2\sum t}, 
+\frac{\chi_{2n, 0.975}^2}{2\sum t} \right]$
+
+\end{leftbar}
+
+If the data are \textbf{censored}:
+
+There are two cases. We either have complete observations, in which case 
+
+$f(x)=\lambda \exp(-\lambda t)$
+
+Or we have censored observations, in which case 
+
+$f(x)= \exp(-\lambda c_i)$ (not sure why this is so)
+
+The above assume $c_i$ are fixed and are given for all individuals (i.e., non-random). I.e., for complete observations, we have $t_i\leq c_i$ and for the censored ones we have  $t_i> c_i$.
+
+To define the likelihood, we define a censoring indicator $\delta_i =1$ if we have a complete observation, and $\delta_i =0$ if censored. Then:
+
+\begin{equation}
+L(\lambda)= \prod [\exp(-\lambda t_i)]^{\delta_i} [\exp(-\lambda c_i )]^{1-\delta_i}
+\end{equation}
+
+taking the log likelihood:
+
+\begin{equation}
+\ell(\lambda)= \log \lambda  \sum\delta_i - \lambda\sum t_i \delta_i  - \lambda \sum (1-\delta_i) c_i
+\end{equation}
+
+Taking the derivative:
+
+\begin{equation}
+\frac{d\ell }{d\lambda} = \frac{\sum \delta_i}{\lambda} - \sum (t_i \delta_i + (1-\delta_i)c_i)
+\Rightarrow \hat \lambda = \frac{\sum \delta_i}{\sum (t_i \delta_i + (1-\delta_i)c_i)}
+\end{equation}
+
+Note that $\frac{d^2\ell}{d\lambda^2} =  - \frac{1}{\lambda^2} \sum \delta_i$, and therefore 
+
+$-\frac{d^2\ell}{d\lambda^2} =  \frac{1}{\lambda^2} \sum \delta_i$.
+
+We can use the asymptotic properties of MLEs to get:
+
+\begin{equation}
+\hat \lambda \xrightarrow{d} N(\lambda, I^{-1}) \quad I = E[-\frac{\delta^2 \ell}{\delta \lambda^2}] = E[\frac{1}{\lambda^2} \sum \delta_i]
+\end{equation}
+
+To find $E[-\frac{\delta^2 \ell}{\delta \lambda^2}]$ we have to find the expectation of $\sum \delta_i$. Now:
+
+\begin{equation}
+\begin{split}
+E[\delta_i] =& 1\times P(T_i < c_i) + 0 \times P(T>c_i) \\
+=& 1-\exp(-\hat \lambda c_i)  \\
+\end{split}
+\end{equation}
+
+It follows that $\sum \delta_i = \sum (1-\exp(-\hat \lambda c_i))$.
+
+Therefore:
+
+\begin{equation}
+Var(\hat \lambda) = I^{-1} = \frac{1}{E[-\frac{\delta^2 \ell}{\delta \lambda^2}]} =  \frac{\hat\lambda^2}{\sum (1- \exp(-\hat{\lambda}c_i))}
+\end{equation}
+
+\textbf{Estimating the mean}
+
+For the exponential, $\hat \mu = \frac{1}{\hat \lambda}$. 
+
+Next, we compute the variance.
+Recall: $Var(g(\hat \lambda)) = [g'(\lambda)^2 var(\lambda)]_{\lambda=\hat \lambda}$.
+
+\begin{equation}
+Var(\hat \mu)= var(\frac{1}{\hat \lambda}) = \frac{\hat \mu^2}{\sum (1-\exp(-\hat \lambda c_i))}
+\end{equation}
+
+[Is the above a mistake? Need to check this.]
+
+\textbf{Estimating the median}
+
+To estimate the median $S_{\alpha}$, note that there is some value $S_{\alpha}$ such that $\alpha = P(T\geq S_{\alpha}) = S(S_{\alpha}) = \exp(-\lambda S_{\alpha})$. 
+
+It follows that 
+\begin{equation}
+\begin{split}
+~& \alpha =  \exp(-\lambda S_{\alpha})\\
+\leftrightarrow & \log \alpha = -\lambda S_{\alpha}\\
+\therefore & S_{\alpha} = - \frac{\log \alpha}{\lambda}
+\end{split}
+\end{equation}
+
+So, 
+
+\begin{equation}
+\begin{split}
+Var(S_{\alpha}) =& Var(- \frac{\log \alpha}{\lambda})  \\
+ =& (-\log \alpha)^2 Var(\frac{1}{\lambda})\\
+ =& (-\log \alpha)^2 \frac{\hat\mu^2}{\sum \delta_i}\\
+\end{split}
+\end{equation}
+
+\begin{leftbar}
+I didn't understand how we got the variance of $\hat\mu=1/\hat\lambda$ to be $\hat\mu^2/\sum \delta_i$.
+
+Since $\hat\mu = g(\hat\lambda) = 1/\hat\lambda$, 
+it follows that $g''(\lambda) = 1/\lambda^3$.
+
+So, $Var(g(\lambda))= g''(\lambda) var(\lambda) = (1/\lambda^3) (\lambda^2/\sum \delta_i ) =  (1/\lambda^3) (1/\sum \delta_i )= \mu/\sum \delta_i$ and not  $\mu^2/\sum \delta_i$.
+\end{leftbar}
+
+\textbf{Example}: Lung cancer data.
+
+\section{Sampling Theory and Design of Experiments}
+
+\subsection{Review of General Linear Models}
+
+[Also see LinearModelsSummary.pdf]
+
+A deterministic model would be $y=f\phi(x,\beta)=\beta_0+\beta_1x$.
+Cf.\ a non-deterministic model: $y=f\phi(x,\beta,\epsilon)=\beta_0+\beta_1x+\epsilon$. The general linear model is:
+
+\begin{equation}
+Y=\sum_{i=1} f_i(x_i)\beta_i +\epsilon \quad E[Y]=\sum \mathbf{f(x)}\mathbf{\beta}
+\end{equation}
+
+The matrix formulation:
+
+\begin{equation}
+Y = X\beta + \epsilon \Leftrightarrow y_j = f(x_j)^T \beta + \epsilon_j, i=1,\dots,n
+\end{equation}
+
+$E[Y]=X\beta$. X is the \textbf{design matrix}.
+
+\textbf{Example}: $y=\beta_0 + \beta_1 x + \epsilon$. Here, $f(x)= (1 x)$.
+
+\paragraph{Least squares estimation: Geometric argument}
+
+When we have a deterministic model  $y=f\phi(x,\beta)=\beta_0+\beta_1x=X\beta$, this implies a perfect fit to all data points. 
+This is like solving the equation $Ax=b$ in linear algebra: $X\beta=y$.
+
+When we have a non-deterministic model 
+$y=f\phi(x,\beta,\epsilon)=\beta_0+\beta_1x+\epsilon$, there is no unique solution. Now, the equation $Ax$ is an approximation to b in $Ax=b$. We try to get Ax as close to b as possible, i.e., $\mid b-Ax\mid$  is minimized. The problem now becomes finding $\hat{x}$ such that $A\hat{x}=\hat b$.
+
+%%to-do: graphic needed
+%\includegraphics[width=10cm]{LSEgraphic}
+
+Now, notice that $(Y - X\hat\beta)$ and $X\beta$ are perpendicular to each other, i.e.,
+
+\begin{equation}
+(Y- X\hat\beta)^T X \beta = 0 \Leftrightarrow (Y- X\hat\beta)^T X = 0 
+\end{equation}
+
+Multiplying out the terms:
+
+\begin{equation}
+\begin{split}
+~& (Y- X\hat\beta)^T X = 0  \\
+\Leftrightarrow& Y^T X - \hat\beta^TX^T X = 0\\
+\Leftrightarrow& Y^T X = \hat\beta^TX^T X \\
+\Leftrightarrow& (Y^T X)^T = (\hat\beta^TX^T X)^T \\
+\Leftrightarrow& X^T Y = XX^T\hat\beta\\
+\end{split}
+\end{equation}
+
+\textbf{This gives us the important result: $\hat\beta = (XX^T)^{-1}X^T Y$.}
+
+X is of full rank, therefore $X^TX$ is positive definite symmetric $p\times p$ and invertible.
+
+[to-do: summarize ch 6 of Lay in matrix algebra notes]
+
+\paragraph{Statistical properties of LSEs}
+
+\begin{equation}
+E[\hat\beta] = (XX^T)^{-1}X^T Y = (XX^T)^{-1}X^T X\beta = \beta
+\end{equation}
+
+\begin{equation}
+\begin{split}
+Cov(\hat\beta) = Var(\hat\beta) = Var([(XX^T)^{-1}X^T] Y) =& [(XX^T)^{-1}X^T] \sigma^2 I  [(XX^T)^{-1}X^T]^{T}\\
+=& [(XX^T)^{-1}X^T] \sigma^2 I  X[(XX^T)^{-1}]^{T} \\
+=& \sigma^2 (XX^T)^{-1} X^T X [(XX^T)^{-1}]^{T}\\
+=& \sigma^2 (XX^T)^{-1} X^T X (XX^T)^{-1} \\
+=& \sigma^2 (XX^T)^{-1}\\
+\end{split}
+\end{equation}
+
+Note that $[(XX^T)^{-1}]^{T}= (XX^T)^{-1}$ because $(XX^T)^{-1}$ is symmetric.
+
+\subsection{Overparameterization and contrast coding}
+
+Suppose there are three groups, so our model is
+
+\begin{equation}
+Y_i = \alpha + \gamma_1 D_{i1} + \gamma_{2}D_{i2}+\epsilon_i 
+\end{equation}
+
+A typical thing we do is \textbf{dummy coding}:
+
+\begin{table}[htdp]
+\begin{center}
+\begin{tabular}{ccc}
+Group & $D_1$ & $D_2$\\
+1 & 1 & 0\\
+2 & 0 & 1\\
+3 & 0 & 0\\
+\end{tabular}
+\end{center}
+\caption{Dummy coding.}
+\label{dummycoding}
+\end{table}%
+
+Let $\mu_i$ be the $i$-th group. Taking expectations:
+
+\begin{equation}
+\begin{split}
+\mu_1 =& \alpha + \gamma_1 \times 1 + \gamma_{2}\times 0 = \alpha + \gamma_1\\
+\mu_2 =& \alpha + \gamma_1 \times 0 + \gamma_{2}\times 1 = \alpha + \gamma_2\\
+\mu_3 =& \alpha + \gamma_1 \times 0 + \gamma_{2}\times 0 = \alpha \\
+\end{split}
+\end{equation}
+
+There are three parameters, and three equations:
+
+\begin{equation}
+\mu_1= \alpha + \gamma_1 \quad \mu_2= \alpha + \gamma_2 \quad \mu_3=\alpha
+\end{equation}
+
+Overparameterization occurs in the following situation:
+Let j index the groups. Then:
+
+\begin{equation}
+y_{ij}=\mu + \alpha_j + \epsilon_{ij}
+\end{equation}
+
+Taking expectations: $\mu_j =\mu + \alpha_j$. Now we have the equations
+
+\begin{equation}
+\begin{split}
+\mu_1 =& \mu + \alpha_1\\
+\mu_2 =&  \mu + \alpha_2\\
+\mu_3 =& \mu + \alpha_3  \\
+\end{split}
+\end{equation}
+
+There are four parameters, and three equations:
+
+These equations can't be solved (don't have a unique solution). The model is said to be overparameterized or underdetermined. 
+
+The solution is to place a restriction on the parameters: express one parameter in terms of the others. An example is sum contrast coding: if there are p parameters, then, just stipulate that 
+$\alpha_1 + \dots + \alpha_n=\sum_{i=1}^{p} \alpha_i = 0$.
+
+Another example is deviation regressors or \textbf{effects coding}: Let m be the maximum number of groups. For each of the j groups,
+
+\begin{equation}
+D_j= 
+\begin{cases}
+1 & group j \\
+-1 & group m\\
+0 & \hbox{otherwise}
+\end{cases}
+\end{equation}
+
+
+\begin{table}[htdp]
+\begin{center}
+\begin{tabular}{ccc}
+Group & $\alpha_1$ & $\alpha_2$\\
+1 & 1 & 0\\
+2 & -1 & 1\\
+3 & -1 & -1\\
+\end{tabular}
+\end{center}
+\caption{Effects coding (sum to zero constraint).}
+\label{dummycoding}
+\end{table}%
+
+Here, we have constrained the parameters so that $\sum \alpha_i = 0$, i.e., 
+$\alpha_3 = - \alpha_1 -\alpha_2$.
+Now we have three equations and three parameters, which has a unique solution.
+
+\begin{equation}
+\begin{split}
+\mu_1 =& \mu + \alpha_1\\
+\mu_2 =&  \mu + \alpha_2\\
+\mu_3 =& \mu + \alpha_3 = \mu - \alpha_1 - \alpha_2 \\
+\end{split}
+\end{equation}
+
+Note that two of the parameters are correlated when we use effects coding:
+
+\textbf{Example}: 
+
+<<>>=
+m<-matrix(c(c(rep(1,9)),
+          c(rep(1,3),rep(0,3),rep(-1,3)),
+          c(rep(0,3),rep(1,3),rep(-1,3))),byrow=FALSE,nrow=9)
+cov(m)
+@
+
+\paragraph{Polynomial regression}
+
+\begin{equation}
+E[Y] = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+\end{equation}
+
+If the design matrix is:
+
+\begin{equation}
+X=\begin{pmatrix}
+1 & x_{11} & x_{21}\\
+1 & x_{12} & x_{22}\\
+1 & x_{13} & x_{23}\\
+\end{pmatrix}
+\end{equation}
+
+This matrix full rank (i.e., non-singular) iff there exists no linear relationship like: 
+
+\begin{equation}
+\lambda_0 + \lambda_1 x_{1j} + \lambda_2 x_{2j} = 0 \quad \hbox{ for } j = 1,2,3
+\end{equation}
+
+$\lambda_i$ are not all zero. 
+
+If X has full rank, the three points are not collinear. Example of collinearity: each triple of rows is for each group $\alpha_i$.
+
+\begin{equation}
+X=\begin{pmatrix}
+1 & 1 & 0 & 0\\
+1 & 1 & 0 & 0\\
+1 & 1 & 0 & 0\\
+\cline{1-4}
+1 & 0 & 1 & 0\\
+1 & 0 & 1 & 0\\
+1 & 0 & 1 & 0\\
+\cline{1-4}
+1 & 0 & 0 & 1\\
+1 & 0 & 0 & 1\\
+1 & 0 & 0 & 1\\
+\end{pmatrix}
+\end{equation}
+
+The columns c2-c4 in this matrix are collinear: c2-c3-c4=0. Therefore the matrix is not full rank, therefore not invertible.
+
+This motivates the use of the corner-point constraint (dummy coding) or effects coding (depending on what the research question is).  Now, if we remove the final column, we have full rank and an invertible matrix.  See below:
+
+\begin{equation}
+\begin{pmatrix}
+ 1 & 1 & 0 \\ 
+ 1 & 1 & 0 \\ 
+ 1 & 1 & 0 \\
+ \cline{1-3}
+ 1 & 0 & 1 \\ 
+ 1 & 0 & 1 \\ 
+ 1 & 0 & 1 \\ 
+\cline{1-3}
+1 & -1 & -1 \\ 
+ 1 & -1 & -1 \\ 
+ 1 & -1 & -1 \\ 
+\end{pmatrix}
+\end{equation}
+
+The first two parameters as $\alpha_1$ and $\alpha_2$.
+
+\textbf{Example}: Let $y=\beta_0 + \beta_1 x$. How to make the design matrix orthogonal? Centering achieves that.  (to-do: discussion based on Draper and Smith)
+
+\subsection{Orthogonality}
+
+Let 
+
+\begin{equation}
+\beta_{p} = 
+\begin{pmatrix}
+\gamma_{q}\\
+\delta{p-q}
+\end{pmatrix}
+\quad 
+X_{n\times p} = {V_{n\times q} W_{n\times (p-q)}}
+\end{equation}
+
+V and W are orthogonal, i.e., $V^T W = 0$.
+
+Consequence of orthogonality:
+
+\begin{equation}
+Cov(\hat\beta) = 
+\sigma^2 
+\begin{pmatrix}
+(V^TV)^{-1} & 0 \\
+0 & (W^TW)^{-1}\\
+\end{pmatrix}
+\end{equation}
+
+$\gamma$ and $\delta$ are independent in the statistical sense. Excluding $\delta$ will not affect estimate of $\gamma$'s sampling distribution.
+
+\paragraph{Prediction}
+
+If we want to predict a new value given a new data point $x_0$.
+
+\begin{equation}
+E[Y[x_0]] = y(x_0) = f(x_0)^T \beta
+\end{equation}
+
+The estimate $\hat y(x_0) =f(x_0)^T\hat \beta$ is unbiased. The variance is 
+
+\begin{equation}
+\begin{split}
+Var(\hat y(x_0)) =& f(x_0)^T Cov\hat \beta f(x_0)\\
+=& \sigma^2 f(x_0)^T f(x_0)\\
+\end{split}
+\end{equation}
+
+So, variance (accuracy) depends on depends on X and $x_0$.
+
+\textbf{Example}: Consider simple linear regression. We know (LinearModelsSummary.pdf) that
+
+\begin{equation}
+(X^TX)^{-1} = \frac{1}{n S_{xx}} 
+\begin{pmatrix}
+\sum x^2 & -\sum x\\
+-\sum x & n \\
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+Var(\hat y(x_0)) = Var(\hat \beta_0 + \hat \beta_1 x_0) =& 
+\frac{\sigma^2}{nS_{xx}} 
+\begin{pmatrix}
+1 & x_0\\
+\end{pmatrix}
+\begin{pmatrix}
+\sum x^2 & -\sum x\\
+-\sum x & n \\
+\end{pmatrix}
+\begin{pmatrix}
+1\\
+x_0\\
+\end{pmatrix}\\
+=& \sigma^2 (\frac{1}{n} + \frac{(x_0 - \bar{x})^2}{S_{xx}}) \\
+\end{split}
+\end{equation}
+
+where $\bar{x} = \frac{\sum x}{n}$, and $S_{xx}=(\sum x_2) -n\bar{x}^2$. 
+
+One should avoid predicting outside the region containing the design points, because we usually have no idea whether the model holds outside the range of the design points. 
+
+\subsection{Standardized Information Matrix (SIM)}
+
+$M=\frac{1}{n} X^T X$.
+
+Standard variance at point x:
+
+\begin{equation}
+\begin{split}
+d(x) =& n f(x)^{T} (X^T X)^{-1} f(x)\\
+=& f(x)^{T} M^{-1} f(x)
+\end{split}
+\end{equation}
+
+This is a very important equation for the next section.
+
+The SIM remains unchanged for different sample sizes.
+
+
+\end{multicols}
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
