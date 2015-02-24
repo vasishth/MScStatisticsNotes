@@ -1,0 +1,995 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+\usepackage[table]{xcolor}
+
+\newcommand\x{\times}
+\newcommand\y{\cellcolor{green!10}}
+
+\newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
+
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}
+
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+\SweaveOpts{prefix.string=MatAlgfigs/MatAlgfig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Multivariate Analysis Summary Sheet}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+
+
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+\footnotesize
+\maketitle
+\tableofcontents
+
+\newpage
+
+\begin{multicols}{2}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Multivariate Analysis Summary Sheet} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+<<echo=F>>=
+options(width=60)
+options(continue=" ")
+@
+
+\section{Preliminaries}
+
+We will treat $X'$ as the data matrix:
+
+\begin{equation}
+X'=\begin{pmatrix}
+x_{11} & \dots & x_{1p}\\
+\vdots & \vdots & \vdots \\
+x_{n1} & \dots & x_{np}\\
+\end{pmatrix}
+\end{equation}
+
+\subsection{Sample mean}
+
+The \textbf{sample mean vector} is:
+
+\begin{equation}
+\bar{x} = \begin{pmatrix}
+\bar{x}_1 \\
+\vdots\\
+\bar{x}_p\\
+\end{pmatrix}
+=
+\frac{1}{n} 
+\begin{pmatrix}
+x_{11} + \dots + x_{n1}\\
+\vdots  \\
+x_{1p} + \dots + x_{np}\\
+\end{pmatrix}
+\end{equation}
+
+More compactly: $\bar{x} = \frac{1}{n}X1 \Leftrightarrow \bar{x}' = \frac{1}{n}1'X'$.
+
+\subsection{Sample variance}
+
+Sample variance (variance-covariance) matrix:
+
+\begin{equation}
+S_{p\times p} = var(X') = \frac{1}{n-1} (X-\bar{X}) (X-\bar{X})'
+\end{equation}
+
+$\bar{X}_{p\times n}=[\bar{x} \dots \bar{x}]$
+
+\textbf{Properties of S}:
+
+$S$ is symmetric, $S_{ii}$ is sample variance, and $S_{ij}$ is sample covariance.
+
+If columns of S are linearly independent (i.e., if none of the variables is a linear combination of the other), S is non-singular, and positive definite.
+
+The \textbf{sample correlation matrix} R is the same as the vcov matrix, but has entries scaled:
+
+\begin{equation}
+r_{ij}=\frac{s_{ij}}{\sqrt{s_{ii}s_{jj}}}
+\end{equation}
+
+If $L$ be the diagonal matrix:
+
+$
+\begin{pmatrix}
+s_{11} & \dots & 0\\
+0 & \dots & 0\\
+0 & \dots & s_{nn}\\
+\end{pmatrix}
+$
+and $L^{1/2}$ has sds along the diagonal, then
+
+\begin{equation}
+S=L^{1/2} R L^{1/2}
+\end{equation}
+
+\begin{enumerate}
+\item R is symmetric, $p\times p$
+\item $r_{ii}=1$ for all i
+\item $-1 \leq r_{ij} 1$.
+\item Geometrically, $r_ij$ is the cosine of the angle between the vectors of deviations of observations of the ith and jth variables from the mean.
+\begin{enumerate}
+\item If angle is 0 deg (0 rad), $\rho=1$.
+\item If angle is 90 deg ($\pi/2$ rad), $\rho=0$.
+\end{enumerate}
+to-do example
+\end{enumerate}
+
+\section{Some useful results}
+
+\begin{enumerate}
+\item
+Let $w$ be a vector. Then $var(X'w) = w'var(X')w=w'Sw$. 
+\item If $A$ is any $p\times q$ matrix, then $Var(X'A)=A'Var(X')A=A'SA$.
+\end{enumerate}
+
+\section{Useful properties of eigenvalues and eigenvectors}
+
+Let $A_{p\times p}$, and let eigenvalues be $\lambda_i$.
+
+\begin{enumerate}
+\item $\sum \lambda_i = trace(A)$
+\item $\prod \lambda_i = det(A)$
+\item If $\lambda_i$ is an eigenvalue of A, then there is at least one vector $x_i$, called an eigenvector of A, such that $Ax_i = \lambda_i x_i$.
+\item If A is realand symmetric $p\times p$, then there are always p linearly independent eigenvectors.
+\item If C is any non-singular square matrix, then A and $CAC^{-1}$ have the same eigenvalues. If $x_i$ is an eigenvector of A with eigenvalue $\lambda_i$, then $Cx_i$ is an  eigenvector of $CAC^{-1}$ with eigenvalue $\lambda_i$. [Prove it]
+\item If A is real symmetric, i.e., $A=A'$. Then the eigenvalues of A are real. [Prove it]
+\item If A is real symmetric, and $\lambda$ and $\mu$ are eigenvalues, and x and y are corresponding eigenvectors, then x and y are orthogonal. [Prove it]
+\item If A is real symmetric, and if X denotes the matrix whose columns are normalized eigenvectors of A, then X is an orthogonal matrix ($XX'=I$, or $X'=X^{-1}$). [Prove it]
+
+Also, $X^{-1}AX=\Lambda$, where $\Lambda$ is the diagonal matrix containing the eigenvalues of A along the diagonal. This is because $AX = X\Lambda$.
+
+The decomposition $X^{-1}AX=\Lambda$ is called the \textbf{spectral decomposition}, and is equivalent to 
+
+\begin{equation}
+A=\lambda_1 x_1 x_1' + \dots + \lambda_p x_p x_p'
+\end{equation}
+
+where $x_i$ is an eigenvector of A with eigenvalue $\lambda_i$.
+\item 
+If A is any positive definite real symmetric matrix, it will have positive definite real symmetric square roots. [Prove it]
+%If A is any positive definite real symmetric matrix, with orthogonal eigenvectors $x_1,\dots,x_p$, corresponding to eigenvalues $\lambda_1,\dots,\lambda_p$ (which are positive). 
+\item The eigenvalues of a variance-covariance matrix are non-negative.
+\end{enumerate}
+
+\section{Vector calculus review}
+
+Some useful results:
+
+\begin{enumerate}
+\item 
+If S is a symmetric $p\times p$ vector, and if $f(x)=x'Sx$. Then $\frac{\delta f}{\delta x} = 2Sx$. [Derive this.]
+\item 
+If S is not symmetric, $\frac{\delta f(x)}{\delta x} = (S + S')x$
+\item
+If S is I, then $\frac{\delta f(x)}{\delta x}=\frac{\delta x'x}{\delta x}=2x$.
+\item If a is a constant p-vector, and $f(x)=a'x$, then $\frac{\delta f}{\delta x}=a$. 
+\end{enumerate}
+
+\section{Constrained optimization (Lagrange Multipliers)}
+
+Suppose $t_1, \dots, t_n$ are unbiased estimates of $\theta$, and variance of $t_i$, $i=1,\dots,n$, is $\sigma_i^2$.
+
+<<>>=
+## t_i, equal variance
+t<-rnorm(10)
+@
+
+Find \textbf{B}est \textbf{L}inear \textbf{U}nbiased \textbf{E}stimator of $\theta$.
+
+Solution:
+
+The BLUE of $\theta$ will be a weighted sum of the $t_i$. Let this weighted sum be $\tau = \sum a_i t_i$, such that $E[\tau]=\theta$. 
+
+We need to minimize the variance: $Var(\tau)=Var(\sum a_i t_i)=\sum a_i^2 Var(t_i)=\sum a_i^2\sigma_i^2$.
+
+Since $E[t_i] = E[\tau]=\theta$, the weights $a_i$ must sum to 1. So the constraint is that $\sum a_i = 1$. 
+
+So, we minimize this function:
+
+\begin{equation}
+\Omega = \sum a_i^2\sigma_i^2 + \lambda (\sum a_i - 1)
+\end{equation}
+
+Differentiating with respect to  each $a_i$, we get: $2 a_i\sigma_i^2 +\lambda = 0$, which implies that
+
+\begin{equation}\label{ai}
+a_i = -\frac{\lambda}{2 \sigma_i^2}
+=
+-\frac{1}{2}\frac{\lambda}{\sigma_i^2}
+\end{equation}
+
+Differentiating with respect to the Lagrangian, we get
+
+\begin{equation}
+\sum a_i - 1 = 0
+\end{equation}
+
+Replacing $a_i$ in the above with the RHS in equation~\ref{ai},
+
+\begin{equation}
+\sum  -\frac{1}{2}\frac{\lambda}{\sigma_i^2} - 1 = 0
+\end{equation}
+
+Adding -1 to both sides:
+
+\begin{equation}
+\sum  -\frac{1}{2}\frac{\lambda}{\sigma_i^2}  = 1
+\end{equation}
+
+Multiplying both sides by -1:
+
+\begin{equation}
+\sum  \frac{1}{2}\frac{\lambda}{\sigma_i^2}  = -1
+\end{equation}
+
+Solve for $\lambda$ (change index i to k):
+
+\begin{equation}
+\lambda   = \frac{-1}{\frac{1}{2}}\frac{1}{\frac{1}{\sum \sigma_k^2}} = \frac{-2}{\frac{1}{\sum \sigma_k^2}}
+\end{equation}
+
+Now we can figure out each $a_i$ by plugging in $\lambda$ into 
+
+\begin{equation}
+a_i = -\frac{1}{2}\frac{\lambda}{\sigma_i^2} = -\frac{1}{2}\frac{\frac{-2}{\frac{1}{\sum \sigma_k^2}}}{\sigma_i^2} = \frac{1}{\sigma_i^2} \left[ \frac{1}{\sum \sigma_k^2}\right]^{-1}
+\end{equation}
+
+Finally, we need to plug in the definition of $a_i$ into $\tau=\sum a_i t_i$. At this stage it makes sense to use the index i again (instead of k):
+
+\begin{equation}
+\tau = \sum a_i t_i = \sum \left[ 
+\frac{1}{\sigma_i^2} \left[ \frac{1}{\sum \sigma_k^2}\right]^{-1}
+\right] t_i = \sum \frac{t_i}{\sigma_i^2} \left[ \frac{1}{\sum \sigma_k^2}\right]^{-1}
+\end{equation}
+
+\section{Multivariate distributions}
+
+Definition: If $\mu$ is a p-vector and $\Sigma$ is a positive definite symmetric $p\times p$ matrix, then MVN distribution $N_p(\mu,\Sigma)$ is:
+
+\begin{equation}
+f_x(x) = \frac{1}{(2\pi)^{p/2} \mid \Sigma \mid^{1/2} } \exp \left( -\frac{1}{2} (x-\mu)' \Sigma^{-1} (x-\mu) \right)
+\end{equation}
+
+\begin{enumerate}
+\item
+The quadratic form $(x-\mu)' \Sigma^{-1} (x-\mu)$ in the kernel is a statistical distance measure; for any value of x, the quadratic form gives the squared statistical distance of x from $\mu$, called squared Mahalanobis distance.  
+\item
+Note that the MVN density is constant on surfaces of contours where
+
+$(x-\mu)' \Sigma^{-1} (x-\mu)=c^2$
+
+``The axes of each ellipsoid of constant density are in the direction of the eigen- vectors of $\Sigma^-1$ (recall that these are the same as the eigenvectors of $\Sigma$, but if $\Sigma x=\lambda x$, then
+$\Sigma^{-1} x=\lambda^{-1} x$), and their lengths are proportional to the reciprocals of the square roots of the eigenvalues of $\Sigma^{-1}$.'' (p.\ 95)
+
+\item 
+If $x \sim N_p(\mu,\Sigma)$,
+then
+
+\begin{enumerate}
+\item
+$(x-\mu)' \Sigma^{-1} (x-\mu)\sim \chi_p^2$.
+\item 
+The solid ellipsoid $\{x\mid (x-\mu)' \Sigma^{-1} (x-\mu) \leq \chi_p^2(\alpha)\}$ has probability $1-\alpha$.
+\end{enumerate}
+
+This follows from the fact that if $x\sim N_p(\mu,\Sigma)$ then 
+$y=\Sigma^{1/2} (x-\mu)\sim N_p(0,I_p)$ and therefore:
+
+\begin{equation}
+y'y = (x-\mu)' \Sigma^{-1} (x-\mu) = \sum_{i=1}^2 Y_i^2 \sim \chi_p^2
+\end{equation}
+
+``One of the consequences of the properties is that the marginal distributions of the individual variables of a multivariate normal distribution is a univariate normal distribu- tion.'' (p.\ 96)
+
+\item
+If $X\sim N_p(\mu,\Sigma)$ and w is a p-vector, then the linear combination $w'X \sim N(w'\mu,w'\Sigma w)$.
+\item 
+If $X\sim N_p(\mu,\Sigma)$ and A is a $q\times p$ matrix, then the linear combination $AX \sim N(A\mu,A\Sigma A')$.
+\item 
+If $X\sim N_p(\mu_X,\Sigma_X)$ and $Y\sim N_q(\mu_Y,\Sigma_Y)$, then the p+q vector 
+
+$\begin{pmatrix}
+X\\
+Y
+\end{pmatrix}
+\sim N_{p+q}\left( 
+\begin{pmatrix}
+\mu_X\\
+\mu_Y
+\end{pmatrix},
+\begin{pmatrix}
+\Sigma_X & 0 \\
+0 & \Sigma_Y\\
+\end{pmatrix}
+\right)
+$
+
+as long as X and Y are independent.
+\item 
+If
+$\begin{pmatrix}
+X\\
+Y
+\end{pmatrix}
+\sim N_{p+q}\left( 
+\begin{pmatrix}
+\mu_X\\
+\mu_Y
+\end{pmatrix},
+\begin{pmatrix}
+\Sigma_X & \Sigma \\
+\Sigma' & \Sigma_Y\\
+\end{pmatrix}
+\right)
+$
+
+then X and Y are independent iff $\Sigma=0$.
+
+\end{enumerate}
+
+\section{Principal Components Analysis}
+
+Useful mostly when we have continuous data.
+
+[Sources: Tutorial on PCA by Shlens, ]
+
+Let $X_{n\times p}$ be our data, where we have p different variables, and n measurements on each variables. Example:
+
+<<>>=
+n<-5
+x1<-c(1,3,5,7,9)
+x2<-c(4,7,8,11,15)
+## n=5, p=2:
+X<-data.frame(x1=x1,x2=x2)
+## centered variables:
+x1<-scale(x1,scale=F)
+x2<-scale(x2,scale=F)
+X<-data.frame(x1,x2)
+X<-as.matrix(X)
+@
+
+The matrix $\frac{1}{n-1}X'X$ is the real symmetric variance-covariance matrix, and represents the relationships between the variables:
+
+<<print=TRUE>>=
+var1<-(1/(n-1))*t(X)%*%X
+var2<-var(X)
+@
+
+The total amount of dispersion on the data is the sum of the variances (the trace):
+
+<<>>=
+## sum of the variances=the total dispersion:
+sum(diag(var2))
+@
+
+\begin{fact}
+Any symmetric matrix X is 
+diagonalized by an orthogonal matrix of its eigenvectors (see Theorems 1 and 2 in MatrixAlgebraSummary.pdf). 
+For a symmetric matrix X, $X = EDE^T$, 
+where D is a diagonal matrix and E is a matrix of eigenvectors of X arranged as columns.
+\end{fact}
+
+
+\textbf{PCA using eigenvalue decomposition}:
+
+The goal is to find some orthonormal matrix P in $Y = PX$ such that the covariance matrix $C_Y = \frac{1}{n} Y Y^T$ is a diagonal matrix. The rows of P are the \textit{principal components} of X.
+
+First, write $C_Y$ in terms of the unknown Y:
+
+\begin{equation}
+\begin{split}
+C_Y =& \frac{1}{n} Y Y^T\\
+    =& \frac{1}{n} (PX)(PX)^T\\
+    =& \frac{1}{n} PXX^T P^T\\
+    =& P (\frac{1}{n} XX^T) P^T\\
+C_Y =& PC_X P^T \\   
+\end{split}
+\end{equation}
+
+Choose P to be a matrix such that each row $p_i$ is an eigenvector of $Cov_X$. So $P=E^T$ where E has the eigenvectors of X in each column. Also note that $P^{-1} = P^T$.
+
+Next, we show that this choice of P diagonalizes $C_Y$---that's the goal of PCA.
+\begin{equation}
+\begin{split}
+C_Y =& PC_X P^T\\
+    =& P(E^TDE)P^T\\
+    =& P(P^TDP)P^T\\
+    =& (PP^T) D (PP^T)\\
+    =& (PP^{-1}) D (PP^{-1})\\
+C_Y    =& D
+\end{split}
+\end{equation}
+
+Key point: the i-th diagonal value $C_Y$ is the variance of X along the principal component (an eigenvector) $p_i$.
+
+The real symmetric var-cov matrix var2 can be decomposed into $U\lambda U'$, where
+
+\begin{enumerate}
+\item
+U is the orthonormal matrix containing the eigenvectors of var2
+\item 
+$\lambda$ is a diagonal matrix containing the eigenvalues of var2
+\end{enumerate}
+
+<<>>=
+lambda<-diag(eigen(var2)$values)
+U<-eigen(var2)$vectors
+U%*%lambda%*%t(U)
+@
+
+We want to linearly transform the vectors 
+x1 and x2:
+
+\begin{center}
+\includegraphics[height=5cm,width=7cm]{bestfitPC}
+\end{center}
+
+In this figure, the largest direction of variance lies along the best fit line, not perpendicular to the best fit line. Thus, by assumption, the dynamics of interest lie along the direction with largest variance. Maximizing the variance corresponds to finding the appropriate rotation of the naive basis.
+
+\textbf{By transforming $X'$ to $Y'=aX'$, we have projected $X'$ onto $a$, a one-dimensional space, a single line. The values of $Y'$ give the co-ordinates of each observation along the vector a}.
+
+For example, if we have 
+$x_1 = 
+\begin{pmatrix}
+1\\
+2
+\end{pmatrix}, 
+x_2 = 
+\begin{pmatrix}
+2\\
+1
+\end{pmatrix}, 
+x_3 = 
+\begin{pmatrix}
+-1\\
+1
+\end{pmatrix}$, and 
+$a = 
+\begin{pmatrix}
+\frac{3}{5}\\
+\frac{-4}{5}
+\end{pmatrix}$, then 
+
+$X' = 
+\begin{pmatrix}
+1 & 2\\
+2 & 1\\
+-1 & 1 
+\end{pmatrix}$. 
+
+Therefore $Y' = X'a = 
+\begin{pmatrix}
+-1 \\
+\frac{2}{5}\\
+-\frac{7}{5}
+\end{pmatrix}$.
+
+So, $x_1 = -1.a + z_1$ where $z_1$ is orthogonal to a. And so on.
+
+<<echo=FALSE>>=
+op<-par(mfrow=c(1,2),pty="s")
+plot(x1,x2,xlim=c(-6,6),ylim=c(-6,6),
+     main="")
+abline(lm(x2~x1))
+## First PC is always along the line
+## of best fit:
+arrows(x0=0,y0=0,x1=5*U[1,1],y1=5*U[2,1],lwd=2)
+arrows(x0=0,y0=0,x1=5*U[1,2],y1=5*U[2,2],lty=2)
+#legend(x=-5,y=20,lty=c(1,2),legend=c("PC1","PC2"))
+library(MVA)
+bvbox(X)
+arrows(x0=0,y0=0,x1=5*U[1,1],y1=5*U[2,1],lwd=2)
+arrows(x0=0,y0=0,x1=5*U[1,2],y1=5*U[2,2],lty=2)
+@
+
+If the maximum variance were \textit{not}
+along the line of best fit, but in a perpendicular direction, the first PC would point in that direction:
+
+<<echo=FALSE>>=
+x1<-c(1,2,3,3,2)
+x2<-c(20,55,4,30,5)
+x1<-scale(x1,scale=F)
+x2<-scale(x2,scale=F)
+op<-par(mfrow=c(1,2),pty="s")
+plot(x1,x2,xlim=c(-33,33),ylim=c(-33,33))
+abline(lm(x2~x1))
+X<-data.frame(x1,x2)
+X<-as.matrix(X)
+lambda<-eigen(var(X))$values
+U<-eigen(var(X))$vectors
+arrows(x0=0,y0=0,x1=20*U[1,1],y1=20*U[2,1])
+arrows(x0=0,y0=0,x1=20*U[1,2],y1=20*U[2,2],lty=2)
+
+bvbox(X)
+arrows(x0=0,y0=0,x1=5*U[1,1],y1=20*U[2,1],lwd=2)
+arrows(x0=0,y0=0,x1=U[1,2],y1=U[2,2],lty=2)
+@
+\begin{center}
+\includegraphics[height=5cm,width=7cm]{PC2}
+\end{center}
+
+
+Assumption (sometimes incorrect): \textbf{Large variances have important structure}. 
+Therefore maximize variance to find the most important PCs.
+
+The reasoning is that if variance is small, then all the observations have similar values, so there is little information in the data. If variance is large, then we have more ``information''.
+
+\subsection{Geometric interpretation}
+
+Basically, the PCA method just rotates the data so that the ellipsoid's axes are the principal components.
+
+\subsection{Presentation from lecture notes}
+
+\textbf{Goal}: reduce $X_{n\times p}$ to $Y_{n\times q}$
+
+``A linear transformation $X' \rightarrow Y'$ is given by $Y'=X'A$ where A is a $p\times p$-matrix; it makes statistical sense to restrict attention to non-singular matrices A. If A happens to be an orthogonal matrix, i.e., $A'A=I_p$,then the transformation $X'\rightarrow Y'$  is an orthogonal transformation (i.e., just a rotation and/or a reflection of the n points in p-dimensional space)''.
+
+We want to choose A such that variance X'A is maximized; this is because ``maximizing the variance corresponds to finding the appropriate rotation of the naive basis'' (Shlens tutorial). 
+
+How to choose A such that variance of $X'A$ is maximized? If we just choose some A:
+<<>>=
+m<-matrix(rnorm(1000),byrow=TRUE,ncol=10)
+diag(var(m))
+a<-matrix(rnorm(100),byrow=TRUE,ncol=10)
+@
+You can increase variance arbitrarily
+by multiplying a with some number, here 2:
+
+<<>>=
+diag(m1<-var(m%*%a))
+diag(m2<-var(m%*%(2*a)))
+@
+Notice that variances have increased by
+a factor of $2^2$:
+
+<<>>=
+diag(m2)/diag(m1)
+@
+
+\textbf{The point here}: The ``maximum variance'' here is unbounded. We can increase it arbitrarily. To maximize variance, we have to constrain it somehow, and that's why a constraint is imposed (below), that $w_i' w_i$ sums to 1 and the eigenvectors $w_i, w_j$ ($i\neq j$) are orthogonal.
+
+\begin{theorem}
+The $p$ principal components of data $X'$ are the $p$ eigenvectors $a_1,\dots,a_p$ corresponding to the $p$ ordered eigenvalues $\lambda_1 \geq \dots \geq \lambda_p$ of S, the variance of $X'$.
+[Theorem 3.3 in lecture notes]
+\end{theorem}
+
+\begin{definition}
+The first principal component is the vector $a_1$ such that the projection of the data $X'$ onto $a_1$, i.e., $X'a_1$, has maximal variance, subject to the normalising constraint that $a_1'a_1 = 1$ (i.e., $a_1$ has length 1).
+\end{definition}
+
+\subsection{PCA example by hand}
+
+To find first PC, we maximize $w_1 S w_1$ subject to $w_1' w_1=1$, where $S=X'X$. $w_1$ will be the eigenvector representing the direction of the maximum variance.
+
+\begin{equation}
+w_1' S w_1 - \lambda_1 (w_1' w_1 -1)
+\end{equation}
+
+Differentiating with respect to $w_1$ gives:
+
+\begin{equation}
+S w_1 - \lambda_1 w_1 = 0 \Leftrightarrow 
+S w_1 = \lambda_1 w_1
+\end{equation}
+
+But this means that $\lambda_1$ is an eigenvalue of S, and that $w_1$ is the corresponding eigenvector.
+
+When finding the second principal component, we want to ensure that $w_2$ is uncorrelated to $w_1$. This means that $w_2' S w_1=0$, but since $S w_1 = \lambda_1w_1$, we have $w_2' w_1 = 0$.
+
+So the second PC $w_2$ should have the property that the projection of $X'$ onto $w_2$ should have maximum variance subject to $w_2'w_2=1$ and 
+$w_2' w_1 = 0$. Since we have two constraints we will use two Lagrangian multipliers:
+
+\begin{equation}
+\Omega_2 = w_2' S w_2 -\mu w_2' w_1 - \lambda_2(w_2' w_2 -1 )
+\end{equation}
+
+Differentiate with respect to $w_2$:
+
+\begin{equation} \label{e0}
+2S w_2 -\mu w_1 - 2\lambda_2 w_2=0
+\end{equation}
+
+Pre-multiplying each side with $w_1'$:
+
+\begin{equation}\label{e1}
+2w_1'S w_2 -\mu w_1'w_1 - 2\lambda_2 w_1'w_2=0
+\end{equation}
+
+Pre-multiplying by $w_2'$:
+
+\begin{equation}\label{e3}
+2w_2'S w_2 -\mu w_2'w_1 - 2\lambda_2 w_2'w_2=0
+\end{equation}
+
+Because $\lambda_2 w_1'w_2=0$, we can see from equation~\ref{e1} that
+
+\begin{equation}
+\mu = 2w_1'S w_2 = 2(Sw_a)' w_2 = 2(\lambda_1 w_1)' w_2 = 2\lambda_2 w_1' w_2=0
+\end{equation}
+
+From equation~\ref{e0}, we can then conclude that
+
+\begin{equation}
+2S w_2 = \lambda_2 w_2
+\end{equation}
+
+Therefore, $w_2$ is an eigenvector of S, with eigenvalue $\lambda_2$.
+
+Recall that $var(X'w_2) = w_2'var(X')w_2 = w_2'Sw_2$. Equation~\ref{e3} is that:
+
+\begin{equation}
+2w_2'S w_2 -\mu w_2'w_1 - \lambda_2 w_2'w_2=0
+\end{equation}
+
+Replacing $w_2'S w_2$ with $var(X'w_2)$, we get that:
+
+\begin{equation}
+2var(X'w_2) -\explain{\mu w_2'w_1}{=0} - 2\lambda_2 w_2'w_2=
+var(X'w_2) - 2\lambda_2 = 0
+\end{equation}
+
+Therefore, $var(X'w_2) = 2\lambda_2$. This entails that $\lambda_2$ must be the second largest eigenvalue with eigenvector $w_2$. (Question: why is this entailed?)
+
+All Principal Components can be found using the diagonalization of S. The eigenvalue decomposition of S is also called the \textbf{spectral decomposition} of S. The set of eigenvalues is called the \textbf{spectrum} of S.
+
+\subsection{Computing PCs using eigen()}
+
+<<>>=
+x<-c(1,3,5,7,9)
+y<-c(4,7,8,11,15)
+plot(x,y)
+xy<-data.frame(x=x,y=y)
+var_matrix<-var(xy)
+lambda<-eigen(var_matrix)$values
+eigenvectors<-eigen(var_matrix)$vectors
+## first principle component contains 99.2% of the information:
+lambda[1]/(lambda[1]+lambda[2])
+## using prebuilt function:
+xy_pc<-princomp(xy)
+plot(xy_pc)
+#source("code/scree.R")
+@
+
+\subsection{How to map the points onto the PC}
+
+Take the first example above:
+
+<<>>=
+n<-5
+x1<-c(1,3,5,7,9)
+x2<-c(4,7,8,11,15)
+## n=5, p=2:
+## centered variables:
+x1<-scale(x1,scale=F)
+x2<-scale(x2,scale=F)
+X<-data.frame(x1,x2)
+X<-as.matrix(X)
+S<-var(X)
+lambda<-eigen(S)$values
+U<-eigen(S)$vectors
+@
+
+The first set of points $x_1=(1,4)$, and $e_1$ is the first PC.
+
+\begin{equation}
+x_1  = \bar{x} + te_1 + ue_2
+\end{equation}
+
+$\bar{x}=0$ as data are centered, so we have:
+
+\begin{equation}
+x_1  = te_1 + ue_2
+\end{equation}
+ Premultiplying by $e_1$:
+ 
+\begin{equation}
+e_1' x_1  = e_1' te_1 + e_1' ue_2 = t
+\end{equation}
+
+So, $t= e_1' x_1$ (\textbf{or}: $t= x_1' e_1$), so $x_1=t e_1$. I.e.,
+$t e_1$ is the point where 
+$x_1$ is mapped on to on the first PC. 
+
+<<echo=FALSE>>=
+x1<-c(1,3,5,7,9)
+x2<-c(4,7,8,11,15)
+## n=5, p=2:
+X<-data.frame(x1=x1,x2=x2)
+## centered variables:
+x1<-scale(x1,scale=F)
+x2<-scale(x2,scale=F)
+X<-data.frame(x1,x2)
+
+X<-as.matrix(X)
+S<-var(X)
+lambda<-eigen(S)$values
+U<-eigen(S)$vectors
+@
+
+<<echo=FALSE>>=
+plot(x1,x2,xlim=c(-6,6),ylim=c(-6,6),
+     main="")
+abline(lm(x2~x1))
+## First PC is always along the line
+## of best fit:
+arrows(x0=0,y0=0,x1=5*U[1,1],y1=5*U[2,1],lwd=2)
+arrows(x0=0,y0=0,x1=5*U[1,2],y1=5*U[2,2],lty=2)
+arrows(x0=0,y0=0,x1=x1[1],y1=x2[1],lty=1,lwd=2)
+t<-t(U[,1])%*%X[1,]
+U1<-t*U[,1]
+arrows(x0=0,y0=0,x1=U1[1],y1=U1[2],lty=1,lwd=3)
+@
+
+\includegraphics[height=5cm,width=7cm]{PCmapping}
+
+\subsection{Computing PCs using the correlation matrix}
+
+Needed when data are of mixed type, or one variable has very high variance compared to others. 
+
+\textbf{Rule of thumb}:
+``If the largest variance is more than about 4 times the smallest, then use the correlation matrix (otherwise the variables with large variance will dominate the principal component calculation).''
+
+One should use the vcov matrix if
+the scales of measurement are similar,  and the standard deviations of all variables are similar.
+
+\textbf{Note}: The sort of interpretation given in the turtle example is valid only really when the variance matrix is used rather than the correlation matrix.
+
+Interpretation of loadings is only viable for small numbers of variables.
+
+
+Steps:
+
+\begin{enumerate}
+\item Center and scale data to get a correlation matrix:
+
+<<>>=
+x1<-c(1,2,4,4,5,6,8,10)
+x2<-c(2,3,6,7,8,11,13,14)
+x1<-scale(x1,scale=F)
+x2<-scale(x2,scale=F)
+X<-data.frame(x1,x2)
+X<-as.matrix(X)
+S<-var(X)
+lambda<-eigen(S)$values
+U<-eigen(S)$vectors
+S_corr<-cov2cor(S)
+@
+
+\end{enumerate}
+
+\subsection{Quadratic PCA}
+
+With a very small number of variables, one might try to generalise to e.g., quadratic principal components by adding variables for each quadratic combination.
+
+\subsection{Other things to look up}
+
+\begin{enumerate}
+\item Projection pursuit
+\item ICA
+\item Factor analysis
+\item Kohonen's SOMs
+\item Generative topographic mapping
+\end{enumerate}
+
+\section{Multidimensional scaling}
+
+Goal: visualize a proximity matrix, if possible with a  good lower-dimensional approximation (similar to PCA).
+
+\textbf{The mathematical problem}: $n\times n$ proximity matrix (a symmetric matrix of $\delta_{ij}$ dissimilarities), find a q-dimensional space such that the calculated distance matrix $d_{ij}$ reasonably matches the given dissimilarity matrix $\delta_{ij}$. We can generally find one for $q=n-1$. The more interesting case is when q is very small.
+
+Aims of MDS:
+
+\begin{enumerate}
+\item To learn about the measure of dissimilarity itself
+\item To discover underlying structure in the data
+\item
+To see whether the data naturally divides into groups (clustering)
+\end{enumerate}
+
+
+\subsection{Principal coordinate analysis (classical metric scaling)}
+
+PCA = classical MDS
+
+\begin{theorem}
+D is a matrix of Euclidean distances iff B is  positive semidefinite (iff all eigenvalues of B are semidefinite).\hfill
+[Theorem 4.2, p.\ 52]
+\end{theorem}
+
+Given a distance matrix $D=(\delta_{ij})$, we find the configuration of points:
+
+\begin{enumerate}
+\item 
+Find B=HAH, where $A=-\frac{1}{2} \delta_{ij}^2$, and $H=I_n - \frac{1}{n} J_n$.
+\item Find eigenanalysis of B.
+\item Transpose matrix of eigenvectors.
+\item The columns of this transposed matrix are the principal coordinates of the points.
+\end{enumerate}
+
+\textbf{Example}:
+
+<<>>=
+x<-c(1,3,5,7,9)
+y<-c(4,7,8,11,15)
+D<-matrix(rep(NA,25),ncol=5)
+## compute Eudlidean distance:
+for(i in 1:5){
+  for(j in 1:5){
+    d<-(x[i]-x[j])^2+(y[i]-y[j])^2
+    D[i,j]<-d
+  }
+}
+A<- -0.5 * D
+H<-diag(5) - (1/5)*matrix(rep(1,25),ncol=5)
+
+B<- H%*% A %*% H
+eigen_B<-eigen(B)
+eigen_B$values
+## take first eigenvector:
+v1<-eigen_B$vectors[,1]
+f<-v1*sqrt(eigen_B$values[1])
+## D2 fits with D:
+D2<-matrix(rep(NA,25),ncol=5)
+for(i in 1:5){
+  for(j in 1:5){
+    d<-(f[i]-f[j])^2
+    D2[i,j]<-d
+  }
+}
+@
+
+\section{Cluster analysis}
+
+%http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters?imm_mid=0bf394&cmp=em-strata-na-na-newsltr_20140702_elist
+
+\section{Multivariate analysis}
+
+To test the null hypothesis: $H_0: \mu_1=\mu_2$.
+From the lecture notes (p.\ 102): obtain the sample Mahalanobis distance $D^2$ and reject $H_0$ if 
+
+\begin{equation}
+\frac{n_1 n_2 (n-p -1 )}{n(n-2)p} D^2 > F_{p,n-p-1}(\alpha)
+\end{equation}
+
+where $D^2$:
+
+\begin{equation}
+D^2= (\bar{x}_1-\bar{x}_2)' S^{-1}(\bar{x}_1-\bar{x}_2)
+\quad S = \frac{(n_1 -1)S_1 + (n_2 -1)S_2}{n-2}
+\end{equation}
+
+To test the hypothesis
+
+\begin{equation}
+H_0:
+\begin{pmatrix}
+\mu_{1}\\
+\mu_{2}\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\mu_{3}\\
+\mu_{4}\\
+\end{pmatrix}
+\end{equation}
+
+the procedure is identical, except that $\bar{x}_1$ are vectors, not single values. 
+
+\subsection{Assessing normality}
+
+One can plot $D^2$ against the appropriate chi-squared distribution:
+
+<<>>=
+library(MVA)
+#chiplot
+@
+
+\subsection*{Analysis using the library ICSNP}
+
+Example code (From ex 3):
+
+\begin{verbatim}
+m1<-with(shapedata,
+         HotellingsT2(cbind(taper,point) ~ batch))
+\end{verbatim}         
+     
+
+\section{Time Series}         
+
+
+
+\end{multicols}
+
+\end{document}
+
