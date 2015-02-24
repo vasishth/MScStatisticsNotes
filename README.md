@@ -11,7 +11,10 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 	Prob: https://www.sheffield.ac.uk/polopoly_fs/1.139682!/file/P-contentsMap.pdf
 	
 	Stat: https://www.sheffield.ac.uk/polopoly_fs/1.139683!/file/S-contentsMap.pdf
+
 1. GraduateCertificateNotes.{Rnw,pdf} Covering Mathematics, Probability, and Statistics
+
+2. FoundationsOfMathematics.Rnw A bit more detail on the mathematical background.
 
 *Year 1 (2012-13)*
 
