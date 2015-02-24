@@ -1,0 +1,68 @@
+\documentclass{article}
+\title{Time Series problems (and examples)}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section{Problem 1}
+
+<<fig=TRUE>>=
+dir<-"/Users/shravanvasishth/Dropbox/MScStatistics/2014-2015/MAS6011/Semester2/Data/"
+
+whisk<-read.table(paste(dir,"Whisk.txt",
+                        sep=""))
+whisk_ts<-ts(whisk,start=c(1980),end=1987,
+             frequency=12)
+ts.plot(whisk_ts,ylab="hectoliters of whiskey per month",xlab="month")
+@
+
+trend: none
+
+seasonality: peaks at start of year (sometimes)
+
+randomness: some
+
+stationarity: yes
+
+<<fig=TRUE>>=
+sheftempq<-scan(paste(dir,"Sheftemq.txt",
+                        sep=""))
+
+shef_ts<-ts(sheftempq,start=c(1963),end=1978,
+             frequency=4)
+
+ts.plot(shef_ts,ylab="temp.",
+        xlab="quarter")
+
+@
+
+trend: none
+
+seasonality: peaks at start of year (sometimes)
+
+randomness: some
+
+stationarity: yes
+
+\section{The decompose function}
+
+<<>>=
+whisk_ts_decomp<-decompose(whisk_ts)
+str(whisk_ts_decomp)
+plot(whisk_ts_decomp$seasonal)
+plot(whisk_ts_decomp$trend)
+plot(whisk_ts_decomp$random)
+@
+
+\section{ACF}
+
+<<>>=
+acf(whisk_ts)
+@
+
+
+
+
+\end{document}
