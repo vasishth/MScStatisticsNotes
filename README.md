@@ -16,7 +16,7 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 *Year 1 (2012-13)*
 	http://maths.dept.shef.ac.uk/maths/module_info_1417.html
 
-1. LinearModels.{tex,pdf}  
+1. LinearModels.{tex,pdf}. LinearModels2015.{Rnw} is newer. 
 2. GeneralizedLinearModels.{Rnw,pdf}
 3. LinearMixedModels.{Rnw,pdf}
 
@@ -25,6 +25,13 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 
 1. BayesianDataAnalysis.{Rnw,pdf}
 2. ComputationaInference.{Rnw,pdf}
+
+*Year 3 (2014-15)*
+http://maths.dept.shef.ac.uk/maths/module_info_1009.html
+http://maths.dept.shef.ac.uk/maths/module_info_1150.html
+
+1. MultivariateAnalysisSummary.{Rnw,pdf}
+2. MedicalStatisticsSummary.{Rnw,pdf}
 
 *Miscellaneous Notes*
 
