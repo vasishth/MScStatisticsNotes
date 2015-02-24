@@ -1,0 +1,371 @@
+\documentclass{article}
+\title{Multivariate examples}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section{Some notes on practical aspect of PCA}
+
+Any PCA analysis will consist of 
+\begin{enumerate}
+\item
+eigenvalues: amount of variability captured by each PC
+\item 
+scores: ``provide coordinates to graphically represent objects in a lower dimensional space'' (Gaston Sanchez notes)
+\item 
+loadings: ``provide information to determine what variables characterize each principal component'' (Gaston Sanchez notes)
+\end{enumerate}
+
+Functions available:
+
+prcomp:
+\begin{verbatim}
+pc<-prcomp(data, scale. = TRUE)
+## eigenvalues:
+pc$sdev^2
+## scores
+round(head(pc$x, 5), 2)
+## loadings
+round(head(pc$rotation, 5), 2)
+\end{verbatim}
+\section{Iris example}
+
+princomp:
+
+\begin{verbatim}
+pc<-princomp(data, cor = TRUE)
+## eigenvals:
+pc$sdev^2
+## scores:
+round(head(pc$scores, 5), 3)
+##loadings:
+round(head(unclass(pc$loadings), 5), 3)
+\end{verbatim}
+
+<<>>=
+ir<-iris[,-5]
+library(lattice)
+splom(ir)
+
+
+ir.pca<-princomp(ir)
+ir.pca
+summary(ir.pca)
+plot(ir.pca)
+round(loadings(ir.pca),digits=3)
+@
+
+Interpretation of loadings is only viable for small numbers of variables.
+
+<<fig=TRUE>>=
+par(mfrow=c(2,2))
+plot(ir.pca)
+ir.pc<-predict(ir.pca)
+plot(ir.pc[,1:2])
+plot(ir.pc[,2:3])
+plot(ir.pc[,3:4])
+@
+
+PCA on the first two varieties, to illustrate prediction:
+
+<<>>=
+iris.pc2<-princomp(iris[1:100,-5])
+
+irisnew<-predict(iris.pc2,iris[101:150,-5])
+plot(iris.pc2$scores[,1]
+  ,iris.pc2$scores[,2]
+  ,xlim=c(-2.5,5.5),
+  ylim=c(-2.5,1.5))
+points(irisnew[,1],irisnew[,2],col=2)
+@
+
+It is possible to represent the original variables on a plot of the data on the first two principal components (the biplot):
+
+The variables are represented as arrows, with lengths proportional to the standard deviations, and angles between a pair of arrows proportional to the covariances. 
+
+The orientation of the arrows on the plot relates to the correlations between the variables and the principal components and so can be an aid to interpretation.
+
+<<>>=
+biplot(ir.pca)
+@
+
+\subsection{FactoMineR}
+
+<<>>=
+library(FactoMineR)
+pca_ir<-PCA(ir)
+pca_ir$eig
+barplot(pca_ir$eig[,"eigenvalue"], border = NA, col = "gray80", names.arg = rownames(pca_ir$eig))
+## coordinates=loadings:
+## these are the *correlations* between the variables and the PC
+round(pca_ir$var$coord[,1:2], 4)
+## circle of correlations:
+plot(pca_ir,choix="var")
+@
+
+``The closer an arrow is to the circumference of the circle, the better its representation on the given axes.''
+
+Contributions of variables:
+
+<<>>=
+# Contribution of variables
+print(rbind(pca_ir$var$contrib,
+TOTAL = colSums(pca_ir$var$contrib)), print.gap = 3)
+@
+
+If all variables were to contribute uniformly, they would have a contribution of 1/4 (25\%).
+
+Barplot of variable contributions:
+
+<<>>=
+library(RColorBrewer)
+# color palette
+colpal = brewer.pal(n = 4, name = "Blues")[4:1]
+barplot(t(pca_ir$var$contrib), beside = TRUE,
+border = NA, ylim = c(0, 90), col = colpal, legend.text = colnames(pca_ir$var$contrib), args.legend = list(x = "top", ncol = 4, bty = 'n'))
+abline(h = 25, col = "#ff572255", lwd = 2)
+@
+
+Use scores as coordinates to plot objects as scatterplots:
+
+<<>>=
+print(round(pca_ir$ind$coord[,1:2], 3),
+print.gap
+= 3)
+plot(pca_ir, choix = "ind")
+@
+
+Using ggplot2:
+
+<<>>=
+library(ggplot2)
+# data frame with observations from PCA results
+pca_obs <- data.frame(pca_ir$ind$coord[,1:3])
+
+# PCA plots of observations
+ggplot(pca_obs, 
+       aes(x = Dim.1, y = Dim.2, 
+           label = rownames(ir))) + 
+  geom_hline(yintercept = 0, color = "gray70") +
+geom_vline(xintercept = 0, color = "gray70") +
+geom_point(color = "#55555544", size = 5) +
+geom_text(alpha = 0.55, size = 4) + xlab("PC1") +
+ylab("PC2") +
+xlim(-5, 6) +
+ggtitle("PC plot of observations")
+@
+
+Contributions of objects to PCs:
+
+<<>>=
+print(round(pca_ir$ind$contrib[,1:2], 3),
+print.gap
+= 3)
+@
+
+The contributions (in percentage) reflect the influence that each observation has on the formation of the PCs.
+If all observations had the same contribution on each PC, they would contribute with a value of 100/150=10/15=2/3.
+
+Barplots of contributions:
+
+<<>>=
+op = par(mfrow = c(2,1))
+# barplot of object contributions for PC1
+barplot(pca_ir$ind$contrib[,1], border = NA, las = 2,
+names.arg = abbreviate(rownames(ir), 8), cex.names = 0.8)
+title("Observation Contributions on PC1", cex.main = 0.9) 
+abline(h = 2/3, col = "gray50")
+# barplot of object contributions for PC2
+barplot(pca_ir$ind$contrib[,2], border = NA, las = 2,
+names.arg = abbreviate(rownames(ir), 8), cex.names = 0.8)
+title("Observation Contributions on PC2", cex.main = 0.9) 
+abline(h = 2/3, col = "gray50")
+par(op)
+@
+
+Hierarchical clustering:
+
+<<>>=
+clustering = hclust(dist(pca_ir$ind$coord), method = "ward.D") 
+plot(clustering, xlab = "", sub = "")
+@
+
+<<>>=
+# get 3 cluster
+clusters <- cutree(clustering, k = 3) # add cluster to data frame of scores
+pca_obs$cluster = as.factor(clusters)
+# ggplot
+ggplot(pca_obs, aes(x=Dim.1, y=Dim.2, label=rownames(ir))) + geom_hline(yintercept = 0, color = "gray70") +
+geom_vline(xintercept = 0, color = "gray70") +
+geom_point(aes(color = cluster), alpha = 0.55, size = 3) + geom_text(aes(color = cluster), alpha = 0.55, size = 4) +
+xlab("PC1") +
+ylab("PC2") +
+xlim(-5, 6) +
+ggtitle("PCA plot of observations")
+@
+
+\subsection{Better presentation}
+
+%%Example from:
+%http://freshbiostats.wordpress.com/2013/09/04/an-example-of-principal-components-analysis/
+
+<<>>=
+data(iris)
+str(iris); summary(iris[1:4])
+
+pairs(iris[1:4],main="Iris Data", pch=19, col=as.numeric(iris$Species)+1)
+mtext("Type of iris species: red-> setosa; green-> versicolor; blue-> virginica", 1, line=3.7,cex=.8)
+
+#To examine variability of all numeric variables
+sapply(iris[1:4],var)
+range(sapply(iris[1:4],var))
+
+# maybe this range of variability is big in this context.
+#Thus, we will use the correlation matrix
+#For this, we must standardize our variables with scale() function:
+iris.stand <- as.data.frame(scale(iris[,1:4]))
+sapply(iris.stand,sd) #now, standard deviations are 1
+
+#If we use prcomp() function, we indicate 'scale=TRUE' to use correlation matrix
+pca <- prcomp(iris.stand,scale=T)
+#it is just the same that: prcomp(iris[,1:4],scale=T) and prcomp(iris.stand)
+#similar with princomp(): princomp(iris.stand, cor=T)
+pca
+summary(pca)
+#This gives us the standard deviation of each component, and the proportion of variance explained by each component.
+#The standard deviation is stored in (see 'str(pca)'):
+pca$sdev
+
+#plot of variance of each PCA.
+#It will be useful to decide how many principal components should be retained.
+screeplot(pca, type="lines",col=3)
+#The loadings for the principal components are stored in:
+pca$rotation # with princomp(): pca$loadings
+@
+
+
+<<>>=
+#biplot of first two principal components
+biplot(pca,cex=0.8)
+abline(h = 0, v = 0, lty = 2, col = 8)
+@
+
+\section{Turtle data}
+
+<<>>=
+variances<-c(451.39,271.17,168.70,
+             271.17,171.73,103.29,
+             168.70,103.29,66.65)
+S<-matrix(variances,nrow=3,byrow=FALSE)
+rownames(S)<-c("len","wid","ht")
+
+lambda<-eigen(S)$values
+U<-eigen(S)$vectors
+
+pca_turtle<-princomp(S,cor=T)
+pca_turtle$loadings
+@
+
+\section{Chicken data}
+
+to-do
+
+\section{MDS examples}
+
+\subsection{R commands and examples}
+
+<<>>=
+## color data:
+library(smacof)
+data(ekman)
+ekman.cmds<-cmdscale(1-ekman)
+plot(ekman.cmds)
+lines(ekman.cmds)
+
+## eigenvalues:
+cmdscale(1-ekman,eig=TRUE)
+
+##one dimensional map:
+ekman.cmds<-cmdscale(1-ekman,k=1)
+
+plot(ekman.cmds)
+lines(ekman.cmds)
+
+## PCA and MDS are identical:
+library("MASS")
+ir<-iris[,-5]
+ir.pr<-prcomp(ir)
+ir.scal<-cmdscale(dist(ir))
+ir.pc<-predict(ir.pr)
+par(mfrow=c(1,2))
+library("MASS")
+eqscplot(ir.pc)
+eqscplot(ir.scal)
+
+## isoMDS:
+ekman.mds<-isoMDS(1-ekman)
+plot(ekman.mds$points)
+lines(ekman.mds$points)
+
+## tabulate dimensions:
+ekman.mds<-isoMDS(1-ekman)
+
+## sammon scaling:
+ekman.sam<-sammon(1-ekman)
+plot(ekman.sam$points)
+lines(ekman.sam$points)
+@
+
+<<>>=
+library(datasets)
+eurodist_cmds<-cmdscale(eurodist)
+eurodist_cmds
+x<-eurodist_cmds[,1]
+y<- -eurodist_cmds[,2]
+plot(x,y,type="n",xlab="",ylab="")
+text(x,y,attributes(eurodist)$Labels,cex=0.5)
+## morse code data:
+load("data/morse.Rdata")
+morse.cmd<-cmdscale(morse,k=7,eig=TRUE)
+morse.cmd$eig
+
+## Sammon:
+m<-as.matrix(morse)
+m.samm<-sammon(m)
+eqscplot(m.samm$points[,1],m.samm$points[,2],pch=16,col="red",cex=1.5) 
+text(m.samm$points,names(morse),cex=0.8,adj=c(1.1,-0.6))
+m.iso<-isoMDS(m,cmdscale(morse))
+eqscplot(m.iso$points[,1],m.iso$points[,2],pch=16,col="red",cex=1.5)
+text(m.iso$points,names(morse),cex=0.8,adj=c(1.1,-0.6))
+@
+\subsection{crimcoords}
+
+LDA: 
+<<>>=
+load("data/irisnf.Rdata")
+library(MASS)
+iris.lda<-lda(Variety~Sepal.l + Sepal.w + Petal.l + Petal.w,data=irisnf)
+
+iris.crimcoord<-predict(iris.lda)$x
+
+plot(iris.lda,xlim=c(-5,10))
+plot(iris.crimcoord)
+@
+
+\subsection{Language similarities}
+
+<<>>=
+lg<-read.table("data/concordance.txt",
+               header=FALSE)
+lgdata<-data.frame(lg[,2:11])
+colnames(lgdata)<-lg[,1]
+rownames(lgdata)<-lg[,1]
+library(MASS)
+lg_cmd<-cmdscale(lgdata,k=9,eig=TRUE)
+lg_cmd$eig
+plot(lg_cmd$points[,2],lg_cmd$points[,1])
+@
+
+\end{document}
