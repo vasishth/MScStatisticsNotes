@@ -27,8 +27,9 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 2. ComputationaInference.{Rnw,pdf}
 
 *Year 3 (2014-15)*
-http://maths.dept.shef.ac.uk/maths/module_info_1009.html
-http://maths.dept.shef.ac.uk/maths/module_info_1150.html
+
+	http://maths.dept.shef.ac.uk/maths/module_info_1009.html
+	http://maths.dept.shef.ac.uk/maths/module_info_1150.html
 
 1. MultivariateAnalysis.{Rnw,pdf}
 2. MedicalStatistics.{Rnw,pdf}
