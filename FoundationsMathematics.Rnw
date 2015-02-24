@@ -1,0 +1,4943 @@
+\documentclass[12pt]{book}
+
+\usepackage{Sweave}
+
+%% added by SV:
+\usepackage{hyperref}
+\hypersetup{colorlinks=TRUE,linkcolor=blue,anchorcolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,citecolor=blue,bookmarksnumbered=true}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{gauss}
+
+\usepackage[latin1]{inputenc}
+
+\usepackage{mathptmx}
+\usepackage{helvet}
+\usepackage{courier}
+%
+\usepackage{type1cm}         
+
+\usepackage{makeidx}         % allows index generation
+\usepackage{graphicx}        % standard LaTeX graphics tool
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{amsthm}
+
+\usepackage{esint}
+
+\usepackage{cancel}
+
+\usepackage{comment}
+\excludecomment{answer}
+%\includecomment{answer}
+
+\usepackage{framed}
+
+
+\setcounter{secnumdepth}{5}
+
+%\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\vect}[1]{\vec{#1}}
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+\usepackage[table]{xcolor}
+
+\newcommand\x{\times}
+\newcommand\y{\cellcolor{green!10}}
+
+
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+  
+\hyphenation{distribu-tion}
+ 
+\newcommand{\BlackBox}{\rule{1.5ex}{1.5ex}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\SweaveOpts{prefix.string=figures/statsnotesfig}
+
+%\SweaveOpts{cache=TRUE}
+
+\title{Foundations of Mathematics\\
+\small
+Lecture notes for the MSc in Cognitive Systems at the University of Potsdam, Germany
+}
+\author{Compiled by Shravan Vasishth}
+
+\date{version of \today}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{xleftmargin=2em}
+\fvset{listparameters={\setlength{\topsep}{0pt}}}
+\renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
+\SweaveOpts{keep.source=TRUE}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+
+\tableofcontents
+
+<<echo=FALSE>>=
+## customize
+options(prompt="> ", continue="   ",
+show.signif.stars=FALSE)
+
+options(width=50)
+
+options(SweaveHooks=list(fig=function() par(bg="white", fg="black")))
+@
+
+\chapter{Preface}
+
+These notes are intended to serve as lecture notes for the \href{http://www.ling.uni-potsdam.de/en/students/msc-cogsys}{MSc Cognitive Systems} foundational course \textit{Foundations of Mathematics}.
+The notes are based on the books listed in the references, and on the graduate certificate course taught at the School of Mathematics and Statistics (SOMAS), University of Sheffield, UK. 
+
+An important piece of advice I have for students taking this course is that when you get stuck with a problem, don't just give up. Sometimes you will have to keep at it for some hours or days (intense effort, trying different lines of attack) to solve a problem. One trick that works for me is to put in intense effort, and then take a break (usually involved going to sleep at night---I often work on math problems last thing at night). When you return to the problem the next time round, you may see the solution right away.
+
+Homework assignments are integral to the course, but these are provided only to students taking the course.
+Solutions are usually provided a week after the assignment is handed out. The homework assignments are not graded; the student is expected to evaluate their mistakes on their own by comparing the provided solutions with their own attempt. The assignments will however be discussed in class, so that there is ample opportunity for discussion of any problems that come up.
+
+The formal examination for this course is a 20 minute oral exam that the instructor will conduct at the end of the course.
+
+The offical textbook for the course is \cite{gilbertjordan}; \textbf{please get the second edition, published in 2002}. A good, additional text (if you can afford it) is \cite{jordansmith4e}; \textbf{if you buy this too, please get the fourth edition, published in 2008}.
+
+I owe a great debt of gratitude to \href{http://maths.dept.shef.ac.uk/maths/staff_info_498.html}{Fionntan Roukema} at SOMAS, Sheffield. He is the best math teacher I have ever encountered, and his teaching style has been an inspiration to me.
+
+\chapter{Course schedule}
+
+We have approximately 14 lectures in this course (this varies a bit from year to year).
+
+The approximate schedule is as follows:
+
+\begin{enumerate}
+\item Precalculus I (HW0 assigned)
+\item Discussion of solutions to HW0
+\item Precalculus II (HW1 assigned)
+\item Solutions HW1
+\item Differentiation (HW2 assigned)
+\item Solutions HW2
+\item Integration (HW3 assigned)
+\item Solutions HW3
+\item Matrix Algebra I (HW4 assigned)
+\item Matrix Algebra II, minima, maxima, partial derivatives (HW 5 assigned)
+\item Solutions HW4 and HW5
+\item Double integrals, change of variables (HW 6)
+\item Solutions HW6
+\item Review, and applications in statistics and data mining (time permitting)
+\end{enumerate}
+
+%To-do for next iteration: show applications early, and add more exercises, and add references to video lectures. Extend the lecture notes.
+
+\chapter{Pre-calculus review}
+
+Sources: heavily depended on \cite{salas2003calculus}, \cite{spivak}, \cite{gilbertjordan} (the official textbook in the course) and various summaries on the internet on trigonometric functions. 
+
+
+\section{Counting}
+
+The number of ways in which one may select an unordered sample of k subjects from a population that has n distinguishable members is
+
+\begin{itemize}
+\item
+$\frac{(n-1+k)!}{[(n-1)!k!]}$ if sampling is done with replacement,
+\item
+${n \choose k}=\frac{n!}{[k!(n-k)!]}$ if sampling is done without replacement.
+\end{itemize}
+
+\begin{table}[!htbp]
+\caption{default}
+\begin{center}
+\begin{tabular}{c|cc}
+                   & ordered = TRUE     & ordered = FALSE\\
+\hline                   
+replace = TRUE & $n^{k}$           & $(n-1+k)! / [(n-1)!k!]$ \\
+replace = FALSE & $n! / (n-k)!$   & ${n \choose k}$        
+\end{tabular}
+\end{center}
+\label{default}
+\end{table}%
+
+\section{Permutations and combinations}
+
+\subsection{Permutations}
+
+For $n$ objects, of which $n_1,\dots , n_r$ are alike, the number of different permutations are
+
+\begin{equation}
+\frac{n!}{n_1!n_2!\dots n_r!}
+\end{equation}
+
+\subsection{Combinations}
+
+Choosing $k$ distinct objects from $n$, when order irrelevant:
+
+\begin{equation}
+{n \choose k} = \frac{n!}{(n-r)! r!}
+\end{equation}
+
+\subsection{Binomial theorem}
+
+\begin{equation}
+(x+y)^n = \underset{n=0}{\overset{n}{\sum}} {n \choose k} x^k y^{n-k}
+\end{equation}
+
+%\section{Algebra review}
+
+%to-do
+
+\section{Inequalities}
+
+To solve an inequality, we need to determine the numbers $x$ that satisfy the inequality. This is called the \textbf{solution set} of the inequality.
+
+\begin{enumerate}
+\item If we multiply or divide an inequality by a negative number, the inequality is reversed.
+
+Example: $-\frac{1}{2} x < 4$
+
+\item To solve a quadratic inequality, 
+you can always solve it by completing the square. Another way is to factor the quadratic (works sometimes).
+
+%%p 12 Salas
+Example: Solve $x^2 - 4x + 3 > 0$.
+
+Example (use completing the square): Solve $x^2 - 2x + 5 \leq 0$.
+
+
+\end{enumerate}
+
+
+\section{Series}
+
+\subsection{Arithmetic series}
+
+General form: 
+
+\begin{equation}
+a+(a+d)+(a+2d)+\dots
+\end{equation}
+
+$k$-th partial sum for \textbf{arithmetic series}:
+
+\begin{equation}
+S_k = \underset{n=1}{\overset{k}{\sum}} (a+(n-1)d)
+\end{equation}
+
+The sum can be found by:
+\begin{equation}
+S_k = \frac{k}{2} (2a+(k-1)d)
+\end{equation}
+
+\subsection{Geometric series}
+
+General form:
+
+\begin{equation}
+a+ar+ar^2\dots
+\end{equation}
+
+In summation notation:
+
+\begin{equation}
+\underset{n=1}{\overset{\infty}{\sum}} ar^{n-1}
+\end{equation}
+
+$k$-th partial sum:
+
+\begin{equation}
+S_k=\frac{a-(1-r^k)}{1-r}
+\end{equation}
+
+$S_\infty$ exists just in case $\mid r \mid < 1$.
+
+\begin{equation}
+S_\infty = \frac{a}{1-r}
+\end{equation}
+
+%\subsection{Clever trick for computing partial sums of geometric series}
+
+%to-do (see my P-Ass1 solution)
+
+\subsection{Power series}
+
+\begin{equation}
+ \underset{n=0}{\overset{\infty}{\sum}} a_n (x-a)^n
+\end{equation}
+
+%\textbf{radius of convergence}: to-do
+
+
+
+
+
+\section{Trigonometry}
+
+\subsection{Basic definitions}
+
+\begin{figure}[!htbp]
+	\centering
+\includegraphics[width=6cm]{triangle}
+\caption{Right-angled triangle.}
+\label{fig:tri}
+\end{figure}
+
+\begin{equation}
+\sin A = \frac{opp}{hyp} = \frac{a}{c}
+\end{equation}
+
+Cosine is the complement of the sine:
+
+\begin{equation}
+\cos A = \sin (90-A) = \sin B
+\end{equation}
+
+\begin{equation}
+\cos A = \frac{b}{c}
+\end{equation}
+
+\subsection{Pythagorean identity}
+
+\begin{equation}
+a^2 + b^2  = c^2
+\end{equation}
+
+\begin{equation}
+\begin{split}
+\frac{a^2}{c^2} + \frac{b^2}{c^2} & = 1\\
+\sin^2 A + \cos^2 A  & = 1
+\end{split}
+\end{equation}
+
+\subsection{Relations between trig functions}
+
+\begin{equation}
+\tan A = \frac{\sin A}{\cos A} = \frac{a}{c}/\frac{b}{c}= \frac{a}{b} = 
+\frac{opp}{adj}
+\end{equation}
+
+$\tan A$ is also the \textbf{slope} of a line.
+
+\begin{equation}
+\cot A = \frac{1}{\tan A}=\frac{\cos A}{\sin A}
+\end{equation}
+
+\begin{equation}
+\sec A = \frac{1}{\cos A}
+\end{equation}
+
+\begin{equation}
+\csc A = \frac{1}{\sin A}
+\end{equation}
+
+
+
+%\begin{figure}[!htbp]
+\begin{center}
+\begin{fmpage}{.6\linewidth}
+\begin{tabular}{c|c}
+sin A = a/c (opp/hyp) & csc A = c/a (hyp/opp)\\
+cos A = b/c (adj/hyp) & sec A = c/b (hyp/adj)\\
+tan A = a/b (opp/adj) & cot A = b/a (adj/opp)\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+%\end{figure}
+
+
+
+Note that cot A = tan B, and csc A = sec B.
+
+\subsection{Identities expressing trig functions in terms of their complements}
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\begin{tabular}{c|c}
+cos t = sin($\pi$/2-t)  & sin t = cos($\pi$/2-t)\\
+cot t = tan($\pi$/2-t)   & tan t = cot($\pi$/2-t)\\
+csc t = sec($\pi$/2-t)  & sec t = csc($\pi$/2-t)\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+      
+
+     
+
+      
+
+
+
+\subsection{Periodicity}
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\begin{tabular}{c|c}
+$\sin t + 2\pi = \sin t$  &  $\sin t + \pi = -\sin t$\\
+$\cos t + 2\pi = \cos t$   & $\cos t + \pi = -\cos t$\\
+$\tan t + 2\pi = \tan t$  &  $\tan t + \pi = \tan t$\\
+\end{tabular}
+\end{fmpage}
+\end{center}
+
+\begin{center}
+\begin{fmpage}{.6\linewidth}
+\begin{tabular}{ccc}
+$\sin 0 = 0$  & $\cos 0 = 1$  & $\tan 0 = 0$ \\
+$\sin \frac{\pi}{2} = 1$  & $\cos \frac{\pi}{2} = 0$  & $\tan \frac{\pi}{2}$ undefined \\
+$\sin \pi = 0$  & $\cos \pi = -1$  & $\tan \pi = -1$ \\
+\end{tabular}
+\end{fmpage}
+\end{center}
+
+\subsection{Law of cosines}
+
+Three ways of writing it:
+
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab \cos C
+\end{equation}	
+
+\begin{equation}
+a^2 = b^2 + c^2 - 2bc \cos C
+\end{equation}	
+
+\begin{equation}
+b^2 = c^2 + a^2 - 2ca \cos C
+\end{equation}	
+
+\subsection{Law of sines}
+
+\begin{equation}
+\frac{\sin A}{a}=\frac{\sin B}{b}=\frac{\sin C}{c}
+\end{equation}	
+
+
+
+
+
+\subsection{Odd and even functions}
+
+A function $f$ is said to be an odd function if for any number $x$, $f(-x) = -f(x)$ (e.g., $f(y)=x^5$). A function $f$ is said to be an even function if for any number $x$, $f(-x) = f(x)$ (e.g., $f(y)=x^4$).
+
+Odd functions: sin, tan, cotan, csc.
+
+Even functions: cos, sec.
+
+%$\sin $ is odd ($\sin -t=-\sin t $), $\cos$ is even ($\cos -t=\cos t $).
+
+\subsection{Sum formulas for sine and cosine}
+
+\begin{equation}
+\sin (s + t) = \sin s \cos t + \cos s \sin t
+\end{equation}
+
+\begin{equation}
+\cos (s + t) = \cos s \cos t - \sin s \sin t
+\end{equation}
+
+
+\subsection{Double angle formulas for sine and cosine}
+
+\begin{equation}
+\sin 2t = 2 \sin t \cos t
+\end{equation}
+
+\begin{equation}
+\cos 2t = \cos^2 t - \sin^2 t = 2 \cos^2 t - 1 =  1 - 2 \sin^2 t
+\end{equation}
+
+\subsection{Less important identities}
+
+Pythagorean formula for tan and sec:
+
+\begin{equation}
+\sec^2 t = 1 + \tan^2 t
+\end{equation}
+
+Identities expressing trig functions in terms of their supplements
+
+\begin{equation}
+\sin(\pi - t) = \sin t
+\end{equation}
+
+\begin{equation}
+\cos(\pi - t) = -\cos t
+\end{equation}
+
+\begin{equation}
+\tan(\pi - t) = -\tan t
+\end{equation}
+
+Difference formulas for sine and cosine
+
+\begin{equation}
+\sin (s - t) = \sin s \cos t - \cos s \sin t
+\end{equation}
+
+\begin{equation}
+\cos (s - t) = \cos s \cos t + \sin s \sin t
+\end{equation}
+
+
+\chapter{Differentiation and integration}
+
+\section{Differentiation}
+
+
+Given a function $f(x)$, the derivative from first principles is as follows:
+
+If we want to find $\frac{\partial y}{\partial x}$, note that $\partial y = f(x+\partial x) - f(x)$:
+
+\begin{equation}
+\begin{split}
+y =& f(x)\\
+y+\partial y =& f(x+\partial x) \\
+\end{split}
+\end{equation}
+
+Subtracting y from both sides:
+
+\begin{equation}
+\begin{split}
+y+\partial y - y =& f(x+\partial x) -y \\
+\partial y =& f(x+\partial x) -f(x) \\
+\end{split}
+\end{equation}
+
+It follows that $\frac{\partial y}{\partial x} = \frac{f(x+\partial x) -f(x) }{\partial x}$. If we write the first derivative $\frac{\partial y}{\partial x}$ as $f^{(1)}(x)$, we have the following identity:
+
+
+\begin{equation}
+f^{(1)}(x)= \frac{f(x+\partial x) - f(x)}{\partial x}
+\end{equation}
+
+Other notations we will use interchangeably: Given y = f(x),
+
+$\frac{\partial y}{\partial x}=\frac{d y}{d x}=f^{(1)}(x)=y'$.
+
+Note:
+\begin{enumerate}
+\item
+The derivative of a function at some point c is the slope of the function at that point c. The slope is the rate of growth: $\frac{dy}{dx}$.
+\item
+The derivative $f'$ is itself a function, and can be further differentiated. So, the second derivative,  $f''$ is the rate of change of the slope. This will soon become a very important fact for us when we try to find maxima and minima of a function.
+\end{enumerate}
+
+\subsection{Deriving a rule for differentiation}
+
+Consider the function $y=x^2$. Suppose we increase x by a small amount $dx$, y will also increase by some small amount $dy$. We can ask: what is the ratio of the increases: $\frac{dy}{dx}$? We will derive this next:
+
+\begin{equation}
+y + dy = (x+dx)^2
+\end{equation}
+
+Expanding out the RHS:
+
+\begin{equation}
+y + dy = x^2+dx^2+2xdx
+\end{equation}
+
+Observe that squaring a small quantity dx will make it even smaller (e.g., try squaring 1/100000000; it is effectively zero). That leads to the following simplification:
+
+\begin{equation}
+y + dy = x^2+2xdx \hbox{ as dx gets infinitesimally small}
+\end{equation}
+
+Subtracting y from both sides:
+
+\begin{equation}
+dy = 2xdx \Leftrightarrow \frac{dy}{dx} = 2x
+\end{equation}
+
+\textbf{Exercise}: Find the derivative of $x^3, x^4, x^5$ using the above approach. Evaluate each derivative at c=2.
+
+The general rule is that
+
+\begin{equation}
+\boxed{\frac{dy}{dx} = nx^{n-1}}
+\end{equation}
+
+Verify that this rule works for negative powers and fractional powers:
+$x^{-2}, x^{1/2}$.
+
+\subsection{Derivatives of trigonometric functions, exponential, and log}
+
+Memorizing these results will simplify our life considerably.
+
+\begin{enumerate}
+\item
+$\frac{d(\sin(x))}{dx} = \cos x$ and $\frac{d(\cos(x))}{dx} = -\sin x$.
+\item
+$d(\exp(x))/dx=\exp(x)$
+\item
+$d(\log(x))/dx = \frac{1}{x}$
+\end{enumerate}
+
+Proofs will come later.
+
+\subsection{Derivations of combinations of functions}
+
+Let u and v be (differentiable) functions.
+
+\begin{enumerate}
+\item Sum of functions
+\begin{equation}
+  (u+v)' = u' + v'
+\end{equation}
+\item Difference of functions
+\begin{equation}
+  (u-v)' = u' - v'
+\end{equation}
+
+\item Function multiplied by constant:
+
+Given a constant c:
+\begin{equation}
+  (cu)' = cu'
+\end{equation}
+
+
+
+\item Product of functions
+
+\begin{equation}
+	(uv)' = uv' + vu'
+\end{equation}
+
+\item Quotient of functions:
+
+\begin{equation}
+(u/v)' = 	\frac{vu' - uv'}{v^2}
+\end{equation}
+
+\item 
+Chain rule:
+
+If y = g(f(x)), then, letting u=f(x), we get $dy/dx= dy/du \cdot du/dx$
+
+Example: $y=(x^2 + 3)^7$ needs the chain rule.
+\end{enumerate}
+
+Note: the notation $\frac{dy}{dx}\bigg |_{x=a}$ means: evaluate the derivative at x=a.
+
+Given one of our standard functions above, which I will call $f(x)$, we can differentiate it repeatedly: $f', f''$, etc. 
+So:
+
+\begin{enumerate}
+\item
+$f'(x)=\frac{d}{dx} f(x)$
+\item 
+$f''(x)=\frac{d^2}{dx^2} f(x)$
+\item
+$f'''(x)=\frac{d^3}{dx^3} f(x)$
+\end{enumerate}
+
+\subsection{Maxima and minima}
+
+If we have a function like $y=f(x)$, there may be a point (for some x) where the graph of this function turns over. For example, in the normal distribution (see chapter\~ref{apps}), the graph turns over at the mean.
+
+At this turning point, the slope changes from positive to negative, and is 0 at the turning point. Therefore,
+
+\begin{equation}
+f'(x)
+\end{equation}
+
+is an equation whose solution is the point where the graph turns over.
+
+Note that a graph does not necessarily turn over at a point where $f'(x)=0$. Example: $y=x^3$.
+
+<<fig=TRUE>>=
+x<-seq(-10,10,by=0.1)
+plot(x,x^3,type="l")
+@
+
+If $f'(x)=0$ at some point x=c, then this point c is called the stationary point of $f(x)$. This point could be a local maximum or a local minimum. To determine whether this point is a local maximum or minimum, take the second derivative: $f''(x)$.
+
+\begin{enumerate}
+\item 
+If $f'(c)=0$ and $f''(c)<0$, then we have a local maximum.
+\item
+If $f'(c)=0$ and $f''(c)>0$, then we have a local minimum.
+\item 
+If $f'(c)=0$ and $f''(c)=0$, then we have either a maximum, mininum, or a stationary point of inflection like in the $y=x^3$ figure above. In this case, examine the sign of $f'(x)$ on both sides of $x=c$.
+\end{enumerate}
+
+\section{Integration}
+
+\subsection{Riemann sums}
+
+A simple example:
+  
+Given $\phi (x)$, the probability density function of the standard normal distribution:
+
+\begin{equation*}
+\phi (x) = \frac{1}{\sqrt{2\pi}} e^{-x^{2}/2}
+\end{equation*}
+
+We have to find an approximate value of 
+
+\begin{equation*}
+\int_0^1 \phi (x)\, dx	
+\end{equation*}
+
+We divide the interval $[0,1]$ into $10$ intervals of width $1/10$, and approximate the area under the curve by taking the sum of the $10$ rectangles under the curve. The width of each rectangle will be $\partial x=1/10$, and each of the ten $x_i$ are $1/10,2/10,\dots,10/10$, i.e., $i/10$, where $i=1,\dots, 10$.
+
+The area $A$ can be computed by summing up the areas of the ten rectanges. Each rectangle's area is length $\times$ width, which is $\phi(x_i) \times \partial x$. Hence,
+
+\begin{equation*}
+A= \underset{i=1}{\overset{10}{\sum}} \phi(x_i) \partial x = \underset{i=1}{\overset{10}{\sum}}
+\frac{1}{\sqrt{2\pi}} e^{-x_i^{2}/2} \times \frac{1}{10} 	
+\end{equation*}
+	
+The constant terms $\frac{1}{\sqrt{2\pi}}$ and $\frac{1}{10}$  can be pulled out of the summation: 	
+
+\begin{equation*}
+A= \frac{1}{\sqrt{2\pi}} \frac{1}{10} 	 
+   \underset{i=1}{\overset{10}{\sum}}
+   e^{-x_i^{2}/2} 
+\end{equation*}
+
+We use R for the above calculations. First, we define the function for $e^{-x_i^{2}/2}$: 
+
+<<>>=
+my.fn<-function(x)
+     {exp(1)^(-(x^2/2))}
+@
+
+Then we define $x_i$ (I made the code very general so that the number of intervals $n$ can be increased arbitrarily) and plug this into the function:
+
+<<print=TRUE>>=
+n<-10
+x.i<-(1:n)/n
+A<- ((1/n) * (1/sqrt(2 * pi)) * sum(my.fn(x.i)))
+A<-round(A,digits=5)
+@
+
+Compare this to the exact value, computed using R:
+
+<<>>=
+fprob2<-function(x){
+	(1/sqrt(2 * pi))*exp(1)^(-(x^2/2))
+}
+
+integrate(fprob2,lower=0,upper=1)
+@
+
+\textbf{Answer}: The approximate area is: $\Sexpr{A}$. This is a bit lower than the value computed by R, but this is because the ten rectangles fall inside the curve.  
+
+<<>>=
+## As an aside, note that one can get really close  
+## to the pnorm value by increasing n, 
+## say to a high number like 2000:
+n<-2000
+
+## 2000 rectangles now:
+x.i<-(1:n)/n
+     
+(A<- ((1/n) * (1/sqrt(2 * pi)) * sum(my.fn(x.i))))
+@
+
+With 2000 rectangles, we can get a better estimate of the area than with 10 rectangles: \Sexpr{round(A,4)}. Compare this with the 
+theoretical value:
+
+<<>>=
+round(pnorm(1)-pnorm(0),4)
+@
+
+\subsection{Some common integrals}
+
+\begin{equation}
+	\int \frac{1}{x}\, dx = \log \mid x \mid + c
+\end{equation}
+
+\begin{equation}
+	\int \log x\, dx = \frac{1}{x} + c
+\end{equation}
+
+
+
+\subsection{The Fundamental Theorem of Calculus}
+
+The Fundamental Theorem states the following:
+
+Let $f$ be a continuous real-valued function defined on a closed interval $[a, b]$. Let $F$ be the function defined, for all $x$ in $[a, b]$, by
+
+\begin{equation*}
+F(x) = \int_a^x f(u)\, du	
+\end{equation*}
+
+Then, $F$ is continuous on $[a, b]$, differentiable on the open interval $(a, b)$, and
+
+\begin{equation*}
+F'(x) = f(x)	
+\end{equation*}
+
+for all $x $ in $(a, b)$.	
+
+%\subsection{Rules of integration} to-do
+%\subsection{Standard integrals} to-do
+
+\subsection{The u-substitution}
+
+From \cite[306]{salas2003calculus}:
+
+An integral of the form
+\begin{equation}
+\int f(g(x)) g'(x) \, dx
+\end{equation}
+
+can be written as
+
+\begin{equation}
+\int f(u) \, du
+\end{equation}
+
+by setting
+
+\begin{equation}
+u = g(x)
+\end{equation}
+
+and 
+
+\begin{equation}
+du = g'(x) \, dx
+\end{equation}
+
+If F is an antiderivative for f, then 
+
+\begin{equation}
+\frac{d}{dx} [F(g(x))] \explain{=}{\textrm{by the chain rule}} F'(g(x)) g'(x) \explain{=}{F'=f} f(g(x)) g'(x)
+\end{equation}
+
+We can obtain the same result by calculating:
+
+\begin{equation}
+\int f(u) \, du
+\end{equation}
+
+and then substituting g(x) back in for u:
+
+\begin{equation}
+\int f(u) \, du = F(u)+C = F(g(x)) + C
+\end{equation}
+
+\textbf{A frequently occurring type of integral} is
+
+\begin{equation}
+\int \frac{g'(x)}{g(x)} \, dx
+\end{equation}
+
+Let $u=g(x)$, giving $\frac{du}{dx}=g'(x)$, i.e., $du = g'(x)\,dx$, so that
+
+\begin{equation}
+\int \frac{g'(x)}{g(x)}\,dx=\int \frac{1}{u} du = ln \mid u \mid +C
+\end{equation}
+
+
+\begin{center}
+\begin{fmpage}{.5\linewidth}
+\textbf{Examples}:
+
+\begin{equation*}
+\int \tan x \, dx = \int \frac{1}{\cos x} \sin x \, dx
+\end{equation*}
+
+\begin{equation*}
+\int \frac{2x + b}{x^2+bx + c} \, dx
+\end{equation*}
+
+\end{fmpage}
+\end{center}
+
+
+\textbf{Functions of linear functions}: E.g., $\int cos(2x-1)\,dx$. Here, the general form is $\int f(ax+b)\,dx$. We do $u=ax+b$, and then $du=a \,dx$
+
+\begin{center}
+\begin{fmpage}{.9\linewidth}
+\textbf{Using integration by substitution to compute the expectation of a standard normal random variable}: 
+
+The expectation of the standard normal random variable:
+
+\begin{equation*}
+E[Z] = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty x e^{-x^2/2} \, dx
+\end{equation*}
+
+Let $u = -x^2/2$.
+
+Then, $du/dx = -2x/2=-x$. I.e., $du= -x \, dx$ or $-du=x \, dx$.
+
+We can rewrite the integral as:
+
+\begin{equation*}
+E[Z]  = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} x \, dx\\
+\end{equation*}
+
+Replacing $x\, dx$ with $-du$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} \, du	
+\end{equation*}
+
+which yields:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{u} ]_{-\infty}^{\infty}
+\end{equation*}
+
+Replacing $u$ with $-x^2/2$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{-x^2/2} ]_{-\infty}^{\infty} = 0
+\end{equation*}
+\end{fmpage}
+\end{center}
+
+\subsection{Change of variables (Gamma functions)}
+
+We can solve integrals like 
+
+\begin{equation}
+  \int_0^\infty x^2 e^{-x^5}\, dx
+\end{equation}
+
+by restating it as the gamma function:
+
+\begin{equation}
+	\Gamma (z) = \int_0^\infty x^{z-1}e^{-x}\, dx
+\end{equation}
+
+This can be done by, e.g., letting $y=x^5$, so that $dy/dx= 5x^4$, and therefore $dx= dy/5x^4 = dy/(5\times y^{4/5})$. This lets us rewrite the above integral in terms of y:
+
+\begin{equation}
+	\frac{y^{2/5}}{5y^{4/5}}e^y\, dy 
+\end{equation}
+
+This has the form of the gamma function, allowing us to state the integral in terms of the gamma function.
+
+Note that
+
+\begin{equation}
+	\Gamma(z) = (z-1) \Gamma (z-1)
+\end{equation}
+
+R has a function, gamma, that allows us to compute $\Gamma(z)$:
+
+<<>>=
+gamma(2)
+gamma(10)
+## this is equal to:
+(10-1)*gamma(10-1)
+@
+
+
+\chapter{Matrix algebra}
+
+[Some of this material is based on \cite{jordansmith4e}.]
+
+A rectangular array of numbers (real numbers in our case) which obeys certain algebraic rules of operations is a matrix.
+The main application for us will be in solving systems of linear equations in statistics (and in data mining). 
+
+
+Example of a 2x2 matrix:
+
+<<>>=
+## a 2x2 matrix:
+(m1<-matrix(1:4,2,2))
+## transpose of a matrix:
+t(m1)
+@
+
+\section{Introductory concepts}
+
+\subsection{Basic operations}
+
+Matrix addition and subtraction are cell-wise operations:
+
+<<>>=
+m1+m1
+m1-m1
+@
+
+Matrix multiplication:
+Think of this simple situation first, where you have a vector of values:
+
+<<>>=
+
+(m1<-rnorm(5))
+
+@
+
+If you want to find out the sum of the squares of these values ($\overset{n}{\underset{i=1}\sum} x_i ^2$), then you can multiply each value in m1 with itself, and sum up the result:
+
+<<>>=
+(sum(m1*m1))
+@
+
+Matrix multiplication does exactly the above operation (for arbitrarily large matrices):
+
+<<>>=
+t(m1)%*%m1
+@
+
+Note that two matrices can only be multiplied if they are \textbf{conformable}: the number of columns of the first matrix has to be the same as the number of rows of the second matrix.
+
+Scalar matrix multiplication: Multiplying a matrix M with a scalar value just amounts to multiplying the scalar with each cell of the matrix:
+
+<<>>=
+5*m1
+@
+
+\subsection{Diagonal matrix and identity matrix}
+
+A diagonal matrix is a square matrix that has zeros in its off-diagonals:
+
+<<>>=
+diag(c(1,2,4))
+@
+
+An identity matrix is a diagonal matrix with 1's along its diagonal:
+
+<<>>=
+diag(rep(1,3))
+@
+
+For a 3x3 identity matrix, we can write $I_3$, and for an nxn identity matrix, $I_n$.
+
+
+Multiplying an identity matrix with any (conformable) matrix gives that matrix back:
+
+<<>>=
+(I<-diag(c(1,1)))
+
+(m4<-matrix(c(6,7,8,9),2,2))
+(I%*%m4)
+
+## the matrix does not have to be square:
+(m5<-matrix(c(2,3,6,7,8,9),2,3))
+(I%*%m5)
+@
+
+<<>>=
+betterway<-function(n){
+  return(diag(rep(1,n)))
+}
+@
+
+
+\subsection{Powers of matrices} \label{matrixpower}
+
+If A is a square nxn matrix, then we write AA as $A^2$, and so on. If A is diagonal, then AA is just the diagonal matrix with the diagonal elements of A squared:
+
+<<>>=
+m<-diag(c(1,2,3))
+## 
+m%*%m
+@
+
+For all positive integers m, $I_n^m = I_n$.
+
+
+\subsection{Inverse of a matrix}
+
+If A,B are square matrices, of order nxn, and the following relation is satisfied:
+
+\begin{equation}
+AB = BA= I_n
+\end{equation}
+
+then, B is the inverse (it is unique) of A. We write $B=A^{-1}$.  The inverse is analogous to division and allows us to solve matrix equations: AB=C can be solved by post-multiplying both sides by $B^{-1}$ to get  $ABB^{-1}=AI=A=CB^{-1}$.
+
+How to find the inverse? Consider a 2x2 matrix A, and consider the equation:
+
+\begin{equation}
+\begin{pmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+\end{pmatrix}
+\begin{pmatrix}
+x_1 \\
+x_2 
+\end{pmatrix}
+= 
+\begin{pmatrix}
+d_1 \\
+d_2 
+\end{pmatrix}
+\end{equation}
+
+We can write this in compact matrix form: Ax=d.
+If we multiply A and x, we get a system of linear equations:
+
+\begin{equation}
+a_{11} x_1 + a_{12} x_2 = d_1
+\end{equation}
+
+\begin{equation}
+a_{21} x_1 + a_{22} x_2 = d_2
+\end{equation}
+
+If we solve these equations, we get (exercise: prove this as homework):
+
+\begin{equation}
+x_1 = \frac{a_{22}d_1 - a_{12}d_2}{a_{11}a_{22}-a_{21}a_{12}}
+\end{equation}
+
+\begin{equation}
+x_2 = \frac{-a_{21}d_1+a_{11}d_2}{a_{11}a_{22} - a_{21}a_{12}}
+\end{equation}
+
+We can now express the solution in matrix form (verify that this is equivalent to the above two equations for $x_1$ and $x_2$):
+
+\begin{equation}
+x=
+\begin{pmatrix}
+x_1 \\
+x_2 
+\end{pmatrix}
+=
+\frac{1}{a_{11}a_{22}-a_{21}a_{12}}
+\begin{pmatrix}
+a_{22}d_1 - a_{12}d_2\\
+-a_{21}d_1+a_{11}d_2
+\end{pmatrix}
+= C d
+\end{equation}
+
+where
+
+\begin{equation}
+C= \frac{1}{det A} 
+\begin{pmatrix}
+a_{22} - a_{12}\\
+-a_{21} + a_{11}
+\end{pmatrix}
+\quad detA = a_{11}a_{22}-a_{21}a_{12}
+\end{equation}
+
+Now, if we pre-multiply $Ax=d$ by $A^{-1}$, we get
+
+\begin{equation}
+A^{-1} A x = Ix=x= A^{-1} d
+\end{equation}
+
+So, because $x= A^{-1} d$ and $x=Cd$,  it must be the case that  
+$A^{-1}=C$.
+
+\begin{leftbar}
+\textbf{Note}:
+Multiplying a matrix by its inverse gives an identity matrix (the R function \texttt{solve} computes the inverse of a matrix):
+
+<<>>=
+(m3<-matrix(c(2,3,4,5),2,2))
+(round(solve(m3)%*%m3))
+@
+\end{leftbar}
+
+So: 
+
+$\begin{pmatrix}
+a & b \\
+c & d\\
+\end{pmatrix}^{-1}
+= \frac{1}{det} 
+\begin{pmatrix}
+d & -b \\
+-c & a\\
+\end{pmatrix}$
+
+Here, det is the determinant.
+Note that $det(m)$ is going to be the same as 
+$det(m^{-1})$. 
+
+\subsubsection{Inverse of a $3\times 3$ matrix}
+
+\textbf{Note: you will normally only use \texttt{solve} in R, you won't be doing this by hand.}
+
+Say you are given:
+$\begin{pmatrix}
+2 & 0 & 0 \\
+0 & 2 & 1 \\
+0 & 1 & 2\\
+\end{pmatrix}
+$
+\begin{enumerate}
+\item
+Find determinant (the way to do this by hand is explained below). Det(m)=6.
+\item Define co-factors of matrix and add alternating +/- signs, then find determinants:
+
+$\begin{pmatrix}
++\begin{vmatrix}
+2 & 1 \\
+1 & 2\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+0 & 1 \\
+0 & 2\\
+\end{vmatrix}
+& 
++\begin{vmatrix}
+0 & 2 \\
+0 & 1\\
+\end{vmatrix}
+\\
+& & \\
+-\begin{vmatrix}
+0 & 0 \\
+1 & 2\\
+\end{vmatrix}
+&
++\begin{vmatrix}
+2 & 0 \\
+0 & 2\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+2 & 0 \\
+0 & 1\\
+\end{vmatrix}\\
+& & \\
++\begin{vmatrix}
+0 & 0 \\
+2 & 1\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+2 & 0 \\
+0 & 1\\
+\end{vmatrix}
+& 
++\begin{vmatrix}
+2 & 0 \\
+0 & 2\\
+\end{vmatrix}
+\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+3 & 0 & 0 \\
+0 & 4 & -2 \\
+0 & -2 & 4\\
+\end{pmatrix}
+$
+\item
+Then take reflection of the above matrix; here, none is needed because it's symmetric. Then multiply by 1/det to get inverse:
+
+$
+\frac{1}{6} \times \begin{pmatrix}
+3 & 0 & 0 \\
+0 & 4 & -2 \\
+0 & -2 & 4\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.5 & 0 & 0 \\
+0 & 2/3 & -1/3 \\
+0 & -1/3 & 2/3\\
+\end{pmatrix}
+$
+\end{enumerate}
+
+\subsubsection{Inverse of a product of non-singular matrices}
+If A and B are non-singular matrices then $(AB)^{-1} = B^{-1}A^{-1}$.
+
+\subsection{Linear independence}
+
+Consider a 3x3 matrix. The 
+The rows $r_1, r_2, r_3$ are linearly \textbf{dependent} if 
+$\alpha, \beta, \gamma$, not all zero, exist such that 
+$\alpha r_1+ \beta r_2+ \gamma r_3 = (0,0,0)$.
+
+If the rows or columns of A are linearly \textbf{dependent}, then det A=0 (the matrix is singular, not invertible).
+
+\subsection{The rank of a matrix}
+
+The column rank of a matrix is the maximum number of \textbf{linearly independent} columns in the matrix. The row rank is the maximum number of linearly independent rows. Column rank is always equal to row rank, so we can just call it rank.
+
+\subsection{More on determinants}
+
+The determinant is a value associated with a square (nxn) matrix. 
+
+\begin{enumerate}
+\item
+If the determinant is non-zero, the system of linear equations expressed by the matrix has a unique solution. 
+\item 
+If the determinant is zero, there are no solutions or many solutions.
+\item
+We can invert a matrix only if its determinant is non-zero. (Inversion of matrices turns up a lot).
+\end{enumerate}
+
+The determinant of a square matrix can be computed using an in-built R function. 
+
+<<>>=
+(m1<-matrix(1:4,2,2))
+
+det(m1)
+@
+
+\subsubsection{Computing determinants by hand}
+
+\textbf{Note that you will almost never have to do this by hand, except for exercises. In real work, we just use R.}
+
+
+The det[erminant] of a $2\times 2$ matrix like the one below is ad-bc.
+
+$\begin{pmatrix}
+a & b\\
+c & d\\
+\end{pmatrix}
+$
+
+
+The det of a $n\times$ n matrix A, $n>2$, is computed as follows:
+
+\begin{equation}
+det A = \sum_{j=1}^n (-1)^{1+j} a_{1j} det A_{1j} 
+\end{equation}
+
+An example makes it easier to understand:
+
+\begin{equation}
+A=\begin{pmatrix}
+1 & 5 & 0 \\
+2  & 4  & -1 \\
+0 & -2 & 0 \\
+\end{pmatrix}
+\end{equation}
+
+Then, the determinant is (the vectors in red disappear):
+
+\begin{equation*}
+det A = 1 \times 
+  \left(\begin{array}{>{\columncolor{red!20}}ccc}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
+- 5 \times 
+  \left(\begin{array}{c>{\columncolor{red!20}}cc}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
++ 0 \times 
+  \left(\begin{array}{cc>{\columncolor{red!20}}c}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
+\end{equation*}
+
+Another trick, for 3x3 matrices for example, is the following (from Vinod's book (Hands-on matrix algebra)):
+
+\begin{enumerate}
+\item Rewrite the matrix 
+$\begin{pmatrix}
+a & d & g \\
+b  & e &  h \\
+c & f & i \\
+\end{pmatrix}$
+by repeating the first two columns and coloring the matrix in two ways:
+$\begin{pmatrix}
+{\color{red} a} & {\color{green}d} & {\color{orange}g} & a & d\\
+b  & {\color{red} e}  & {\color{green}h} & {\color{orange}b}  & e\\
+c & f & {\color{red} i} & {\color{green}c} & {\color{orange}f}\\
+\end{pmatrix}$
+and
+$\begin{pmatrix}
+a & d & {\color{red}g} & {\color{green}a} & {\color{orange}d}\\
+b  & {\color{red}e} &  {\color{green}h} & {\color{orange}b}  & e\\
+{\color{red}c} & {\color{green}f} & {\color{orange}i} & c & f\\
+\end{pmatrix}$
+
+
+\item Then write out:
+
+$det=aei + dhc + gbf - ceg - fha - ibd$
+\end{enumerate}
+
+\subsection{Singularity}
+
+If the determinant of a square matrix is zero, then it can't be inverted; we say that the matrix is singular.
+
+\section{Solving simultaneous linear equations}
+
+We know how to solve for x and y in these two equations (by eliminating one variable---this is the method of elimination):
+
+\begin{equation}
+2x + 3y = -1 \quad x - 2y = 3 
+\end{equation}
+
+
+
+But what about:
+
+\begin{equation}
+x+y = 2 \quad 2x + 2y = 1
+\end{equation}
+
+These two equations are contradictory (check this). There is no solution; we can also say that they are incompatible. Similarly, consider:
+
+\begin{equation}
+x+y = 2 \quad 2x + 2y = 4
+\end{equation}
+
+These are both saying the same thing, and so reduce to one equation, with two unknowns. Therefore, there is an infinity of solutions.
+
+If we have two equations, and the right-hand side has 0 in both equations, the equations are called homogeneous. Here, there are two possibilities:
+
+First, if the equations are equivalent, as in:
+
+\begin{equation}
+x+y = 0 \quad 2x + 2y = 0
+\end{equation}
+
+we again have an infinity of solutions (x=c and y=-c for any value of c).
+
+Second, if the equations are not equivalent, as in:
+
+\begin{equation}
+2x+3y = 0 \quad x - 2y = 0
+\end{equation}
+
+they are not incompatible because they have a single, unique solution, x=0, and y=0. This is called the trivial solution.
+
+To summarize: Inhomogeneous and homogeneous equations can have
+
+\begin{enumerate}
+\item  a unique solution
+\item no solution
+\item an infinity of solutions 
+\end{enumerate}
+
+In addition, homogeneous equations that are not equivalent can have a trivial solution.
+
+\begin{figure}[!htbp]
+\includegraphics{solutionslineq}
+\caption{Visualizing the solutions of simultaneous linear equations in two dimensions. Three dimensions involves planes intersecting (or not intersecting) instead of lines, and higher dimensions are harder to visualize.}\label{fig:lineq}
+\end{figure}
+
+It is easy to use the elimination method to solve equations with two unknowns, but for equations with many unknowns, we need different methods to avoid tedium and error-prone calculations.
+
+\subsection{Gaussian elimination}
+
+Given three (or more) equations like:
+
+\begin{equation}
+x_1 + 2x_2 + x_3 = 1
+\end{equation}
+
+\begin{equation}
+-2x_1 + 3x_2 - x_3 = -7
+\end{equation}
+
+\begin{equation}
+x_1 + 4x_2 - 2x_3 = -7
+\end{equation}
+
+There are three elementary row operations that do not affect the solution:
+
+\begin{enumerate}
+\item
+Any equation can be multiplied by a non-zero constant
+\item any two equations can be interchanged
+\item any equation can be replaced the sum of itself and any multiple of another equation
+\end{enumerate}
+
+It's easiest to illustrate how these operations lead to a solution with a concrete example:
+
+Suppose we are given the three equations shown below. We use Gaussian elimination to solve the equations. I will refer to the rows of a matrix by $\rho_n$, where $n$ refers to the $n$-th row.
+
+\begin{equation}
+\begin{array}{ccccccc}
+2x &+& -y &+& 3z &=& 8\\
+-x &+& 6y &+& z &=& 17 \\
+-2x &+& 5y &+& 3z &=& 24\\
+\end{array}
+\end{equation}
+
+We could write this in matrix form: Ax = d, where
+
+\begin{equation}
+A= \left( \begin{array}{ccc}
+2 & -1 & 3 \\
+-1 & 6 & 1 \\
+-2 & 5 & 3 \\
+\end{array} \right) 
+\quad 
+x=
+\left( \begin{array}{c}
+x_1\\
+x_2\\
+x_3\\
+\end{array} \right)
+\quad 
+d= 
+\left( \begin{array}{c}
+8\\
+17\\
+24\\
+\end{array} \right)
+\end{equation}
+
+The general strategy will be to convert the matrix to \textbf{echelon form} and then to \textbf{reduced echelon form}.
+
+A matrix is in echelon form if it has 0's below the diagonal elements starting from the top left. See equation~\ref{eq:echelon}.
+A matrix is in reduced echelon form if it in echelon form and has 1's along the diagonal starting from the top left. See equation~\ref{eq:redechelon}.
+
+First, we convert the coefficients into an \textbf{augmented matrix}:
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+2 & -1 & 3 & 8\\
+-1 & 6 & 1 & 17\\
+-2 & 5 & 3 & 24\\
+\end{array} \right)  
+\end{equation}
+
+
+
+Next, move the third row ($\rho$) to second position:
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+2 & -1 & 3 & 8\\
+-2 & 5 & 3 & 24\\
+-1 & 6 & 1 & 17\\
+\end{array} \right)	
+\end{equation}
+
+Add $\rho_1$ to the new $\rho_2$ :
+
+<<echo=FALSE>>=
+r1<-c(2,-1,3,8)
+r2<-c(-1,6,1,17)
+r3<-c(-2,5,3,24)
+
+r3<-r1+r3
+@
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+2 & -1 & 3 & 8\\
+0 & 4 & 6 & 32\\
+-1 & 6 & 1 & 17\\
+\end{array} \right)	
+\end{equation}
+
+Add $\rho_1$ to $2\times \rho_3$ (this is the new $\rho_3$):
+
+<<echo=F,eval=FALSE>>=
+(r2<-2*r2+r1)
+@ 
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+2 & -1 & 3 & 8\\
+0 & 4 & 6 & 32\\
+0 & 11 & 5 & 42\\
+\end{array} \right)	
+\end{equation}
+
+Subtract $11\times \rho_2$ from $4\times \rho_3$. This gives us the \textbf{echelon form}:
+
+<<echo=F,eval=FALSE>>=
+(r2<-11*r3-4*r2)
+@
+
+\begin{equation}\label{eq:echelon}
+\left( \begin{array}{ccc|c}
+2 & -1 & 3 & 8\\
+0 & 4 & 6 & 32\\
+0 & 0 & 46 & 184\\
+\end{array} \right)	
+\end{equation}
+
+Next, we convert the matrix to \textbf{reduced echelon form}. Divide $\rho_1$ by $2$, and $\rho_2$ by $4$, and $\rho_3$ by $46$:
+
+\begin{equation} \label{eq:redechelon}
+\left( \begin{array}{ccc|c}
+1 & -1/2 & 3/2 & 4\\
+0 & 1 & 6/4 & 8\\
+0 & 0 & 1 & 4\\
+\end{array} \right)	
+\end{equation}
+
+<<echo=F,eval=FALSE>>=
+r1<-r1/2
+r3<-r3/4
+r2<-r2/46
+@
+
+Next, we eliminate the nonzero values to the right of the 1's in each row. Subtract 1.5 times $\rho_3$ from $\rho_2$
+
+<<echo=F,eval=FALSE>>=
+(r3<-r3-1.5*r2)
+@
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+1 & -1/2 & 3/2 & 4\\
+0 & 1 & 0 & 2\\
+0 & 0 & 1 & 4\\
+\end{array} \right)	
+\end{equation}
+
+Add $1.5\times \rho_2$ to $\rho_1$:
+
+<<echo=F,eval=FALSE>>=
+(r1<-r1+0.5*r3)
+@
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+1 & 0 & 3/2 & 5\\
+0 & 1 & 0 & 2\\
+0 & 0 & 1 & 4\\
+\end{array} \right)	
+\end{equation}
+
+Subtract $1.5\rho_3$ from $\rho_1$:
+
+<<echo=F,eval=FALSE>>=
+(r1<-r1-1.5*r2)
+@
+
+\begin{equation}
+\left( \begin{array}{ccc|c}
+1 & 0 & 0 & -1\\
+0 & 1 & 0 & 2\\
+0 & 0 & 1 & 4\\
+\end{array} \right)	
+\end{equation}
+
+This tells us that $x=-1$, $y=2$, $z=4$.
+
+
+\textbf{Answer}: $x=-1$, $y=2$, $z=4$.
+
+\begin{leftbar}
+How to solve multiple-variable simultaneous linear equations in R:
+
+<<>>=
+X <- matrix(c(2,-1,3,-1,6,1,-2,5,3), ncol=3,byrow=T) 
+y<-c(8,17,24)
+library(MASS)
+## correct:
+fractions(solve(crossprod(X))%*%crossprod(X,y))
+@
+\end{leftbar}
+
+You can use Gaussian elimination to find the inverse of a matrix:
+
+\begin{equation}
+AA^{-1} = I
+\end{equation}
+
+Apply a sequence of row operations that transform A into I on the left-hand side, so that the left hand side becomes $A^{-1}$. Apply the same sequence of row operations to I on the right-hand side, and you will get $A^{-1}$.
+The two examples below illustrate this point.
+
+\underline{Example 1}: Find the inverse of 
+
+\[ M_1 = 
+\left( \begin{array}{ccc}
+1 & 0 & 0 \\
+-1 & 5 & 3\\
+0 & 3 & 2\\
+\end{array} \right)\]
+
+The algorithm is: row-reduce the augmented matrix $[M_1 I]$. If $M_1$ is row equivalent to $I$, then $[M_1 I]$ is row equivalent to $[I M_1^{-1}]$. Otherwise $M_1$ doesn't have an inverse.
+
+First, we append the identity matrix to the right side of $M_1$:
+
+\[ [M_1 I] = 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+-1 & 5 & 3 & 0 & 1 & 0\\
+0 & 3 & 2 & 0 & 0 & 1\\
+\end{array} \right)\]
+
+The next step is to convert the left half of the matrix $[M_1 I]$ into an identity matrix. 
+
+<<echo=F,eval=FALSE>>=
+M<-matrix(c(1,0,0,1,0,0,-1,5,3,0,1,0,0,3,2,0,0,1),byrow=T,nrow=3)
+r1<-M[1,]
+r2<-M[2,]
+r3<-M[3,]
+@
+
+Add $\rho_1$ to $\rho_2$:
+
+<<echo=F,eval=FALSE>>=
+r2<-r1+r2
+@
+
+
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+-1+1 & 5+0 & 3+0 & 0+1 & 1+0 & 0+0\\
+0 & 3 & 2 & 0 & 0 & 1\\
+\end{array} \right)
+=
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & 5 & 3 & 1 & 1 & 0\\
+0 & 3 & 2 & 0 & 0 & 1\\
+\end{array} \right)
+\]
+
+Subtract $5\times \rho_3$ from $3\times \rho_2$ and place the result in $\rho_3$:
+
+<<echo=F,eval=FALSE>>=
+r3<-3*r2-5*r3
+@
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & 5 & 3 & 1 & 1 & 0\\
+0 & 0 & -1 & 3 & 3 & -5\\
+\end{array} \right)
+\]
+
+Multiply $\rho_3$ by $-1$:
+
+<<echo=F,eval=FALSE>>=
+r3<-(-1)*r3
+@
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & 5 & 3 & 1 & 1 & 0\\
+0 & 0 & 1 & -3 & -3 & 5\\
+\end{array} \right)
+\]
+
+Divide $\rho_2$ by $5$:
+
+<<echo=F,eval=FALSE>>=
+r2<-r2/5
+@
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & 1 & 3/5 & 1/5 & 1/5 & 0\\
+0 & 0 & 1 & -3 & -3 & 5\\
+\end{array} \right)
+\]
+
+Subtract $\rho_2$ from $3/5\times \rho_3$ and place the result in $\rho_2$:
+
+<<echo=F,eval=FALSE>>=
+r2<-(3/5)*r3-r2
+@
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & -1 & 0 & -2 & -2 & 3\\
+0 & 0 & 1 & -3 & -3 & 5\\
+\end{array} \right)
+\]
+
+Multiply $\rho_2$ by $-1$:
+
+<<echo=F,eval=FALSE>>=
+r2<-(-1)*r2
+@
+
+\[ 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0\\
+0 & 1 & 0 & 2 & 2 & -3\\
+0 & 0 & 1 & -3 & -3 & 5\\
+\end{array} \right)
+\]
+
+The inverse of $M_1$ is therefore:
+
+\[ M_1^{-1}=
+\left( \begin{array}{ccc}
+1 & 0 & 0\\
+2 & 2 & -3\\
+-3 & -3 & 5\\
+\end{array} \right)
+\]
+
+We cross-check this with R:
+
+<<>>=
+## correct:
+M1<-matrix(c(1,0,0,-1,5,3,0,3,2),byrow=T,nrow=3)
+## note: ginv is in library MASS, loaded earlier
+fractions(ginv(M1))
+@
+
+
+We check our result regarding the inverse by evaluating $M_1 M_1^{-1}$. If the product of this matrix multiplication is $I$, then $M_1^{-1}$ is the correct inverse.
+
+\[ M_1 M_1^{-1}=
+\left( \begin{array}{ccc}
+1 & 0 & 0 \\
+-1 & 5 & 3\\
+0 & 3 & 2\\
+\end{array} \right)
+\left( \begin{array}{ccc}
+1 & 0 & 0\\
+2 & 2 & -3\\
+-3 & -3 & 5\\
+\end{array} \right)
+\]
+
+The result is:
+
+\[ M_1 M_1^{-1}=
+\left( \begin{array}{ccc}
+1\cdot 1 + 2\cdot 0 + -3\cdot 0 & 0 \cdot 1 + 2\cdot 0 + -3 \cdot 0 & 0 \cdot 1 + -3 \cdot 0 + 5 \cdot 0\\
+1\cdot -1 + 2\cdot 5 + -3\cdot 3 & 0\cdot -1 + 2\cdot 5 + -3\cdot 3 & 0\cdot -1 + -3\cdot 5 + 5\cdot 3\\
+1\cdot 0 +2\cdot 3 + -3\cdot 2 & 0\cdot 0 + 2\cdot 3+ -3\cdot 2 & 0\cdot 0 + -3\cdot 3 + 5\cdot 2 \\
+\end{array} \right)
+\]
+
+Simplifying:
+
+\[ M_1 M_1^{-1}=
+\left( \begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1 \\
+\end{array} \right)
+\]
+
+This confirms that we have the correct inverse. 
+
+We cross-check our calculations using R:
+<<>>=
+M1<-matrix(c(1,0,0,-1,5,3,0,3,2),byrow=T,nrow=3)
+## correct:
+fractions(M1%*%fractions(ginv(M1)))
+@
+
+
+\textbf{Answer}:  The inverse of $\left( \begin{array}{ccc}
+1 & 0 & 0 \\
+-1 & 5 & 3\\
+0 & 3 & 2\\
+\end{array} \right)$ is $\left( \begin{array}{ccc}
+1 & 0 & 0\\
+2 & 2 & -3\\
+-3 & -3 & 5\\
+\end{array} \right)$.
+
+\underline{Example 2}: Find the inverse of $M_2$:
+
+\[ M_2 = 
+\left( \begin{array}{ccc}
+1 & 0 & 0 \\
+-1 & 6 & 4\\
+0 & 3 & 2\\
+\end{array} \right)\]
+
+First, we augment the matrix:
+
+\[ M_2 I = 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0 \\
+-1 & 6 & 4& 0 & 1 & 0\\
+0 & 3 & 2& 0 & 0 & 1\\
+\end{array} \right)\]
+
+
+We replace $\rho_2$ with $\rho_1+\rho_2$:
+
+
+
+<<echo=F,eval=FALSE>>=
+M2<-matrix(c(1,0,0,-1,6,4,0,3,2),byrow=T,nrow=3)
+M2I<-matrix(c(1,0,0,1,0,0,-1,6,4,0,1,0,0,3,2,0,0,1),byrow=T,nrow=3)
+r1<-M2I[1,]
+r2<-M2I[2,]
+r3<-M2I[3,]
+
+r2<-r1+r2
+@
+
+\[ M_2 I = 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0 \\
+0 & 6 & 4 & 1 & 1 & 0\\
+0 & 3 & 2& 0 & 0 & 1\\
+\end{array} \right)\]
+
+Divide $\rho_2$ by $2$:
+
+<<echo=F,eval=FALSE>>=
+r2<-r2/2
+@
+
+\[ M_2 I = 
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 1 & 0 & 0 \\
+0 & 3 & 2 & 1/2 & 1/2 & 0\\
+0 & 3 & 2& 0 & 0 & 1\\
+\end{array} \right)\]
+
+There is no way to proceed here since the second and third rows can never be changed such that we have an identity matrix on the left hand side. I.e., no inverse exists for this matrix. 
+
+We cross-check this result using R by computing the inverse and then multiplying the original matrix with the purported inverse; we should get the identity matrix. As the R code shows, we do not get the identity matrix.
+
+<<>>=
+M2<-matrix(c(1,0,0,-1,6,4,0,3,2),byrow=T,nrow=3)
+## should have been an identity matrix:
+fractions(M2%*%fractions(ginv(M2)))
+@
+
+\textbf{Answer}: $M_2$ does not have an inverse because it is not row equivalent to $I$. 
+
+
+%% Homework p 266, 267 of MT 
+
+\section{Eigenvalues and eigenvectors}
+
+Any set of equations Ax=0 is a homogeneous set. Clearly, this will have at least the trivial solution x=0. The more interesting question is: are there any non-trivial solutions? It turns out that such a set of equations will have non-trivial solutions only if det A is 0.
+%%to-do Cramer's rule
+
+Now consider the nxn set of equations: $Ax = \lambda x$ or $(A-\lambda I)x = 0$. In order for these equations to have non-trivial solutions, it must be true (see previous paragraph) that 
+
+\begin{equation}
+det(A-\lambda I)=0
+\end{equation}
+
+The above is called the \textbf{characteristic equation} of A, and the $\lambda$ that satisfy the equation are called \textbf{eigenvalues}.
+
+\underline{Example}:
+
+Find the eigenvalues of 
+
+$A=\begin{pmatrix}
+1 & 3\\
+2 & 2
+\end{pmatrix}
+$
+
+Solve  $det(A-\lambda I)=0$:
+
+\begin{equation}
+det \begin{pmatrix}
+1-\lambda & 3\\
+2 & 2-\lambda 
+\end{pmatrix}
+=(1-\lambda) (2-\lambda) - 6
+\Rightarrow \lambda^2 - 3\lambda -4 = 0
+\end{equation}
+
+This gives us the factorization $(\lambda -4)(\lambda + 1)$. It follows that the eigenvalues are $\lambda_1 = -1, \lambda_2=4$ (we will order them from smallest to largest).
+
+\begin{leftbar}
+Recall the rule for figuring out the roots of a quadratic equation:
+
+$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$
+
+\end{leftbar}
+
+Associated with each eigenvalue we have a non-trivial solution to the equation $(A-\lambda I)x = 0$. Each of the solutions corresponding to each eigenvalue is called the eigenvector. So, once you have found an eigenvalue $\lambda_1$, you can find the eigenvector by solving the simultaneous linear equation  $(A-\lambda_1 I)x = 0$ using Gaussian elimination.
+
+For our above example, we have $\lambda_1 = -1, \lambda_2=4$. So, the eigenvectors are:
+
+\begin{equation}
+s_1=
+\begin{pmatrix}
+a_1\\
+b_1
+\end{pmatrix}
+\quad
+s_2=
+\begin{pmatrix}
+a_2\\
+b_2
+\end{pmatrix}
+\end{equation}
+
+Recall that $A=\begin{pmatrix}
+1 & 3\\
+2 & 2
+\end{pmatrix}
+$.
+
+We need to find the two solutions:
+$(A-\lambda_1 I)s_1 = 0$ and $(A-\lambda_2 I)s_2 = 0$. 
+
+As an example, consider $(A-\lambda_1 I)s_2 = 0$. Expanding everything out:
+
+\begin{equation}
+\begin{pmatrix}
+1 & 3\\
+2 & 2
+\end{pmatrix}
+- 
+\begin{pmatrix}
+4 & 0\\
+0  & 4
+\end{pmatrix}
+\begin{pmatrix}
+a_2\\
+b_2
+\end{pmatrix}
+= 
+\begin{pmatrix}
+0\\
+0
+\end{pmatrix}
+\end{equation}
+
+This gives us:
+
+\begin{equation}
+\begin{pmatrix}
+-3 & 3\\
+2 & -2
+\end{pmatrix}
+\begin{pmatrix}
+a_2\\
+b_2
+\end{pmatrix}
+= 
+\begin{pmatrix}
+0\\
+0
+\end{pmatrix}
+\end{equation}
+
+The solution is $a_2=b_2=\alpha$ for any value $\alpha$.
+
+You can do a similar calculation to get the eigenvector $s_1$. 
+
+Normally, we will use R for calculating eigenvalues and eigenvectors:
+
+<<>>=
+m<-matrix(c(1,3,2,2),byrow=T,ncol=2)
+eigen(m)
+@
+
+However, you should know how to do this by hand for 2x2 matrices; for larger matrices, just use R.
+
+Note that a zero eigenvalue implies that A is singular, i.e., det A = 0.
+If A singular, then A has at least one 0 eigenvalue.
+
+\subsection{Linear dependence}
+
+Consider the set of all mx1 column vectors; this set is the m-dimensional vector space $V_m$. Thus, if 
+
+\begin{equation}
+s_1 = 
+\begin{pmatrix}
+a_1\\
+a_2\\
+\vdots\\
+a_m
+\end{pmatrix}
+s_2 = 
+\begin{pmatrix}
+b_1\\
+b_2\\
+\vdots\\
+b_m
+\end{pmatrix}
+\end{equation}
+
+Then $s_1$ and $s_2$ belong to $V_m$ and so does
+
+\begin{equation}
+\alpha s_1 + \beta s_2
+\end{equation}
+
+for any $\alpha$ and $\beta$.
+
+We refer to as the set of \textbf{base vectors} in $V_m$ the following:
+
+\begin{equation}
+e_1 = 
+\begin{pmatrix}
+1\\
+0\\
+\vdots\\
+0
+\end{pmatrix}
+e_2 = 
+\begin{pmatrix}
+0\\
+1\\
+\vdots\\
+0
+\end{pmatrix}
+\dots
+e_m = 
+\begin{pmatrix}
+0\\
+0\\
+\vdots\\
+1
+\end{pmatrix}
+\end{equation}
+
+Any vector in $V_m$ can be expressed as a linear combination of these vectors:
+For any $i=1,\dots,m$,
+
+\begin{equation}
+s_i = a_1 e_1 + \dots + a_m e_m
+\end{equation}
+
+This is why $e_1,\dots,e_m$ forms a \textbf{basis} for $V_m$. Note that none of the $e_i$ can be expressed as a linear combination of the others; i.e., they are \textbf{linearly independent}.
+
+The set of $n$ column vectors $s_1,\dots,s_n$ is said to be linearly dependent
+if there exists constants $a_1,\dots, a_n$ (not all zero) such that
+
+\begin{equation}
+a_1 s_1 + \dots + a_n s_n = 0
+\end{equation}
+
+If the above equation holds only when $a_1 = \dots = a_n = 0$, then the $s_1\dots s_n$ are linearly dependent.
+
+Note that any set of m linearly independent vectors form a basis of the 
+vector space $V_m$.
+
+\underline{Example}:
+
+The column vectors below for a basis in three dimensions:
+$a_1=[1,1,0]^T, a_2 = [1,0,1]^T, a_3 = [0,0,1]^T$.
+
+To show this, we have to verify that
+
+\begin{equation}
+x a_1 + y a_2 + z a_3 = 0
+\end{equation}
+
+has non-zero solutions for x, y, z. We are trying to solve the equations:
+
+\begin{equation}
+\begin{pmatrix}
+x & + & y &   &   & = 0\\
+x & + &   &   & z & = 0\\
+  &   & y & + & z & = 0\\
+\end{pmatrix}
+\end{equation}
+
+The coefficient matrix is:
+
+\begin{equation}
+\begin{pmatrix}
+1 & 1 & 0\\
+1 & 0 & 1 \\
+0 & 1 & 1\\
+\end{pmatrix}
+\end{equation}
+
+Its determinant is -2 (i.e., not 0). The only solution is $x=y=z=0$. Therefore the vectors are linearly independent, and can form a basis.
+
+\begin{leftbar}
+For a square matrix A, if det A = 0, there is an infinite number of non-trivial solutions. If $det A \neq = 0$, the only solution is x = 0.
+\end{leftbar}
+
+\subsection{Diagonalization of a matrix}
+
+The eigenvalue and eigenvector information contained in a matrix can be used in a useful factorization of the type $D=C^{-1} A C$ where D is a diagonal matrix. Since computing powers of a diagonal matrix D are easy, we can use this factorization to find powers of the matrix A very quickly (see section~\ref{matrixpower}).
+
+Consider the matrix m and its eigenvalues and eigenvectors:
+
+<<print=TRUE>>=
+m<-matrix(c(1,2,1,2,1,1,1,1,2),byrow=FALSE,nrow=3)
+eigen_values_m<-eigen(m)$values
+eigen_vectors_m<-eigen(m)$vectors
+@
+
+Note that the eigenvectors are linearly independent, and do the matrix is non-singular:
+
+<<>>=
+det(eigen_vectors_m)
+@
+
+Let the matrix of eigenvectors (\texttt{eigen\_vectors\_m} above) be the 
+matrix C.
+Note that $AC= A [s_1~s_2~s_3]$, where $s_1, s_2, s_3$ are the eigenvectors of A.
+Now, $s_i$ is by definition a non-zero solution to $A s_i = \lambda_1 s_i$.
+
+Let D be the diagonal matrix of eigenvalues:
+
+\begin{equation}
+D=
+\begin{pmatrix}
+\lambda_1 & 0 & 0 \\
+0 & \lambda_2 & 0  \\
+0 & 0 & \lambda_3 \\
+\end{pmatrix}
+\end{equation}
+
+Now, 
+
+\begin{equation}
+AC = CD
+\end{equation}
+
+[Verify this.]
+
+Pre-multiplying both sides with $C^{-1}$, we get:
+
+\begin{equation}
+C^{-1}AC =  C^{-1}CD = D
+\end{equation}
+
+We say that the operation $C^{-1}AC$ has diagonalized the matrix A.
+
+Summary of steps: To diagonalize a matrix A:
+
+\begin{enumerate}
+\item find the eigenvalues of A
+\item find n linearly independent eigenvectors $s_n$ of A (if they exist)
+\item construct the matrix C of eigenvectors
+\item calculate the inverse of C
+\item compute $C^{-1}AC$
+\end{enumerate}
+
+\subsubsection{Application of diagonalization: finding powers of matrices}
+
+For a diagonal matrix D, we can find any power $D^n$ quickly by just raising the diagonal elements $d_ii$ to the n-th power.
+
+To find the power of any matrix A, first note that:
+
+\begin{equation}
+AC =  CD
+\end{equation}
+
+Post-multiplying both sides by $C^{-1}$, we get:
+
+\begin{equation}
+ACC^{-1} = A=  CDC^{-1}
+\end{equation}
+
+It follows that
+
+\begin{equation}
+A^2 =  C D C^{-1} C D C^{-1} = C D D C^{-1} = C D^2 C^{-1}
+\end{equation}
+
+\begin{equation}
+A^3 =  C D C^{-1} C D C^{-1} C D C^{-1} = C D^3 C^{-1}
+\end{equation}
+
+and in general, it should be obvious that:
+
+\begin{equation}
+A^n =   \overbrace{C D C^{-1} C D C^{-1} \dots C D C^{-1} C D C^{-1}}^{n \hbox{ times}}  = C D^n C^{-1}
+\end{equation}
+
+\subsection{Quadratic forms}
+
+Let $x = [x_1,x_2,\dots,x_n]^T$ be an n-dimensional column vector.
+Any polynomial function of these elements in which every term is of degree 2 in them is called a \textbf{quadratic form}. For n=3, we have (for example):
+
+\begin{equation}\label{quadform}
+x_1^2 + 8 x_1 x_2 + 6 x_2 x_3 + x_3^2
+\end{equation}
+
+
+Quadratic forms can always be expressed in matrix form:
+
+\begin{equation}
+x^T A x
+\end{equation}
+
+The above example in equation~\ref{quadform} can be restated as:
+
+\begin{equation}
+\begin{pmatrix}
+x_1 & x_2 & x_3\\
+\end{pmatrix}
+\begin{pmatrix}
+1 & 4 & 0\\
+4 & 1 & 3\\
+0 & 3 & 1
+\end{pmatrix}
+\begin{pmatrix}
+x_1\\
+x_2 \\
+x_3\\
+\end{pmatrix}
+\end{equation}
+
+Note that A is a symmetric matrix. Any quadratic form can be written using a symmetric A (although non-symmetric representations are possible). 
+
+Now let's compute the eigenvalues and eigenvectors:
+<<print=TRUE>>=
+m<-matrix(c(1,4,0,4,1,3,0,3,1),byrow=FALSE,ncol=3)
+val<-eigen(m)$values
+vec<-eigen(m)$vectors
+@
+
+Note that the eigenvectors are \textbf{orthogonal}:
+
+<<>>=
+round(t(vec[,1])%*%vec[,2],5)
+round(t(vec[,1])%*%vec[,3],5)
+round(t(vec[,2])%*%vec[,3],5)
+@
+
+[Two vectors $a_n$ and $b_n$ are orthogonal when $a^T b=0$.
+We say that they are \textbf{mutually perpendicular}.]
+
+This property of orthogonality comes from the fact that the matrix is symmetric:
+
+\begin{theorem}
+If A is a real symmetric matrix, then the eigenvectors associated with any two distinct eigenvalues are orthogonal.
+%% proof p. 294 of Math Techniques
+\end{theorem}
+
+%Example: to-do
+
+%Let $f(x,y) = 7x^2 + 4 y^2 + 4 xy$. Use the diagonalization of a symmetric matrix to write this quadratic form in the form:
+
+%\begin{equation}
+%\lambda_1 u^2 + \lambda_2 v^2
+%\end{equation}
+
+%with $u$ and $v$ linear combinations of $x$ and $y$.
+
+\subsubsection{Positive-definite matrices}
+
+A quadratic form is positive definite if $x^T A x > 0$ for all $x\neq 0$. The matrix A is also called positive definite. 
+
+A symmetric matrix A is positive definite if and only if its eigenvalues are positive.
+
+There is a unique decomposition of A
+
+\begin{equation}\label{cholesky}
+A=LL^T
+\end{equation}
+
+where L is the lower triangular matrix (this matrix has non-zero values in the lower-triangular part, and 0's in the upper triangular part). 
+The equation~\ref{cholesky} is called the Cholesky decomposition. How to compute this in R:
+
+<<>>=
+m <- matrix(c(5,1,1,3),2,2)
+L <- t(chol(m))
+L%*%t(L)
+@
+
+There is also a unique decomposition of A such that
+
+\begin{equation}
+A= V D V^T \quad V^T V = I
+\end{equation}
+
+is called the \textbf{singular value decomposition}. 
+
+\chapter{Multivariate calculus}
+
+
+\section{Partial derivatives}
+
+It is easy to imagine that more than one variable may be involved in a function:
+
+$z=f(x,y)=x^3 + y^3$
+
+We will encounter such functions in multivariate statistics (see chapter~\ref{apps}).
+
+We will say that we are taking a partial derivative if we differentiate a function like $z$ above with respect to x (treating y as a constant) or with respect to y (treating x as a constant).
+
+We write these two cases as $\frac{\partial f(x,y)}{\partial x}$ and $\frac{\partial f(x,y)}{\partial y}$. Higher derivatives can be computed in the usual way we have seen.
+
+We can also take mixed derivatives, where we first differentiate f(x,y) with respect to x and then with respect to y; this is written:
+
+$\frac{\partial^2 f(x,y)}{\partial \partial y}$
+
+Note that order of differentiation does not matter for the kinds of functions we will encounter: 
+$\frac{\partial^2 f(x,y)}{\partial x \partial y}=\frac{\partial^2 f(x,y)}{\partial y \partial x}$.
+
+
+\section{Drawing level curves}
+
+You can draw contour plots of a bivariate function, also called level curves, given x and y values stored in a matrix m (x in the first column, and y in the second).
+
+<<>>=
+## source:
+#https://stat.ethz.ch/pipermail/r-help/
+##2007-October/142470.html
+dens2d<-function(x, nx = 20, ny = 20, 
+                 margin = 0.05, h = 1)
+{
+ xrange <- max(x[, 1]) - min(x[, 1])
+ yrange <- max(x[, 2]) - min(x[, 2])
+ xmin <- min(x[, 1]) - xrange * margin
+ xmax <- max(x[, 1]) + xrange * margin
+ ymin <- min(x[, 2]) - yrange * margin
+ ymax <- max(x[, 2]) + yrange * margin
+ xstep <- (xmax - xmin)/(nx - 1)
+ ystep <- (ymax - ymin)/(ny - 1)
+ xx <- xmin + (0:(nx - 1)) * xstep
+ yy <- ymin + (0:(ny - 1)) * ystep
+ g <- matrix(0, ncol = nx, nrow = ny)
+ n <- dim(x)[[1]]
+ for(i in 1:n) {
+  coefx <- dnorm(xx - x[i, 1], mean = 0, sd = h)
+  coefy <- dnorm(yy - x[i, 2], mean = 0, sd = h)
+  g <- g + coefx %*% t(coefy)/n
+ }
+ return(list(x = xx, y = yy, z = g))
+}
+
+m<-matrix(cbind(x=rnorm(10),y=rnorm(10)),ncol=2)
+@
+
+<<fig=TRUE>>=
+contour(dens2d(m))
+@
+
+\section{Double integrals}
+
+\subsection{How to solve double integrals}
+
+An example may help in seeing how to solve double integrals. Let 
+
+\begin{equation}
+I= \int_0^1 \int_0^2 (xy + y^2 -1 )\, dx dy 
+\end{equation}
+\begin{enumerate}
+\item
+Put brackets around the inner integral, and relabel the limits so that it is clear which integral is for which variable:
+
+\begin{equation}
+I= \int_{y=0}^1  \left( \int_{x=0}^2 (xy + y^2 -1 )\, dx \right) dy 
+\end{equation}
+\item
+Treat y as a constant and evaluate the inner integral with respect to x:
+
+\begin{equation}
+\left( \int_{x=0}^2 (xy + y^2 -1 )\, dx \right) = \left[ \frac{1}{2}x^2y+ xy^2-x\right]_{x=0}^2=2y +2y^2 -2
+\end{equation}
+
+Note that x has been eliminated.
+\item
+Use the result of the inner integration for the second integral:
+
+\begin{equation}
+\int_{y=0}^1  2y +2y^2 -2 dy = \left[ y^2 +\frac{2}{3}y^3-2y  \right]_{y=0}^1=
+1 -\frac{2}{3}-2=-\frac{1}{3}
+\end{equation}
+\end{enumerate}
+
+See the section on jointly distributed random variables (page~\pageref{joint}, section~\ref{joint}) for some applications of double integrals in statistics.
+
+\subsection{Double integrals using polar coordinates}
+
+Any (x,y) point in a cartesian plane can be stated in terms of the angle $\theta$ of the line from the origin to the point (x,y), and the length r of the line from the origin to the point (x,y). Recall that 
+
+\begin{equation}
+\cos \theta = \frac{x}{r} \quad \sin \theta = \frac{y}{r}
+\end{equation}
+
+Therefore, $x=r\cos \theta, y=r\sin \theta$.
+
+It is easier to solve the double integral $\iint (1-x^2 - y^2)\,dxdy$, (where $x^2 + y^2< 1; x, y<1$) if we convert to polar coordinates.
+
+\begin{figure}[!htbp]
+<<fig=TRUE>>=
+library(plotrix)
+plot(0:2,0:2,type="n",xlab="",ylab="")
+draw.circle(0,0,1,border="black",lty=1,lwd=1)
+arrows(x0=0,y0=0,x1=.7,y1=.7,code=2,length=0)
+arrows(x0=0,y0=0,x1=.45,y1=.9,code=2,length=0)
+draw.circle(0,0,.7,border="black",lty=2,lwd=1)
+draw.circle(0,0,.9,border="black",lty=2,lwd=1)
+text(.48,.75,"dA",cex=2)
+text(.4,.6,expression(paste("rd",theta)),cex=1)
+text(.6,.55,"dr",cex=1)
+@
+\caption{The function f(x,y). (The circle has not been drawn correctly. Need to fix this.)}\label{fig:quartercircle}
+\end{figure}
+
+Note that  $\iint (1-x^2 - y^2)\,dxdy$ is just a sum of all the areas of small near-rectangles; we can call the areas dA:
+
+\begin{equation}
+\iint f(x,y)\, dA
+\end{equation}
+
+Now, given a small rectangle with side $dr$, and a small angle $d\theta$, its area will be $rdrd\theta$, because the arc's length will be (by the definition of radian) $rd\theta$, the width of the rectangle is $dr$.  See Figure~\ref{fig:quartercircle}.
+
+So, in polar coordinate terms, our integral will look like:
+
+\begin{equation}
+\iint f(x,y)\, dA = \iint (1-x^2-y^2)\, rdrd\theta=
+\iint (1-(x^2+y^2))\, rdrd\theta=
+\iint (1-r^2)\, rdrd\theta
+\end{equation}
+
+The last line above holds because $r^2 = x^2 + y^2$ by Pythagoras' theorem.
+
+Next, we define the upper and lower bounds of the integrals; we can do this because we are given that $x^2 + y^2< 1; x, y<1$. This describes a quarter circle on the first quadrant of the cartesian plane, with radius 1.
+
+\begin{equation}
+\begin{split}
+\iint (1-r^2)\, rdrd\theta =& \int_0^{\pi/2}\int_0^1 (1-r^2)\, rdrd\theta\\
+=& \int_0^{\pi/2} [\frac{r^2}{2}-\frac{r^4}{4}]_0^{1} \, d\theta\\
+=& \int_0^{\pi/2} \frac{1}{4} \, d\theta\\
+=& \frac{\pi}{8}
+\end{split}
+\end{equation}
+
+More generally, if the region R is the region $a\leq r \leq b, \alpha\leq \theta \leq \beta$, then
+
+\begin{equation}
+\iint_R f(x,y)\, dxdy=\int_{\alpha}^{\beta} \int_{a}^{b} f(r,\theta)r dr d\theta
+\end{equation}
+
+This change of variables is related to the next topic.
+
+\subsection{The Jacobian in a change of variables transformation}
+
+We just saw that it is sometimes convenient to transform a function that is in terms of x,y, into another function in terms of u,v (above, we transformed to r, $\theta$).
+
+Suppose we need to solve $\iint (\frac{x}{a})^2+(\frac{y}{b})^2\, dxdy$, given that $(\frac{x}{a})^2+(\frac{y}{b})^2<1$. We are basically looking to find the area inside an ellipse.
+
+<<fig=TRUE>>=
+plot(c(-10,10), c(-10,10), type="n", 
+     main="Ellipse with a=3,b=2")
+draw.ellipse(c(0,0),c(0,0),a=3,b=2,angle=0)
+@
+
+To make this integral simpler to solve, we can change variables. Say $x/a=u, y/b=v$. Now our region R is $u^2 + v^2 <1$. This looks much easier to solve because it is a circle now, with radius 1. Remember that its area is going to $\pi$.
+
+$x/a=u$ implies $du=\frac{1}{a}\,dx$
+
+$y/b=v$ implies $dv=\frac{1}{b}\,dy$
+
+So, $du dv = \frac{1}{ab}\,dxdy$. Or, $dxdy=ab du dv$. So, in the double integral, I can replace dxdy with $ab dudv$:
+
+\begin{equation}
+\iint_R (u^2 + v^2) ab du dv
+= ab \iint_R  u^2 + v^2 du dv = ab \pi
+\end{equation}
+
+(because the area of a unit circle is $\pi$).
+
+When we want to find the area in a double integral with variables x and y, the area will be $dA=dxdy$. When we transform the variables to u,v, the area in the u,v dimensions will be $dA'=dudv$. To take a concrete example, suppose $u=3x-2y$ and $v=x+y$. Then dA will be the area of a rectangle, and the $dA'$ will be the area of a parallelogram (the transformation just twists the rectangle in the x,y space to a parallelogram in u,v space). 
+The area dA will not be the same as the are dA'; i.e., there is some scaling factor k such that $dA=kdA'$.
+
+As a concrete example, consider the unit square:
+
+<<fig=TRUE>>=
+plot(c(0,1.25), c(0,1.25), type="n", main="Unit square")
+arrows(x0=1,y0=0,x1=1,y1=1,code=2,length=0)
+arrows(x0=1,y0=1,x1=0,y1=1,code=2,length=0)
+arrows(x0=0,y0=0,x1=0,y1=1,code=2,length=0)
+arrows(x0=0,y0=0,x1=1,y1=0,code=2,length=0)
+@
+
+In u,v terms, we have a paralleogram:
+
+<<fig=TRUE>>=
+plot(c(-3,3), c(-3,3), type="n", main="Unit square")
+arrows(x0=0,y0=0,x1=3,y1=1,code=2,length=0)
+arrows(x0=3,y0=1,x1=1,y1=2,code=2,length=0)
+arrows(x0=1,y0=2,x1=-2,y1=1,code=2,length=0)
+arrows(x0=-2,y0=1,x1=0,y1=0,code=2,length=0)
+text(2,1,"(u1=3,u2=1)",cex=1)
+text(-1,1,"(v1=-2,v2=1)",cex=1)
+@
+
+Now, it can be shown that the area ($dA'$) of a parallegram is the length of the cross-product of the two vectors that make up two vectors $\mathbf{u}$ and $\mathbf{v}$. That can be shown to be the absolute value of the determinant of the matrix A:
+
+\begin{equation}
+A=
+\begin{pmatrix}
+\mathbf{u}_1 & \mathbf{u}_2\\
+\mathbf{v}_1 & \mathbf{v}_2\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\mathbf{u}_1=3 & \mathbf{u}_2=1\\
+\mathbf{v}_1=-2& \mathbf{v}_2=1\\
+\end{pmatrix}
+\end{equation}
+
+Now, $\mid det A\mid = u_1v_2-u_2v_1=5$. That means that the parallelogram has five times the size than the unit square. So there is always a scaling factor needed when we do a change of variables. 
+
+So, in the above example, $dA'=5dA$, i.e., $dudv=5dxdy$. If we are integrating in terms of u,v, we have to correct for the fact that the area in u,v coordinates is 5 times larger:
+
+\begin{equation}
+\iint \dots dx dy=\iint \dots \frac{1}{5} du dv
+\end{equation}
+
+The scaling factor $\frac{1}{5}$ is called the Jacobian. We could have written 
+
+\begin{equation}
+\iint \dots dx dy=\iint \dots \frac{1}{\mid det A\mid } du dv
+\end{equation}
+
+We say that the Jacobian J=det A, where A is the relevant matrix. I discuss this matrix next by considering the general case.
+
+Let $u = f(x,y)$, and $v=g(x,y)$, i.e., u and v are some functions of x and y. Let f and g be continuously differentiable functions over some region $\Gamma$. The point (u,v) generates a region $\Omega$ in the u-v plane: (f(x,y),g(x,y)). The Jacobian in this case can be computed by:
+
+\begin{equation}
+J(x,y) = \frac{\partial(u,v)}{\partial(x,y)}=det 
+\begin{pmatrix}
+\frac{\partial u}{\partial x} & \frac{\partial v}{\partial x}\\
+\frac{\partial u}{\partial y} & \frac{\partial v}{\partial y}\\
+\end{pmatrix}
+\end{equation}
+
+
+The main thing to understand here is that the Jacobian is the scaling factor when you change variables.
+
+\begin{leftbar}
+To express a double integral in new coordinates 
+
+If $x=g(u,v), y=h(u,v)$, then:
+
+\begin{equation}
+\iint_E f(x,y)\, dx dy = 
+\iint_S f(g(u,v),h(u,v)) \mid \frac{\partial(x,y)}{\partial(u,v)} \mid\, dudv  
+\end{equation}
+
+S is the region R transformed to the cartesian u-v plane. 
+\end{leftbar}
+
+
+\chapter{Some background in statistics, with applications of mathematical methods}\label{apps}
+
+The tools we've acquired in this course have applications in many areas of science, but in the MSc in Cognitive Systems we are mainly interested in their applications for statistics and (by extension) data mining.
+
+We begin by considering some facts about random variables. Then we look at how expectation and variance etc.\ are computed. Several typical probability distributions and their properties are discussed. Two major applications of the mathematics we covered are in maximum likelihood estimation and in the matrix formulation of linear models.
+
+
+\section{Discrete random variables; Expectation}
+
+A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+
+$S_X$ is all the $x$'s (all the possible values of X, the support of X). I.e., $x \in S_X$. 
+
+Good example: number of coin tosses till H
+
+\begin{itemize}
+  \item $X: \omega \rightarrow x$
+	\item $\omega$: H, TH, TTH,\dots (infinite)
+	\item $x=0,1,2,\dots; x \in S_X$
+\end{itemize}
+
+Every discrete random variable X has associated with it a \textbf{probability mass/distribution  function (PDF)}, also called \textbf{distribution function}. 
+
+
+\begin{equation}
+p_X : S_X \rightarrow [0, 1] 
+\end{equation}
+
+defined by
+
+\begin{equation}
+p_X(x) = P(X(\omega) = x), x \in S_X
+ \end{equation}
+
+[\textbf{Note}: Books sometimes abuse notation by overloading the meaning of $X$. They usually have: $p_X(x) = P(X = x), x \in S_X$]
+
+\medskip
+
+The \textbf{cumulative distribution function} is
+
+\begin{equation}
+F(a)=\sum_{\hbox{all } x \leq a} p(x)
+\end{equation}
+
+
+Basic results:
+
+\begin{equation}
+	E[X]= \underset{i=1}{\overset{n}{\sum}} x_i p(x_i)
+\end{equation}
+
+\begin{equation}
+	E[g(X)]= \underset{i=1}{\overset{n}{\sum}} g(x_i) p(x_i)
+\end{equation}
+
+\begin{equation}
+	Var(X)= E[(X-\mu)^2]
+\end{equation}
+
+\begin{equation}
+	Var(X)= E[X^2] - (E[X])^2
+\end{equation}
+
+\begin{equation}
+	Var(aX+b)= a^2 Var(X)
+\end{equation}
+
+\begin{equation}
+	SD(X)=\sqrt{Var(X)}
+\end{equation}
+
+For two independent random variables $X$ and $Y$, 
+
+\begin{equation}
+E[XY]=E[X]E[Y]
+\end{equation}
+
+Covariance of two random variables:
+
+\begin{equation}
+Cov(X,Y)=E[(X-E[X]) (Y - E[Y])]
+\end{equation}
+
+Note that Cov(X,Y)=0 if X and Y are independent.
+
+Corollary in 4.1 of \cite{RossProb}:
+
+\begin{equation}
+E[aX + b] = aE[X]+b
+\end{equation}
+
+A related result is about \textbf{linear combinations of RVs}:
+
+\textbf{Theorem}. Given two \textbf{not necessarily independent} random variables X and Y:
+
+\begin{equation}
+E[aX + bY] =aE[X] + bE[Y]
+\end{equation}
+
+If X and Y are independent, 
+
+\begin{equation}
+Var(X+Y)=Var[X] + Var[Y]
+\end{equation}
+
+and
+
+\begin{equation}
+Var(aX+bY)=a^2Var(X) + b^2Var(Y)
+\end{equation}
+
+If $a=1, b=-1$, then
+
+\begin{equation}
+Var(X-Y)=Var(X) + Var(Y)
+\end{equation}
+
+If X and Y are not independent, then
+
+\begin{equation}
+Var(X-Y)=Var(X) + Var(Y) -2 Cov (X,Y)
+\end{equation}
+
+
+\subsection{Examples of discrete probability distributions}
+
+%\subsubsection{Binomial}
+
+%\subsubsection{Poisson}
+
+\subsubsection{Geometric}
+
+Suppose that independent trials are performed, each with probability $p$, where $0<p<1$, until a success occurs. Let $X$ equal the number of trials required. Then, 
+
+\begin{equation}
+	P(X=n)=(1-p)^{n-1}p \quad n=1,2,\dots	
+\end{equation}
+
+Note that:
+
+\begin{alignat*}{1}
+\sum_{x=0}^{\infty}p(1-p)^{x}= & p\sum_{x=0}^{\infty}q^{x}=p\,\frac{1}{1-q}=1.
+\end{alignat*}
+
+The mean and variance are
+\begin{equation}
+\mu=\frac{1-p}{p}=\frac{q}{p}\mbox{ and }\sigma^{2}=\frac{q}{p^{2}}.
+\end{equation}
+
+%to-do: example
+
+
+\subsubsection{Negative binomial}
+
+[Taken nearly verbatim from \cite{kerns}.]
+
+Consider the case where we wait for more than one success. Suppose that we conduct Bernoulli trials repeatedly, noting the respective successes and failures. Let $X$ count the number of failures before $r$ successes. If $\mathbb{P}(S)=p$ then $X$ has PMF
+
+\begin{equation}
+f_{X}(x)={r+x-1 \choose r-1}\, p^{r}(1-p)^{x},\quad x=0,1,2,\ldots
+\end{equation}
+
+We say that $X$ has a \textbf{Negative Binomial distribution} and write $X\sim\mathsf{nbinom}(\mathtt{size}=r,\,\mathtt{prob}=p)$. 
+
+%The associated $\mathsf{R}$ functions are =dnbinom(x, size, prob)=, =pnbinom=, =qnbinom=, and =rnbinom=, which give the PMF, CDF, quantile function, and simulate random variates, respectively.
+
+Note that $f_{X}(x)\geq 0$ and the fact that $\sum f_{X}(x)=1$ follows from a generalization of the geometric series by means of a Maclaurin's series expansion:
+
+\begin{alignat}{1}
+\frac{1}{1-t}= & \sum_{k=0}^{\infty}t^{k},\quad \mbox{for $-1 < t < 1$},\mbox{ and}\\
+\frac{1}{(1-t)^{r}}= & \sum_{k=0}^{\infty}{r+k-1 \choose r-1}\, t^{k},\quad \mbox{for $-1 < t < 1$}.
+\end{alignat}
+
+Therefore
+
+\begin{equation}
+\sum_{x=0}^{\infty}f_{X}(x)=p^{r}\sum_{x=0}^{\infty}{r+x-1 \choose r-1}\, q^{x}=p^{r}(1-q)^{-r}=1,
+\end{equation}
+
+since $\mid q\mid =\mid 1-p\mid <1$.
+
+%to-do examples
+
+%\subsubsection{Hypergeometric}
+
+
+
+\section{Continuous random variables}
+
+\textbf{Recall from the discrete random variables section that}:
+A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+$S_X$ is all the $x$'s (all the possible values of X, the support of X). I.e., $x \in S_X$.
+
+$X$ is a continuous random variable if there is a non-negative function $f$ defined for all real $x \in (-\infty,\infty)$ having the property that for any set B of real numbers, 
+
+%(note that B is the support $S_X$ in Kerns' notation; the use of B is Ross' notation),
+
+\begin{equation}
+P\{X \in B\} = \int_B f(x) \, dx 
+\end{equation}
+
+Kerns has the following to add about the above:
+
+\begin{quote}
+Continuous random variables have supports that look like
+	
+	\begin{equation}
+	S_{X}=[a,b]\mbox{ or }(a,b),
+	\end{equation}
+	
+	or unions of intervals of the above form. Examples of random variables that are often taken to be continuous are:
+
+\begin{itemize}
+\item the height or weight of an individual,
+\item other physical measurements such as the length or size of an object, and
+\item durations of time (usually).
+\end{itemize}
+
+	Every continuous random variable $X$ has a probability density function (PDF) denoted $f_{X}$ associated with it
+	that satisfies three basic properties:
+
+\begin{enumerate}
+\item $f_{X}(x)>0$ for $x\in S_{X}$,
+\item $\int_{x\in S_{X}}f_{X}(x)\,\mathrm{d} x=1$, and
+\item  $\mathbb{P}(X\in A)=\int_{x\in A}f_{X}(x)\:\mathrm{d} x$, for an event $A\subset S_{X}$.
+\end{enumerate}
+
+	We can say the following about continuous random variables:
+
+\begin{itemize}
+\item Usually, the set $A$ in condition 3 above takes the form of an interval, for example, $A=[c,d]$, in which case
+
+	  \begin{equation}
+	  \mathbb{P}(X\in A)=\int_{c}^{d}f_{X}(x)\:\mathrm{d} x.
+	  \end{equation}
+
+\item It follows that the probability that $X$ falls in a given interval is simply the area under the curve of $f_{X}$ over the interval.
+\item Since the area of a line $x=c$ in the plane is zero, $\mathbb{P}(X=c)=0$  for any value $c$. In other words, the chance that $X$ equals a particular value $c$ is zero, and this is true for any number $c$. Moreover, when $a<b$ all of the following probabilities are the same:
+
+	  \begin{equation}
+	  \mathbb{P}(a\leq X\leq b)=\mathbb{P}(a<X\leq b)=\mathbb{P}(a\leq X<b)=\mathbb{P}(a<X<b).
+	  \end{equation}
+\item The PDF $f_{X}$ can sometimes be greater than 1. This is in contrast to the discrete case; every nonzero value of a PMF is a probability which is restricted to lie in the interval $[0,1]$.
+\end{itemize}
+\end{quote}
+
+$f(x)$ is the probability density function of the random variable $X$.
+
+Since $X$ must assume some value, $f$ must satisfy
+
+\begin{equation}
+1= P\{X \in (-\infty,\infty)\} = \int_{-\infty}^{\infty} f(x) \, dx 
+\end{equation}
+
+If $B=[a,b]$, then 
+
+\begin{equation}
+P\{a \leq X \leq b\} = \int_{a}^{b} f(x) \, dx 
+\end{equation}
+
+If $a=b$, we get
+
+\begin{equation}
+P\{X=a\} = \int_{a}^{a} f(x) \, dx = 0
+\end{equation}
+
+Hence, for any continuous random variable, 
+
+\begin{equation}
+P\{X < a\} = P \{X \leq a \} = F(a) = \int_{-\infty}^{a} f(x) \, dx 
+\end{equation}
+
+$F$ is the \textbf{cumulative distribution function}. Differentiating both sides in the above equation:
+
+\begin{equation}
+\frac{d F(a)}{da} = f(a) 
+\end{equation}
+
+The density (PDF) is the derivative of the CDF. In the discrete case \cite[128]{kerns}:
+
+\begin{equation}
+f_{X}(x)=F_{X}(x)-\lim_{t\to x^{-}}F_{X}(t)
+\end{equation}
+
+
+
+Ross \cite{RossProb} says that it is more intuitive to think about it as follows:
+
+\begin{equation}
+P\{a - \frac{\epsilon}{2} \leq X \leq a + \frac{\epsilon}{2} \} = \int_{a - \epsilon/2}^{a + \epsilon/2} f(x)\, dx \approx \epsilon f(a) 
+\end{equation}
+
+when $\epsilon$ is small and when $f(\cdot)$ is continuous. I.e., $\epsilon f(a)$ is the approximate probability that $X$ will be contained in an interval of length $\epsilon$ around the point $a$.
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Basic results (proofs omitted)}:
+
+\begin{enumerate}
+	\item \begin{equation}
+	E[X]= \int_{-\infty}^{\infty} x f(x) \, dx
+	\end{equation}
+\item
+	\begin{equation}
+	E[g(X)]= \int_{-\infty}^{\infty} g(x) f(x) \, dx
+	\end{equation}
+\item
+	\begin{equation}
+	E[aX+b]= aE[X]+b
+	\end{equation}
+\item
+	\begin{equation}
+	Var[X]= E[(X-\mu)^2]=E[X^2]-(E[X])^2
+	\end{equation}
+\item
+	\begin{equation}
+	Var(aX+b)= a^2Var(X)
+	\end{equation}	
+\end{enumerate}
+
+\end{fmpage}
+\end{center}
+
+\section{Important classes of continuous random variables}
+
+\subsection{Uniform random variable}
+
+A random variable $(X)$ with the continuous uniform distribution on the interval $(\alpha,\beta)$ has PDF
+
+\begin{equation}
+f_{X}(x)=
+\begin{cases}
+\frac{1}{\beta-\alpha}, & \alpha < x < \beta,\\
+0 , & \hbox{otherwise}
+\end{cases}
+\end{equation}
+
+The associated $\mathsf{R}$ function is $\mathsf{dunif}(\mathtt{min}=a,\,\mathtt{max}=b)$. We write $X\sim\mathsf{unif}(\mathtt{min}=a,\,\mathtt{max}=b)$. Due to the particularly simple form of this PDF we can also write down explicitly a formula for the CDF $F_{X}$:
+
+\begin{equation}
+F_{X}(a)=
+\begin{cases}
+0, & a < 0,\\
+\frac{a-\alpha}{\beta-\alpha}, & \alpha \leq t < \beta,\\
+1, & a \geq \beta.
+\end{cases}
+\label{eq-unif-cdf}
+\end{equation}
+
+\begin{equation}
+E[X]= \frac{\beta+\alpha}{2}
+\end{equation}
+
+\begin{equation}
+Var(X)= \frac{(\beta-\alpha)^2}{12}
+\end{equation}
+
+\subsection{Normal random variable}
+
+\begin{equation}
+f_{X}(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{ \frac{-(x-\mu)^{2}}{2\sigma^{2}}},\quad -\infty < x < \infty.
+\end{equation}
+
+We write $X\sim\mathsf{norm}(\mathtt{mean}=\mu,\,\mathtt{sd}=\sigma)$, and the associated $\mathsf{R}$ function is \texttt{dnorm(x, mean = 0, sd = 1)}.
+
+<<label=normaldistr,include=FALSE>>=
+plot(function(x) dnorm(x), -3, 3,
+      main = "Normal density",ylim=c(0,.4),
+              ylab="density",xlab="X")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<normaldistr>>	
+@
+\caption{Normal distribution.}
+\label{fig:normaldistr}
+\end{figure}
+
+If $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then $Y=aX+b$ is normally distributed with parameters $a\mu + b$ and $a^2\sigma^2$.
+
+Computing areas under the curve with R:
+
+<<>>=
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+lower=-Inf,upper=Inf)
+## alternatively:
+pnorm(Inf)-pnorm(-Inf)
+
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+          lower=-2,upper=2)
+## alternatively:
+pnorm(2)-pnorm(-2)
+
+integrate(function(x) dnorm(x, mean = 0, sd = 1),
+          lower=-1,upper=1)
+## alternatively:
+pnorm(1)-pnorm(-1)
+@
+
+\subsubsection{Standard or unit normal random variable} 
+
+If $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then $Z=(X-\mu)/\sigma$ is normally distributed with parameters $0,1$.
+
+We conventionally write $\Phi (x)$ for the CDF:
+
+\begin{equation}
+\Phi (x)=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x}  e^{\frac{-y^2}{2}} \, dy 
+\quad \textrm{where} y=(x-\mu)/\sigma
+\end{equation}
+
+Neave's tables give the values for positive $x$; for negative $x$ we do:
+
+\begin{equation}
+\Phi (-x)= 1- \Phi (x),\quad -\infty < x < \infty
+\end{equation}
+
+If $Z$ is a standard normal random variable (SNRV) then
+
+\begin{equation}
+p\{ Z\leq -x\} = P\{Z>x\}, \quad -\infty < x < \infty
+\end{equation}
+
+Since $Z=((X-\mu)/\sigma)$ is an SNRV whenever $X$ is normally distributed with parameters $\mu$ and $\sigma^2$, then the CDF of $X$ can be expressed as:
+
+\begin{equation}
+F_X(a) = P\{ X\leq a \} = P\left( \frac{X - \mu}{\sigma} \leq \frac{a - \mu}{\sigma}\right) = \Phi\left( \frac{a - \mu}{\sigma} \right)
+\end{equation}
+
+The standardized version of a normal
+random variable X is used to compute specific probabilities relating to X (it's also easier to compute probabilities from different CDFs so that the two computations are comparable).
+
+
+
+\textbf{The expectation of the standard normal random variable}:
+
+\begin{equation*}
+E[Z] = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty x e^{-x^2/2} \, dx
+\end{equation*}
+
+Let $u = -x^2/2$.
+
+Then, $du/dx = -2x/2=-x$. I.e., $du= -x \, dx$ or $-du=x \, dx$.
+
+We can rewrite the integral as:
+
+\begin{equation*}
+E[Z]  = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} x \, dx\\
+\end{equation*}
+
+Replacing $x\, dx$ with $-du$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty e^{u} \, du	
+\end{equation*}
+
+which yields:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{u} ]_{-\infty}^{\infty}
+\end{equation*}
+
+Replacing $u$ with $-x^2/2$ we get:
+
+\begin{equation*}
+-\frac{1}{\sqrt{2\pi}} [ e^{-x^2/2} ]_{-\infty}^{\infty} = 0
+\end{equation*}
+ 
+\textbf{The variance of the standard normal distribution}:
+
+We know that 
+
+\begin{equation*}
+\hbox{Var}(Z)=E[Z^2]-(E[Z])^2
+\end{equation*}
+
+Since $(E[Z])^2=0$ (see immediately above), we have
+
+\begin{equation*}
+\hbox{Var}(Z)=E[Z^2] = 
+\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \explain{x^2}{\textrm{This is $Z^2$.}}  e^{-x^2/2}  \, dx
+\end{equation*}
+
+Write $x^2$ as $x\times x$ and use integration by parts:
+
+\begin{equation*}
+\frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty 
+\explain{x}{u} \explain{x e^{-x^2/2}}{dv/dx} \, dx =
+\frac{1}{\sqrt{2\pi}}\explain{x}{u} \explain{-e^{-x^2/2}}{v} -
+\frac{1}{\sqrt{2\pi}}\int_{-\infty}^\infty \explain{-e^{-x^2/2}}{v} 
+\explain{1}{du/dx} \, dx = 1
+\end{equation*} 
+
+[Explained on p.\ 274 of \cite{GrinsteadSnell}; it wasn't obvious to me, and \cite[200]{RossProb} is pretty terse]:
+``The first summand above can be shown to equal 0, since as 
+$x \rightarrow \pm \infty$, 
+$e^{-x^2/2}$
+gets
+small more quickly than $x$ gets large. The second summand is just the standard
+normal density integrated over its domain, so the value of this summand is 1.
+Therefore, the variance of the standard normal density equals 1.''
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Example}:	
+Given N(10,16), write distribution of $\bar{X}$, where $n=4$. Since $SE=sd/sqrt(n)$, the distribution of $\bar{X}$ is $N(10,4/\sqrt{4}$).
+\end{fmpage}
+\end{center}
+
+%to-do: print out exercises in chapters 5 and 6 of Grinstead and Snell and work through them.
+
+\subsection{Exponential random variables}
+
+For some $\lambda > 0$, 
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+A continuous random variable with the above PDF is an exponential random variable (or is said to be exponentially distributed).
+
+The CDF:
+
+\begin{equation*}
+\begin{split}
+F(a) =& P(X\leq a)\\
+     =& \int_0^a \lambda e^{-\lambda x}\, dx\\
+ 	 =& \left[ -e^{-\lambda x} \right]_0^a\\
+     =& 1-e^{-\lambda a} \quad a \geq 0\\
+\end{split}		
+\end{equation*}
+
+[Note: the integration requires the u-substitution: $u=-\lambda x$, and then $du/dx=-\lambda$, and then use $-du=\lambda dx$ to solve.]
+
+
+\subsubsection{Expectation and variance of an exponential random variable}
+
+For some $\lambda > 0$ (called the rate), if we are given the PDF of a random variable $X$:
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+Find E[X].
+
+[This proof seems very strange and arbitrary---one starts really generally and then scales down, so to speak. The standard method can equally well be used, but this is more general, it allows for easy calculation of the second moment, for example. Also, it's an example of how reduction formulae are used in integration.]
+
+\begin{equation*}
+E[X^n] = \int_0^\infty x^n \lambda e^{-\lambda x} \, dx	
+\end{equation*}
+
+Use integration by parts:
+
+Let $u=x^n$, which gives $du/dx=n x^{n-1}$. Let $dv/dx= \lambda e^{-\lambda x}$, which gives
+$v = -e^{-\lambda x}$. Therefore:
+
+\begin{equation*}
+\begin{split}	
+E[X^n] =&  \int_0^\infty x^n \lambda e^{-\lambda x} \, dx	\\
+       =& \left[ -x^n e^{-\lambda x}\right]_0^\infty + \int_0^\infty e^{\lambda x} n x^{n-1}\, dx\\
+       =& 0 + \frac{n}{\lambda} \int_0^\infty \lambda e^{-\lambda x} n^{n-1}\, dx  
+\end{split}
+\end{equation*}
+
+Thus,
+
+\begin{equation*}
+E[X^n] =  \frac{n}{\lambda}E[X^{n-1}]
+\end{equation*}
+
+If we let $n=1$, we get $E[X]$:
+
+\begin{equation*}
+E[X] =  \frac{1}{\lambda}
+\end{equation*}
+
+Note that when $n=2$, we have
+
+\begin{equation*}
+E[X^2] =  \frac{2}{\lambda}E[X]= \frac{2}{\lambda^2}
+\end{equation*}
+
+Variance is, as usual,
+
+\begin{equation*}
+var(X) = E[X^2] - (E[X])^2	=  \frac{2}{\lambda^2} -  (\frac{1}{\lambda})^2 = \frac{1}{\lambda^2}
+\end{equation*}
+
+\subsection{Weibull distribution}
+
+\begin{equation}
+f(x\mid \alpha, \beta) = \alpha \beta (\beta x)^{\alpha-1} \exp (- (\beta x)^{\alpha})
+\end{equation}
+
+When $\alpha=1$, we have the exponential distribution.
+
+\subsection{Gamma distribution}
+
+[The text is an amalgam of
+ \cite{kerns} and \cite[215]{RossProb}. I don't put it in double-quotes as a citation because it would look ugly.]
+
+This is a generalization of the exponential distribution. We say that $X$ has a gamma distribution and write $X\sim\mathsf{gamma}(\mathtt{shape}=\alpha,\,\mathtt{rate}=\lambda)$, where $\alpha>0$ (called shape) and $\lambda>0$ (called rate). It has PDF
+
+%% Kerns:
+%\begin{equation*}
+%f_{X}(x)=\frac{\lambda^{\alpha}}{\Gamma(\alpha)}\: x^{\alpha-1}\mathrm{e}^{-\lambda x},\quad x>0.
+%\end{equation*}
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \frac{\lambda e^{-\lambda x} (\lambda x)^{\alpha - 1}}{\Gamma(\alpha)} & \quad \textrm{if } x \geq 0\\
+       0 & \quad \textrm{if } x < 0.\\
+\end{array} \right.
+\end{equation*}
+
+$\Gamma(\alpha)$ is called the gamma function:
+
+\begin{equation*}
+\Gamma(\alpha) = \int_0^\infty e^{-y}y^{\alpha-1}\, dy \explain{=}{\textrm{integration by parts}} (\alpha -1 )\Gamma(\alpha - 1)
+\end{equation*}
+
+Note that for integral values of $n$, $\Gamma(n)=(n-1)!$ (follows from above equation).
+
+The associated $\mathsf{R}$ functions are \texttt{gamma(x, shape, rate = 1)}, \texttt{pgamma}, \texttt{qgamma}, and \texttt{rgamma}, which give the PDF, CDF, quantile function, and simulate random variates, respectively. If $\alpha=1$ then $X\sim\mathsf{exp}(\mathtt{rate}=\lambda)$. The mean is $\mu=\alpha/\lambda$ and the variance is $\sigma^{2}=\alpha/\lambda^{2}$.
+
+To motivate the gamma distribution recall that if $X$ measures the length of time until the first event occurs in a Poisson process with rate $\lambda$ then $X\sim\mathsf{exp}(\mathtt{rate}=\lambda)$. If we let $Y$ measure the length of time until the $\alpha^{\mathrm{th}}$ event occurs then $Y\sim\mathsf{gamma}(\mathtt{shape}=\alpha,\,\mathtt{rate}=\lambda)$. When $\alpha$ is an integer this distribution is also known as the \textbf{Erlang} distribution.
+
+
+<<label=gamma,include=FALSE>>=
+## fn refers to the fact that it 
+## is a function in R, it does not mean that 
+## this is the gamma function:
+gamma.fn<-function(x){
+	lambda<-1
+	alpha<-1
+	(lambda * exp(1)^(-lambda*x) * 
+	(lambda*x)^(alpha-1))/gamma(alpha)
+}
+
+x<-seq(0,4,by=.01)
+
+plot(x,gamma.fn(x),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<gamma>>	
+@
+\caption{The gamma distribution.}.
+\label{fig:gamma}
+\end{figure}
+
+The Chi-squared distribution is the gamma distribution with $\lambda=1/2$ and $\alpha=n/2$, where $n$ is an integer:
+
+
+<<label=chisq,include=FALSE>>=
+gamma.fn<-function(x){
+	lambda<-1/2
+	alpha<-8/2 ## n=4
+	(lambda * (exp(1)^(-lambda*x)) * 
+	(lambda*x)^(alpha-1))/gamma(alpha)
+}
+
+x<-seq(0,100,by=.01)
+
+plot(x,gamma.fn(x),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<chisq>>	
+@
+\caption{The chi-squared distribution.}
+\label{fig:chisq}
+\end{figure}
+
+\subsubsection{Mean and variance of gamma distribution}
+
+Let $X$ be a gamma random variable with parameters $\alpha$ and $\lambda$. 
+
+\begin{equation*}
+\begin{split}	
+E[X] =& \frac{1}{\Gamma(\alpha)} \int_0^\infty x \lambda e^{-\lambda x} (\lambda x)^{\alpha - 1}\, dx\\  
+     =& \frac{1}{\lambda \Gamma(\alpha)} \int_0^\infty e^{-\lambda x} (\lambda x)^{\alpha}\, dx\\
+     =& \frac{\Gamma(\alpha+1)}{\lambda \Gamma(\alpha)}\\
+     =& \frac{\alpha}{\lambda} \quad \textrm{see derivation of $\Gamma(\alpha), p.\ 215$  of \cite{RossProb}}
+\end{split}
+\end{equation*}
+
+It is easy to show (exercise) that
+
+\begin{equation*}
+Var(X)=\frac{\alpha}{\lambda^2}	
+\end{equation*}
+
+
+\subsection{Memoryless property (Poisson, Exponential, Geometric)}
+
+A nonnegative random variable is memoryless if
+
+\begin{equation*}
+P(X>s+t) \mid X > t) = P(X>s) \quad \textrm{for all } s,t\geq 0	
+\end{equation*}
+
+Two equivalent ways of stating this:
+
+\begin{equation*}
+\frac{P(X>s+t, X>t)}{P(X>t)} = P(X>s)
+\end{equation*}
+
+[just using the definition of conditional probability]
+
+or
+
+\begin{equation*}
+P(X>s+t) = P(X>s)P(X>t)
+\end{equation*}
+
+[not clear yet why the above holds]
+
+
+Recall definition of conditional probability:
+
+\begin{equation*}
+\mathbb{P}(B\mid A)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(A)},\quad \mbox{if }\mathbb{P}(A)>0.
+\end{equation*}
+
+What memorylessness means is: let $s=10$ and $t=30$. Then
+
+\begin{equation*}
+\frac{P(X>10+30, X\geq 30)}{P(X\geq 30)} = P(X>10)
+\end{equation*}
+
+or 
+
+\begin{equation*}
+P(X>10+30) = P(X>10)P(X\geq 30)
+\end{equation*}
+
+It does \textbf{not} mean:
+
+\begin{equation*}
+P(X>10+30\mid X\geq30) = P(X>40)
+\end{equation*}
+
+It's easier to see graphically what this means:
+
+
+<<label=exp,include=FALSE>>=
+fn<-function(x,lambda){
+	lambda*exp(1)^(-lambda*x)
+}
+
+x<-seq(0,1000,by=1)
+
+plot(x,fn(x,lambda=1/100),type="l")
+abline(v=200,col=3,lty=3)
+abline(v=300,col=1,lty=3)
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<exp>>	
+@
+\caption{The memoryless property of the exponential distribution. The graph after point 300 is an exact copy of the original graph (this is not obvious from the graph, but redoing the graph starting from 300 makes this clear, see figure~\ref{fig:exp2} below).}
+\label{fig:exp}
+\end{figure}
+
+
+<<label=exp2,include=FALSE>>=
+x1<-seq(300,1300,by=1)
+
+plot(x1,fn(x1,lambda=1/100),type="l")
+@
+
+\begin{figure}[!htbp]
+	\centering
+<<fig=TRUE,echo=FALSE>>=
+<<exp2>>	
+@
+\caption{Replotting the distribution starting from 300 instead of 0, and extending the x-axis to 1300 instead of 1000 (the number in figure~\ref{fig:exp}) gives us an 
+exact copy of original. This is the meaning of the memoryless property of the distribution.}
+\label{fig:exp2}
+\end{figure}
+
+\subsubsection{Examples of memorylessness}
+
+Suppose we are given that a discrete random variable $X$ has probability function $\theta^{x-1}(1-\theta)$, where $x=1,2,\dots$. Show that 
+
+\begin{equation} \label{memoryless}
+P(X>t+a\mid X>a) = \frac{P(X>t+a)}{P(X>a)} 
+\end{equation}
+
+\noindent
+hence establishing the `absence of memory' property:
+
+\begin{equation}
+P(X>t+a\mid X>a) = P(X>t)	
+\end{equation}
+
+\textbf{Proof}:
+
+First, restate the pdf given so that it satisfies the definition of a geometric distribution. Let $\theta=1-p$; then the pdf is
+
+\begin{equation}
+(1-p)^{x-1}p 
+\end{equation}
+
+This is clearly a geometric random variable (see p.\ 155 of Ross \cite{RossProb}). On p.\ 156, Ross points out that  
+
+\begin{equation}
+P(X>a) = (1-p)^a	
+\end{equation}
+
+[Actually Ross points out that $P(X\geq k) = (1-p)^{k-1}$, from which it follows that $P(X\geq k+1) = (1-p)^{k}$; and since $P(X\geq k+1)=P(X>k)$, we have $P(X> k) = (1-p)^{k}$.]
+
+Similarly, 
+
+\begin{equation}
+P(X>t) = (1-p)^t	
+\end{equation}
+
+\noindent
+and 
+
+\begin{equation}
+P(X>{t+a}) = (1-p)^{t+a}
+\end{equation}
+
+Now, we plug in the values for the right-hand side in equation~\ref{memoryless}, repeated below:
+
+\begin{equation}
+P(X>t+a\mid X>a) = \frac{P(X>t+a)}{P(X>a)}  = \frac{(1-p)^{t+a}}{(1-p)^a} = (1-p)^t
+\end{equation}
+
+Thus, since $P(X>t) = (1-p)^t$ (see above), we have proved that
+
+\begin{equation}
+P(X>t+a\mid X>a) = P(X>t)
+\end{equation}
+
+\noindent
+This is the definition of memorylessness (equation 5.1 in Ross \cite{RossProb}, p.\ 210).
+Therefore, we have proved the memorylessness property.
+
+\hfill \BlackBox
+
+\subsubsection{Prove the memorylessness property for Gamma and Exponential distributions}
+
+\textbf{Exponential}:
+
+The CDF is:
+
+\begin{equation}
+P(a)=1-e^{-\lambda a}
+\end{equation}
+
+Therefore: 
+
+\begin{equation}
+P(X>s+t)=1-P(s+t) = 1-(1-e^{-\lambda (s+t)}) = e^{-\lambda (s+t)} = e^{-\lambda s}e^{-\lambda t} = P(X>s)P(X>t)
+\end{equation}
+
+The above is the definition of memorylessness.
+
+\hfill \BlackBox
+
+\textbf{Gamma distribution}:
+
+The CDF (not sure how this comes about, see Ross \cite{RossProb}) is
+
+\begin{equation}
+	F(x; \alpha, \beta) = 1 - \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta x)^i e^{-\beta x} 
+\end{equation}
+
+Therefore, 
+
+\begin{equation}
+P(X>s+t) = 1-P(X<s+t) = 1 - (1 - \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta (s+t))^i e^{-\beta (s+t)} ) = \underset{i=0}{\overset{\alpha - 1}{\sum}}\frac{1}{i!}(\beta (s+t))^i e^{-\beta (s+t)}
+\end{equation}
+
+\subsection{Beta distribution}
+
+This is a generalization of the continuous uniform distribution.
+
+\begin{equation*}
+f(x)=  \left\{ 	
+\begin{array}{l l}
+       \frac{1}{B(a,b)} x^{a - 1} (1-x)^{b-1}  & \quad \textrm{if } 0< x < 1\\
+       0 & \quad \textrm{otherwise}\\
+\end{array} \right.
+\end{equation*}
+
+\noindent
+where
+
+\begin{equation*}
+B(a,b) = \int_0^1 x^{a-1}(1-x)^{b-1}\, dx
+\end{equation*}
+
+There is a connection between the beta and the gamma:
+
+\begin{equation*}
+B(a,b) = \int_0^1 x^{a-1}(1-x)^{b-1}\, dx = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}	
+\end{equation*}
+
+\noindent
+which allows us to rewrite the beta PDF as
+
+\begin{equation}
+f(x)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\, x^{a-1}(1-x)^{b-1},\quad 0 < x < 1.
+\end{equation}
+
+%We write $X\sim\mathsf{beta}(\mathtt{shape1}=\alpha,\,\mathtt{shape2}=\beta)$. The associated $\mathsf{R}$ function is =dbeta(x, shape1, shape2)=. 
+
+The mean and variance are
+
+\begin{equation} 
+E[X]=\frac{a}{a+b}\mbox{ and }Var(X)=\frac{ab}{\left(a+b\right)^{2}\left(a+b+1\right)}.
+\end{equation}
+
+%See Example [[exa-cont-pdf3x2][Cont-pdf3x2]]. This distribution comes up a lot in Bayesian statistics because it is a good model for one's prior beliefs about a population proportion $p$, $0\leq p\leq1$.
+
+%to-do: plot beta with different a,b.
+
+\subsection{Distribution of a function of a random variable (transformations of random variables)}
+
+A nice and intuitive description:
+
+Consider a continuous RV Y which is a continuous differentiable increasing function of X:
+
+\begin{equation}
+Y=g(X)	
+\end{equation}
+
+Because g is differentiable and increasing, $g'$ and $g^{-1}$ are guaranteed to exist. Because g maps all $x\leq s \leq x+\Delta x$ to 
+$y\leq s \leq y+\Delta y$, we can say:
+
+\begin{equation}
+\int_x^{x+\Delta x} f_X(s)\, ds = \int_y^{y+\Delta y} f_Y(t)\, dt	
+\end{equation}
+
+Therefore, for small $\Delta x$:
+
+\begin{equation}
+f_Y(y)\Delta y \approx f_X(x)\Delta x	
+\end{equation}
+
+Dividing by $\Delta y$ we get:
+
+\begin{equation}
+f_Y(y) \approx f_X(x)\frac{\Delta x}{\Delta y}
+\end{equation}
+
+
+
+\begin{theorem}
+[\textbf{Theorem 7.1 in Ross \cite{RossProb}}]
+Let $X$ be a continuous random variable having probability density function $f_X$.
+Suppose that $g(x)$ is a strict monotone (increasing or decreasing) function, differentiable and (thus continuous) function of $x$. Then the random variable $Y$ defined by $Y=g(X)$ has a probability density function defined by 
+
+\begin{equation*}
+f_Y(y)=  \left\{ 	
+\begin{array}{l l}
+       f_X(g^{-1}(y)) \mid \frac{d}{dx} g^{-1}(y) \mid  & \quad \textrm{if } y = g(x) \textrm{ for some $x$}\\
+       0 & \quad \textrm{if } y\neq g(x) \textrm{ for all $x$}.\\
+\end{array} \right.
+\end{equation*}
+
+\noindent
+where $g^{-1}(y)$ is defined to be equal to the value of $x$ such that $g(y-y)$.
+
+%[to-do: Ross writes $\frac{d}{dx} g^{-1}(y)$ as an absolute $\mid \frac{d}{dx} g^{-1}(y) \mid$. Need to understand why.]
+
+\end{theorem}
+
+Proof:
+
+Suppose $y=g(x)$ for some $x$. Then, with $Y=g(X)$,
+
+\begin{equation}
+\begin{split}
+F_Y(y) =& P(g(X)\leq y)\\
+	=& P(X\leq g^{-1}(y))\\
+	=& F_X(g^{-1}(y))\\
+\end{split}	
+\end{equation}
+
+%\begin{equation}\label{theorem7.1a}
+%F_Y(y) = F_X(g^{-1}(y))
+%\end{equation}
+
+Differentiation gives
+
+\begin{equation} \label{theorem7.1b}
+	f_Y(y) = f_X(g^{-1}(y)) \frac{d(g^{-1}(y))}{dy}	
+\end{equation}
+
+Detailed explanation for the above equation:
+Since
+
+\begin{equation} \label{theorem7.1c}
+\begin{split}	
+F_Y(y) =& F_X(g^{-1}(y)) \\
+       =& \int f_X(g^{-1}(y)) \, dy\\
+\end{split}
+\end{equation}
+
+Differentiating: 
+
+\begin{equation} \label{theorem7.1d}
+\begin{split}	
+\frac{d(F_Y(y))}{dy}=& \frac{d}{dy}(F_X(g^{-1}(y)))
+\end{split}
+\end{equation}
+
+We use the chain rule. To simplify things, rewrite $w(y)=g^{-1}(y)$ (otherwise typesetting things gets harder). Then, let
+
+\begin{equation*}
+u = w(y)	
+\end{equation*}
+
+which gives
+
+\begin{equation*}
+\frac{du}{dy} = w'(y)	
+\end{equation*}
+
+and let
+
+\begin{equation*}
+x = F_X(u)	
+\end{equation*}
+
+This gives us 
+
+\begin{equation*}
+\frac{dx}{du} = F'_X(u) = f_X(u)
+\end{equation*}
+
+By the chain rule:
+
+\begin{equation*}
+\frac{du}{dy} \times \frac{dx}{du} = w'(y) f_X(u) \explain{=}{\textrm{plugging in the variables}} 
+\frac{d}{dy}(g^{-1}(y)) f_X(g^{-1}(y))  
+\end{equation*}
+
+\hfill \BlackBox
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Exercises}:	
+\begin{enumerate}
+	\item $Y=X^2$
+	\item $Y=\sqrt X$
+	\item $Y=\mid X \mid$
+	\item $Y = aX + b$ 
+  %(see document gst2.pdf)
+\end{enumerate}
+\end{fmpage}
+\end{center}
+
+%\subsection{$\chi^2$ distribution}
+
+%to-do
+
+%\subsection{$t$ distribution}
+
+%to-do
+
+%\subsection{$F$ distribution}
+
+%to-do
+
+\subsection{The Poisson distribution}
+
+
+
+As Kerns \cite{kerns} puts it (I quote him nearly exactly, up to the definition):
+
+\begin{quote}
+	This is a distribution associated with ``rare events'', for reasons which will become clear in a moment. The events might be:
+	\begin{itemize}
+		\item traffic accidents,
+		\item typing errors, or
+		\item customers arriving in a bank.		
+	\end{itemize}
+
+	Let $\lambda$ be the average number of events in the time interval $[0,1]$. Let the random variable $X$ count the number of events occurring in the interval. Then under certain reasonable conditions it can be shown that
+
+	\begin{equation}
+	f_{X}(x)=\mathbb{P}(X=x)=\mathrm{e}^{-\lambda}\frac{\lambda^{x}}{x!},\quad x=0,1,2,\ldots
+	\end{equation}
+\end{quote}
+
+\subsubsection{Poisson conditional probability and binomial}
+
+If $X_1 \sim Pois(\lambda_1)$ and $X_2 \sim Pois(\lambda_2)$ are independent and $Y=X_1+X_2$, then the distribution of $X_1$ conditional on $Y=y$ is a binomial. Specifically, $X_1\mid Y=y ~\sim Binom(y,\lambda_1)/(\lambda_1,\lambda_2)$. More generally, if $X_1, X_2,\dots,X_n$ are independent Poisson random variables with parameters $\lambda_1,\lambda_2,\dots,\lambda_n$ then 
+
+\begin{equation}
+X_i\mid \underset{j=1}{\overset{n}{\sum}} X_j \sim Binom(\underset{j=1}{\overset{n}{\sum}} X_j, 
+\frac{\lambda_i}{\underset{j=1}{\overset{n} \lambda_j}})	
+\end{equation}
+
+[Source for above: wikipedia]. Relevant for q3 in P-Ass 5.
+
+To see why this is true, see p. 173 of Dekking et al. Also see the stochastic processes book.
+
+
+\subsection{Geometric distribution [discrete]}
+
+From Ross \cite[155]{RossProb}:
+
+\begin{quote}
+Let independent trials, each with probability $p$, $0<p<1$ of success, be performed until a success occurs. If $X$ is the number of trials required till success occurs, then
+
+\begin{equation*}
+P(X=n)	= (1-p)^{n-1} p \quad n=1,2,\ldots
+\end{equation*}
+
+I.e., for X to equal n, it is necessary and sufficient that the first $n-1$ are failures, and the $n$th trial is a success. The above equation comes about because the successive trials are independent.
+\end{quote}
+
+$X$ is a geometric random variable with parameter $p$.
+
+
+Note that a success will occur, with probability 1:
+
+\begin{equation*}
+\underset{i=1}{\overset{\infty}{\sum}} P(X=n) = p \underset{i=1}{\overset{\infty}{\sum}} (1-p)^{n-1} \explain{=}{\textrm{see geometric series section.}}	\frac{p}{1-(1-p)} = 1
+\end{equation*}
+
+
+%Kerns \cite{kerns} defines it like this:
+
+%\begin{equation}
+%\sum_{k=0}^{\infty} x^{k} = \frac{1}{1 - x},\quad |x| < 1.\label{eq-geom-series}
+%\end{equation}
+
+\subsubsection{Mean and variance of the geometric distribution}
+
+\begin{equation*}
+E[X] = \frac{1}{p}	
+\end{equation*}
+
+\begin{equation*}
+Var(X) = \frac{1-p}{p^2}	
+\end{equation*}
+
+For proofs, see Ross \cite[156-157]{RossProb}.
+
+
+\subsection{Normal approximation of the binomial and poisson}
+
+Excellent explanation available at:
+
+\begin{verbatim}
+http://www.johndcook.com/normal_approx_to_poisson.html
+\end{verbatim}
+
+If $P(X=n)$ use $P(n -0.5<X<n+0.5)$
+
+If $P(X>n)$ use $P(X > n + 0.5)$
+
+If $P(X\leq n)$ use $P(X < n + 0.5)$
+
+If $P(X<n)$ use $P(X < n - 0.5)$
+
+If $P(X \geq n)$ use $P(X > n - 0.5)$
+
+%to-do: show graphically why.
+
+
+\section{Jointly distributed random variables} \label{joint}
+
+
+\subsection{Joint distribution functions}
+
+\subsubsection{Discrete case}
+
+[This section is an extract from \cite{kerns}.]
+
+Consider two discrete random variables $X$ and $Y$ with PMFs $f_{X}$ and $f_{Y}$ that are supported on the sample spaces $S_{X}$ and $S_{Y}$, respectively. Let $S_{X,Y}$ denote the set of all possible observed \textbf{pairs} $(x,y)$, called the \textbf{joint support set} of $X$ and $Y$. Then the \textbf{joint probability mass function} of $X$ and $Y$ is the function $f_{X,Y}$ defined by
+
+\begin{equation}
+f_{X,Y}(x,y)=\mathbb{P}(X=x,\, Y=y),\quad \mbox{for }(x,y)\in S_{X,Y}.\label{eq-joint-pmf}
+\end{equation}
+
+Every joint PMF satisfies
+
+\begin{equation}
+f_{X,Y}(x,y)>0\mbox{ for all }(x,y)\in S_{X,Y},
+\end{equation}
+
+and
+
+\begin{equation}
+\sum_{(x,y)\in S_{X,Y}}f_{X,Y}(x,y)=1.
+\end{equation}
+
+It is customary to extend the function $f_{X,Y}$ to be defined on all of $\mathbb{R}^{2}$ by setting $f_{X,Y}(x,y)=0$ for $(x,y)\not\in S_{X,Y}$. 
+
+In the context of this chapter, the PMFs $f_{X}$ and $f_{Y}$ are called the \textbf{marginal PMFs} of $X$ and $Y$, respectively. If we are given only the joint PMF then we may recover each of the marginal PMFs by using the Theorem of Total Probability: observe
+\begin{eqnarray}
+f_{X}(x) & = & \mathbb{P}(X=x),\\
+ & = & \sum_{y\in S_{Y}}\mathbb{P}(X=x,\, Y=y),\\
+ & = & \sum_{y\in S_{Y}}f_{X,Y}(x,y).
+\end{eqnarray}
+By interchanging the roles of $X$ and $Y$ it is clear that 
+\begin{equation}
+f_{Y}(y)=\sum_{x\in S_{X}}f_{X,Y}(x,y).\label{eq-marginal-pmf}
+\end{equation}
+Given the joint PMF we may recover the marginal PMFs, but the converse is not true. Even if we have \textbf{both} marginal distributions they are not sufficient to determine the joint PMF; more information is needed.
+%\footnote{We are not at a total loss, however. There are Frechet bounds which pose limits on how large (and small) the joint distribution must be at each point.}
+
+Associated with the joint PMF is the \textbf{joint cumulative distribution function} $F_{X,Y}$ defined by
+\[
+F_{X,Y}(x,y)=\mathbb{P}(X\leq x,\, Y\leq y),\quad \mbox{for }(x,y)\in\mathbb{R}^{2}.
+\]
+The bivariate joint CDF is not quite as tractable as the univariate CDFs, but in principle we could calculate it by adding up quantities of the form in Equation~\ref{eq-joint-pmf}. The joint CDF is typically not used in practice due to its inconvenient form; one can usually get by with the joint PMF alone.
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Examples from \cite{kerns}}:  
+\textbf{Example 1}:
+
+Roll a fair die twice. Let $X$ be the face shown on the first roll, and let $Y$ be the face shown on the second roll. For this example, it suffices to define
+
+\[
+f_{X,Y}(x,y)=\frac{1}{36},\quad x=1,\ldots,6,\ y=1,\ldots,6.
+\]
+
+The marginal PMFs are given by $f_{X}(x)=1/6$, $x=1,2,\ldots,6$, and $f_{Y}(y)=1/6$, $y=1,2,\ldots,6$, since
+
+\[
+f_{X}(x)=\sum_{y=1}^{6}\frac{1}{36}=\frac{1}{6},\quad x=1,\ldots,6,
+\]
+
+and the same computation with the letters switched works for $Y$.
+
+Here, and in many other ones, the joint support can be written as a product set of the support of $X$ ``times'' the support of $Y$, that is, it may be represented as a cartesian product set, or rectangle, $S_{X,Y}=S_{X}\times S_{Y}$, where $S_{X} \times S_{Y}= \{ (x,y):\ x\in S_{X},\, y\in S_{Y} \} $. This form is a necessary condition for $X$ and $Y$ to be \textbf{independent} (or alternatively \textbf{exchangeable} when $S_{X}=S_{Y}$). But please note that in general it is not required for $S_{X,Y}$ to be of rectangle form.
+
+\textbf{Example 2}: very involved example in \cite{kerns}, worth study.
+\end{fmpage}
+\end{center}
+
+
+\subsubsection{Continuous case}
+
+For random variables $X$ and $y$, the \textbf{joint cumulative pdf} is
+
+\begin{equation}
+F(a,b) = P(X\leq a, Y\leq b) \quad -\infty	< a,b<\infty
+\end{equation}
+
+The \textbf{marginal distributions} of $F_X$ and $F_Y$ are the CDFs of each of the associated RVs:
+
+\begin{enumerate}
+	\item The CDF of $X$:
+
+	\begin{equation}
+	F_X(a) = P(X\leq a) = F_X(a,\infty)	
+	\end{equation}
+
+	\item The CDF of $Y$:
+
+	\begin{equation}
+	F_Y(a) = P(Y\leq b) = F_Y(\infty,b)	
+	\end{equation}
+	
+\end{enumerate}
+
+\begin{definition}\label{def:jointcont}
+\textbf{Jointly continuous}: Two RVs $X$ and $Y$ are jointly continuous if there exists a function $f(x,y)$ defined for all real $x$ and $y$, such that for every set $C$:
+
+\begin{equation} \label{jointpdf}
+P((X,Y)\in C) =
+\iintop_{(x,y)\in C} f(x,y)\, dx\,dy 	
+\end{equation}
+
+
+$f(x,y)$ is the \textbf{joint PDF} of $X$ and $Y$.
+
+Every joint PDF satisfies
+\begin{equation}
+f(x,y)\geq 0\mbox{ for all }(x,y)\in S_{X,Y},
+\end{equation}
+and
+\begin{equation}
+\iintop_{S_{X,Y}}f(x,y)\,\mathrm{d} x\,\mathrm{d} y=1.
+\end{equation}
+	
+\end{definition}
+
+For any sets of real numbers $A$ and $B$, and if $C=\{(x,y): x\in A, y\in B  \}$, it follows from equation~\ref{jointpdf} that
+
+\begin{equation} 
+P((X\in A,Y\in B)\in C) = \int_B \int_{A} f(x,y)\, dx\,dy 	
+\end{equation}
+
+Note that
+
+\begin{equation}
+F(a,b) = P(X\in (-\infty,a]),Y\in (-\infty,b]))	= \int_{-\infty}^b \int_{-\infty}^a f(x,y)\, dx\,dy 	
+\end{equation}
+
+Differentiating, we get the joint pdf:
+
+\begin{equation}
+f(a,b) = \frac{\partial^2}{\partial a\partial b} F(a,b)	
+\end{equation}
+
+One way to understand the joint PDF:
+
+\begin{equation}
+P(a<X<a+da,b<Y<b+db)=\int_b^{d+db}\int_a^{a+da} f(x,y)\, dx\, dy \approx f(a,b) da db
+\end{equation}
+
+%[to-do: show this graphically]
+
+Hence, $f(x,y)$ is a measure of how probable it is that the random vector $(X,Y)$ will be near $(a,b)$.
+
+\subsubsection{Marginal probability distribution functions}
+ 
+If X and Y are jointly continuous, they are individually continuous, and their PDFs are:
+
+\begin{equation}
+\begin{split}
+P(X\in A) = & P(X\in A, Y\in (-\infty,\infty))	\\
+= & \int_A \int_{-\infty}^{\infty} f(x,y)\,dy\, dx\\
+= & \int_A f_X(x)\, dx
+\end{split}	
+\end{equation}
+
+\noindent
+where
+
+\begin{equation}
+f_X(x) = \int_{-\infty}^{\infty} f(x,y)\, dy	
+\end{equation}
+
+Similarly:
+
+\begin{equation}
+f_Y(y) =  \int_{-\infty}^{\infty} f(x,y)\, dx		
+\end{equation}
+
+\subsubsection{Independent random variables}
+
+Random variables $X$ and $Y$ are independent iff, for any two sets of real numbers $A$ and $B$:
+
+\begin{equation}
+P(X\in A, Y\in B)	= P(X\in A)P(Y\in B)
+\end{equation}
+
+In the jointly continuous case:
+
+\begin{equation}
+f(x,y) = f_X(x)f_Y(y) \quad \hbox{for all } x,y	
+\end{equation} 
+
+A necessary and sufficient condition for the random variables $X$ and $Y$ to be
+independent is for their joint probability density function (or joint probability mass function in the discrete case) $f(x,y)$ to factor into two terms, one depending only on
+$x$ and the other depending only on $y$. This can be stated as a proposition:
+
+\begin{proposition}\label{pro:jointindep}
+	
+\end{proposition}
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Easy-to-understand example from \cite{kerns}}:	
+Let the joint PDF of $(X,Y)$ be given by
+\[
+f_{X,Y}(x,y)=\frac{6}{5}\left(x+y^{2}\right),\quad 0 < x < 1,\ 0 < y < 1.
+\]
+The marginal PDF of $X$ is
+\begin{eqnarray*}
+f_{X}(x) & = & \int_{0}^{1}\frac{6}{5}\left(x+y^{2}\right)\,\mathrm{d} y,\\
+ & = & \left.\frac{6}{5}\left(xy+\frac{y^{3}}{3}\right)\right|_{y=0}^{1},\\
+ & = & \frac{6}{5}\left(x+\frac{1}{3}\right),
+\end{eqnarray*}
+for $0 < x < 1$, and the marginal PDF of $Y$ is
+\begin{eqnarray*}
+f_{Y}(y) & = & \int_{0}^{1}\frac{6}{5}\left(x+y^{2}\right)\,\mathrm{d} x,\\
+ & = & \left.\frac{6}{5}\left(\frac{x^{2}}{2}+xy^{2}\right)\right|_{x=0}^{1},\\
+ & = & \frac{6}{5}\left(\frac{1}{2}+y^{2}\right),
+\end{eqnarray*}
+for $0 < y < 1$. 
+
+In this example the joint support set was a rectangle $[0,1]\times[0,1]$, but it turns out that $X$ and $Y$ are not independent. 
+This is because $\frac{6}{5}\left(x+y^{2}\right)$ cannot be stated as a product of two terms ($f_X(x)f_Y(y)$).
+\end{fmpage}
+\end{center}
+
+\subsubsection{Sums of independent random variables}
+
+[Taken nearly verbatim from Ross.]
+
+Suppose that X and Y are
+independent, continuous random variables having probability density functions $f_X$
+and $f_Y$. The cumulative distribution function of $X + Y$ is obtained as follows:
+
+\begin{equation}
+\begin{split}
+F_{X+Y}(a) =& P(X+Y\leq a)\\
+           =& \iintop_{x+y\leq a} f_{XY}(x,y)\, dx\, dy\\
+           =& \iintop_{x+y\leq a} f_X(x)f_Y(y)\, dx\, dy\\
+           =& \int_{-\infty}^{\infty}\int_{-\infty}^{a-y} f_X(x)f_Y(y)\, dx\, dy\\ 
+           =& \int_{-\infty}^{\infty}\int_{-\infty}^{a-y}f_X(x)\,dx f_Y(y)\, dy\\ 
+           =& \int_{-\infty}^{\infty}F_X(a-y) f_Y(y)\, dy\\ 
+\end{split}	
+\end{equation}
+
+The CDF $F_{X+Y}$ is the \textbf{convolution} of the distributions $F_X$ and $F_Y$. 
+
+
+If we differentiate the above equation, we get the pdf $f_{X+Y}$:
+
+\begin{equation}
+\begin{split}	
+f_{X+Y} =& \frac{d}{dx}\int_{-\infty}^{\infty}F_X(a-y) f_Y(y)\, dy	\\
+=& \int_{-\infty}^{\infty}\frac{d}{dx}F_X(a-y) f_Y(y)\, dy	\\
+=& \int_{-\infty}^{\infty}f_X(a-y) f_Y(y)\, dy
+\end{split}	
+\end{equation}
+
+%to-do: don't know how a differential can be moved inside an integral (never seen that before and I didn't know that was possible to do).
+
+%to-do: examples of diff. distributions
+
+\subsection{Conditional distributions}
+
+\subsubsection{Discrete case}
+
+Recall that the conditional probability of $B$ given $A$, denoted $\mathbb{P}(B\mid A)$, is defined by
+
+\begin{equation}
+\mathbb{P}(B\mid A)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(A)},\quad \mbox{if }\mathbb{P}(A)>0.
+\end{equation}
+
+If $X$ and $Y$ are discrete random variables, then we can define the conditional PMF of $X$ given that $Y=y$ as follows:
+
+
+\begin{equation}
+\begin{split}
+p_{X\mid Y}(x\mid y) =& P(X=x\mid Y=y)\\
+                     =& \frac{P(X=x, Y=y)}{P(Y=y)}\\
+                     =& \frac{p(x,y)}{p_Y(y)}
+\end{split}	
+\end{equation}
+
+\noindent
+for all values of $y$ where $p_Y(y)=P(Y=y)>0$.
+
+The \textbf{conditional cumulative distribution function} of $X$ given $Y=y$ is defined, for all $y$ such that $p_Y(y)>0$, as follows:
+
+\begin{equation}
+\begin{split}
+F_{X\mid Y}	=& P(X\leq x\mid Y=y)\\
+            =& \underset{a\leq x}{\overset{}{\sum}} p_{X\mid Y}(a\mid y)
+\end{split}	
+\end{equation}
+
+If $X$ and $Y$ are independent then
+
+\begin{equation}
+p_{X\mid Y}(x\mid y) = P(X=x)=p_X(x)	
+\end{equation}
+
+See the examples starting p.\ 264 of Ross.
+
+An important thing to understand is the phrasing of the question (e.g., in P-Ass3): ``Find the conditional distribution of $X$ given all the possible values of $Y$''.
+
+\subsubsection{Continuous case}
+
+[Taken almost verbatim from Ross.]
+
+If $X$ and $Y$ have a joint probability density function $f(x, y)$, then the conditional probability density function of $X$ given that $Y = y$ is defined, for all values of $y$ such that $f_Y(y) > 0$,by
+
+\begin{equation}
+f_{X\mid Y}(x\mid y) = \frac{f(x,y)}{f_Y(y)}	
+\end{equation}
+
+We can understand this definition by considering what 
+$f_{X\mid Y}(x\mid y)\, dx$ amounts to: 
+
+\begin{equation}
+\begin{split}
+f_{X\mid Y}(x\mid y)\, dx =& \frac{f(x,y)}{f_Y(y)} \frac{dxdy}{dy}\\
+		=& \frac{f(x,y)dxdy}{f_Y(y)dy} \\
+		=& \frac{P(x<X<d+dx,y<Y<y+dy)}{y<P<y+dy}
+\end{split}	
+\end{equation}
+
+\subsection{Joint and marginal expectation}
+
+[Taken nearly verbatim from \cite{kerns}.]
+
+Given a function $g$ with arguments $(x,y)$ we would like to know the long-run average behavior of $g(X,Y)$ and how to mathematically calculate it. Expectation in this context is computed by integrating (summing) with respect to the joint probability density (mass) function.
+
+Discrete case:
+
+\begin{equation}
+\mathbb{E}\, g(X,Y)=\mathop{\sum\sum}\limits _{(x,y)\in S_{X,Y}}g(x,y)\, f_{X,Y}(x,y).
+\end{equation}
+
+Continuous case:
+
+\begin{equation}
+\mathbb{E}\, g(X,Y)=\iintop_{S_{X,Y}}g(x,y)\, f_{X,Y}(x,y)\,\mathrm{d} x\,\mathrm{d} y,
+\end{equation}
+
+
+
+
+\subsubsection{Covariance and correlation}
+
+There are two very special cases of joint expectation: the \textbf{covariance} and the \textbf{correlation}. These are measures which help us quantify the dependence between $X$ and $Y$. 
+
+\begin{definition}
+The \textbf{covariance} of $X$ and $Y$ is
+\begin{equation}
+\mbox{Cov}(X,Y)=\mathbb{E}(X-\mathbb{E} X)(Y-\mathbb{E} Y).
+\end{equation}
+\end{definition}
+
+Shortcut formula for covariance:
+
+
+\begin{equation}
+\mbox{Cov}(X,Y)=\mathbb{E}(XY)-(\mathbb{E} X)(\mathbb{E} Y).
+\end{equation}
+
+The \textbf{Pearson product moment correlation} between $X$ and $Y$ is the covariance between $X$ and $Y$ rescaled to fall in the interval $[-1,1]$. It is formally defined by 
+\begin{equation}
+\mbox{Corr}(X,Y)=\frac{\mbox{Cov}(X,Y)}{\sigma_{X}\sigma_{Y}}.
+\end{equation}
+
+The correlation is usually denoted by $\rho_{X,Y}$ or simply $\rho$ if the random variables are clear from context. There are some important facts about the correlation coefficient: 
+
+\begin{enumerate}
+	\item The range of correlation is $-1\leq\rho_{X,Y}\leq1$.
+	\item Equality holds above ($\rho_{X,Y}=\pm1$) if and only if $Y$ is a linear function of $X$ with probability one.
+\end{enumerate}
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Discrete example}:
+to-do
+\end{fmpage}
+\end{center}
+
+\begin{center}
+\begin{fmpage}{\linewidth}
+\textbf{Continuous example from \cite{kerns}}:
+Let us find the covariance of the variables $(X,Y)$ from an example numbered 7.2 in Kerns. The expected value of $X$ is
+\[
+\mathbb{E} X=\int_{0}^{1}x\cdot\frac{6}{5}\left(x+\frac{1}{3}\right)\mathrm{d} x=\left.\frac{2}{5}x^{3}+\frac{1}{5}x^{2}\right|_{x=0}^{1}=\frac{3}{5},
+\]
+and the expected value of $Y$ is
+\[
+\mathbb{E} Y=\int_{0}^{1}y\cdot\frac{6}{5}\left(\frac{1}{2}+y^{2}\right)\mathrm{d} x=\left.\frac{3}{10}y^{2}+\frac{3}{20}y^{4}\right|_{y=0}^{1}=\frac{9}{20}.
+\]
+Finally, the expected value of $XY$ is
+\begin{eqnarray*}
+\mathbb{E} XY & = & \int_{0}^{1}\int_{0}^{1}xy\,\frac{6}{5}\left(x+y^{2}\right)\mathrm{d} x\,\mathrm{d} y,\\
+ & = & \int_{0}^{1}\left.\left(\frac{2}{5}x^{3}y+\frac{3}{10}xy^{4}\right)\right|_{x=0}^{1}\mathrm{d} y,\\
+ & = & \int_{0}^{1}\left(\frac{2}{5}y+\frac{3}{10}y^{4}\right)\mathrm{d} y,\\
+ & = & \frac{1}{5}+\frac{3}{50},
+\end{eqnarray*}
+which is 13/50. Therefore the covariance of $(X,Y)$ is
+\[
+\mbox{Cov}(X,Y)=\frac{13}{50}-\left(\frac{3}{5}\right)\left(\frac{9}{20}\right)=-\frac{1}{100}.
+\]
+\end{fmpage}
+\end{center}
+
+\subsection{Conditional expectation}
+
+Recall that
+
+\begin{equation}
+f_{X\mid Y} (x\mid y) = P(X = x\mid Y = y) = \frac{p_{X,Y}(x,y)}{p_Y(y)}	
+\end{equation}
+
+\noindent 
+for all $y$ such that $P(Y=y)>0$.
+
+It follows that
+
+\begin{equation}
+\begin{split}
+	E[X\mid Y=y] =& \underset{x}{\overset{}{\sum}} xP(X=x\mid Y=y)\\
+	=& \underset{x}{\overset{}{\sum}} xp_{X\mid Y}(x\mid y)
+\end{split}	
+\end{equation}
+
+$E[X\mid Y]$ is that \textbf{function} of the random variable $Y$ whose value at $Y=y$ is $E[X\mid Y=y]$. $E[X\mid Y]$ is a random variable.
+
+\subsubsection{Relationship to `regular' expectation}
+
+Conditional expectation given that $Y = y$ can be
+thought of as being an ordinary expectation on a reduced sample space consisting
+only of outcomes for which $Y = y$. All properties of expectations hold. Two examples:
+%(to-do: spell out the other equations): 
+
+\textbf{Example 1}: 
+%to-do: develop some specific examples.
+
+\begin{equation*}
+E[g(X)\mid Y=y]=  \left\{ 	
+\begin{array}{l l}
+       \underset{x}{\sum} g(x)p_{X\mid Y}(x,y) & \quad \textrm{in the discrete case}\\
+       \int_{-\infty}^{\infty} g(x)f_{X\mid Y}(x\mid y)\, dx & \quad \textrm{in the continuous case}\\
+\end{array} \right.
+\end{equation*}
+
+\textbf{Example 2}:
+
+\begin{equation}
+E\left[ \underset{i=1}{\overset{n}{\sum}} X_i\mid Y=y \right] = 
+\underset{i=1}{\overset{n}{\sum}} E[X_i\mid Y=y]	
+\end{equation}
+
+\begin{proposition}\label{pro:condexp}
+\textbf{Expectation of the conditional expectation}
+
+\begin{equation}
+	E[X] = E[E[X\mid Y]]	
+\end{equation}
+
+\end{proposition}
+
+If $Y$ is a discrete random variable, then the above proposition states that 
+
+\begin{equation}
+E[X] = \underset{y}{\overset{}{\sum}} E[X\mid Y = y] P(Y=y)	
+\end{equation}
+
+\subsection{Multinomial coefficients and multinomial distributions}
+
+[Taken almost verbatim from \cite{kerns}, with some additional stuff from Ross.]
+
+We sample $n$ times, with replacement, from an urn that contains balls of $k$ different types. Let $X_{1}$ denote the number of balls in our sample of type 1, let $X_{2}$ denote the number of balls of type 2, ..., and let $X_{k}$ denote the number of balls of type $k$. Suppose the urn has proportion $p_{1}$ of balls of type 1, proportion $p_{2}$ of balls of type 2, ..., and proportion $p_{k}$ of balls of type $k$. Then the joint PMF of $(X_{1},\ldots,X_{k})$ is
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}\, p_{1}^{x_{1}}p_{2}^{x_{2}}\cdots p_{k}^{x_{k}},
+\end{eqnarray}
+for $(x_{1},\ldots,x_{k})$ in the joint support $S_{X_{1},\ldots X_{K}}$. We write
+\begin{equation}
+(X_{1},\ldots,X_{k})\sim\mathsf{multinom}(\mathtt{size}=n,\,\mathtt{prob}=\mathbf{p}_{\mathrm{k}\times1}).
+\end{equation}
+
+Note:
+
+First, the joint support set $S_{X_{1},\ldots X_{K}}$ contains all nonnegative integer $k$-tuples $(x_{1},\ldots,x_{k})$ such that $x_{1}+x_{2}+\cdots+x_{k}=n$. A support set like this is called a \textit{simplex}. Second, the proportions $p_{1}$, $p_{2}$, ..., $p_{k}$ satisfy $p_{i}\geq0$ for all $i$ and $p_{1}+p_{2}+\cdots+p_{k}=1$. Finally, the symbol
+\begin{equation}
+{n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}=\frac{n!}{x_{1}!\, x_{2}!\,\cdots x_{k}!}
+\end{equation}
+is called a \emph{multinomial coefficient} which generalizes the notion of a binomial coefficient.
+
+\begin{center}
+\begin{fmpage}{0.9\linewidth}
+\textbf{Example from Ross}:
+
+Suppose a fair die is rolled nine times. The probability that 1 appears three times, 2 and 3 each appear twice, 4 and 5 each appear once, and 6 not at all, can be computed using the multinomial distribution formula.
+
+Here, for $i=1,\dots,6$, it is clear that  $p_i==\frac{1}{6}$. And it is clear that $n=9$, and $x_1=3$, $x_2=2$, $x_3=2$, $x_4=1$, $x_5=1$, and $x_6=0$. We plug in the values into the formula:
+
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {n \choose x_{1}\, x_{2}\,\cdots\, x_{k}}\, p_{1}^{x_{1}}p_{2}^{x_{2}}\cdots p_{k}^{x_{k}}
+\end{eqnarray}
+
+Plugging in the values:
+
+\begin{eqnarray}
+f_{X_{1},\ldots,X_{k}}(x_{1},\ldots,x_{k}) & = & {9 \choose 3\,2\,2\,1\,1\,0}\, \frac{1}{6}^{3}\frac{1}{6}^{2}\frac{1}{6}^2 \frac{1}{6}^1 \frac{1}{6}^1 \frac{1}{6}^{0} 
+\end{eqnarray}
+
+Answer: $\frac{9!}{3!2!2!} \left(\frac{1}{6}\right)^9$
+
+%If we had thrown the die only two times, we have the binomial distribution.
+\end{fmpage}
+\end{center}
+
+
+\subsection{Multivariate normal distributions}
+
+
+Recall that in the univariate case:
+
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi \sigma^2} e\{ - \frac{(\frac{(x-\mu)}{\sigma})^2}{2}\}}	 \quad -\infty < x < \infty
+\end{equation}
+
+We can write the power of the exponential as:
+
+\begin{equation}
+(\frac{(x-\mu)}{\sigma})^2 = (x-\mu)(x-\mu)(\sigma^2)^{-1} = (x-\mu)(\sigma^2)^{-1}(x-\mu) = Q
+\end{equation}
+
+Generalizing this to the multivariate case: 
+
+\begin{equation}
+Q= (x-\mu)' \Sigma ^{-1} (x-\mu)	
+\end{equation}
+
+
+
+
+So, for multivariate case:
+
+\begin{equation}
+f(x) = \frac{1}{\sqrt{2\pi det \Sigma } e\{ - Q/2\}}	 \quad -\infty < x_i < \infty, i=1,\dots,n
+\end{equation}
+
+
+Properties of normal MVN X:
+
+\begin{itemize}
+	\item Linear combinations of X are normal distributions.
+	\item All subset's of X's components have a normal distribution.
+	\item Zero covariance implies independent distributions.
+	\item Conditional distributions are normal.
+\end{itemize}
+
+
+\section{Application of differentiation: Method of maximum likelihood estimation}
+
+For this section, note that if we write the equation $f'(x) = 0$, and solve for x, we are basically trying to find out what the value of x is when the slope is 0. That is exactly the situation when the function f ``turns'', i.e., is at a maximum or minimum.
+
+
+Next, we look at an application of differentation that will come up again and again.
+In statistics, we look at the sample values and then choose as our estimates of the unknown parameters the values for which the probability or probability density of getting the sample values is a maximum. 
+
+\textbf{Discrete case}: Suppose the observed sample values are $x_1, x_2,\dots, x_n$. The probability of getting them is
+
+\begin{equation}
+P(X_1=x_1,X_2=x_2,\dots,X_n=x_n) = f(X_1=x_1,X_2=x_2,\dots,X_n=x_n;\theta)  
+\end{equation} 
+
+\noindent
+i.e., the function $f$ is the value of the joint probability \textbf{distribution} of the random variables $X_1,\dots,X_n$ at $X_1=x_1,\dots,X_n=x_n$. Since the sample values have been observed and are fixed, $f(x_1,\dots,x_n;\theta)$ is a function of $\theta$. The function $f$ is called a \textbf{likelihood function}.
+
+\textbf{Continuous case}
+
+Here, $f$ is the joint probability \textbf{density}, the rest is the same as above.
+
+\begin{definition}\label{def:lik}
+If $x_1, x_2,\dots, x_n$ are the values of a random sample from a population with parameter $\theta$, the \textbf{likelihood function} of the sample is given by 
+
+\begin{equation}
+L(\theta) = f(x_1, x_2,\dots, x_n; \theta)  
+\end{equation}
+
+\noindent
+for values of $\theta$ within a given domain. Here, $f(X_1=x_1,X_2=x_2,\dots,X_n=x_n;\theta)$ is the joint probability distribution or density of the random variables $X_1,\dots,X_n$ at $X_1=x_1,\dots,X_n=x_n$.
+
+\end{definition}
+
+So, the method of maximum likelihood consists of maximizing the likelihood function with respect to $\theta$. The value of $\theta$ that maximizes the likelihood function is the \textbf{MLE} (maximum likelihood estimate) of $\theta$.
+
+\textbf{Example}: The likelihood function in the binomial case:
+
+\begin{equation}
+L(\theta) = {n \choose x} \theta^x (1-\theta)^{n-x}  
+\end{equation}
+
+Log likelihood:
+
+\begin{equation}
+\ell (\theta) = \log {n \choose x} + x \log \theta + (n-x)  \log (1-\theta)
+\end{equation}
+
+Differentiating and equating to zero to get the maximum:
+
+\begin{equation}
+\ell ' (\theta) = \frac{x}{\theta} - \frac{n-x}{1-\theta} = 0  
+\end{equation}
+
+How to get the second term: let $u=1-\theta$. 
+
+Then, $du/d\theta= -1$. Now, $y=(n-x)\log(1-\theta)$ can be rewritten in terms of u: $y=(n-x)\log(u)$. So, $dy/du= \frac{n-x}{u}$. 
+
+Now, by the chain rule, $dy/d\theta=dy/du \times du/d\theta= \frac{n-x}{u}\times (-1)=-\frac{n-x}{1-\theta}$.
+
+Rearranging terms, we get:
+
+$ \frac{x}{\theta} - \frac{n-x}{1-\theta} = 0 \Leftrightarrow  
+\frac{x}{\theta} = \frac{n-x}{1-\theta} 
+\Leftrightarrow  
+\hat \theta = \frac{x}{n}$ 
+
+
+
+\subsubsection{Finding maximum likelihood estimates for different distributions}
+
+\paragraph{Example 1}
+
+Let $X_i$, $i=1,\dots,n$ be a random variable with PDF $f(x; \sigma) = \frac{1}{2\sigma} \exp (-\frac{\mid x \mid}{\sigma})$. Find $\hat \sigma$, the MLE of $\sigma$.
+
+
+\begin{equation}
+	L(\sigma) = \prod f(x_i; \sigma) = \frac{1}{(2\sigma)^n} \exp (-\sum \frac{\mid x_i \mid}{\sigma})
+\end{equation}
+
+
+\begin{equation}
+	\ell (x; \sigma) = \sum \left[ - \log 2 - \log \sigma - \frac{\mid x_i \mid}{\sigma} \right]
+\end{equation}
+
+Differentiating and equating to zero to find maximum:
+
+\begin{equation}
+	\ell ' (\sigma) = \sum \left[- \frac{1}{\sigma} + \frac{\mid x_i \mid}{\sigma^2}  \right] = - \frac{n}{\sigma} + \frac{\mid x_i \mid}{\sigma^2} =
+	 0
+\end{equation}
+
+Rearranging the above, the MLE for $\sigma$ is:
+
+\begin{equation}
+	\hat \sigma = \frac{\sum \mid x_i \mid}{n}
+\end{equation}
+
+\paragraph{Exponential}
+
+
+\begin{equation}
+	f(x; \lambda)= \lambda \exp (- \lambda x)
+\end{equation}
+
+Log likelihood:
+
+\begin{equation}
+	\ell = n \log \lambda - \sum \lambda x_i
+\end{equation}
+
+Differentiating and equating to zero:
+
+\begin{equation}
+	\ell ' (\lambda) = \frac{n}{\lambda} - \sum x_i = 0
+\end{equation}
+
+\begin{equation}
+	\frac{n}{\lambda} =  \sum x_i
+\end{equation}
+
+I.e., 
+
+\begin{equation}
+	\frac{1}{\hat \lambda} =  \frac{\sum x_i}{n}
+\end{equation}
+
+
+\paragraph{Poisson}
+
+\begin{eqnarray}
+	L (\mu; x) & = \prod \frac{\exp^{-\mu} \mu ^{x_i}}{x_i!}\\
+	           & = \exp^{-\mu} \mu^{\sum x_i} \frac{1}{\prod x_i !} 
+\end{eqnarray}
+
+
+Log likelihood:
+
+\begin{equation}
+\ell (\mu; x) = -n\mu + \sum x_i \log \mu - \sum \log y!	
+\end{equation}
+
+Differentiating and equating to zero:
+
+\begin{equation}
+\ell ' (\mu) = -n + \frac{\sum x_i}{\mu}	= 0
+\end{equation}
+
+Therefore:
+
+\begin{equation}
+\hat \lambda = \frac{\sum x_i}{n}
+\end{equation}
+
+
+\paragraph{Geometric}
+
+\begin{equation}
+f(x; p) = (1-p)^{x-1} p  
+\end{equation}
+
+\begin{equation}
+L(p) = p ^ n (1-p)^{\sum x - n}
+\end{equation}
+
+Log likelihood:
+
+\begin{equation}
+\ell (p) = n \log p + (\sum x -n ) \log (1-p)
+\end{equation}
+
+Differentiating and equating to zero:
+
+\begin{equation}
+\ell ' (p)	\frac{n}{p} - \frac{\sum x - n }{1-p} = 0
+\end{equation}
+
+
+\begin{equation}
+\hat p = \frac{1}{\bar{x}}	
+\end{equation}
+
+\paragraph{Normal}
+
+Let $X_1,\dots,X_n$ constitute a random variable of size $n$ from a normal population with mean $\mu$ and variance $\sigma^2$, find joint maximum likelihood estimates of these two parameters.
+
+\begin{eqnarray}
+L(\mu; \sigma^2) & = \prod N(x_i; \mu, \sigma)	\\
+                 & = (\frac{1}{\sigma \sqrt{2 \pi}})^n \exp (-\frac{1}{2\sigma^2} \sigma (x_i - \mu)^2)\\ 
+\end{eqnarray}
+
+
+Taking logs and differentiating with respect to $\mu$ and $\sigma$, we get:
+
+\begin{equation}
+	\hat \mu = \frac{1}{n}\sum x_i = \bar{x}	
+\end{equation}
+
+and
+
+\begin{equation}
+	\hat \sigma ^2 = \frac{1}{n}\sum (x_i-\bar{x})^2
+\end{equation}
+ 
+
+%Note that we did not show that $\hat\sigma$ is an MLE of $\sigma$. But MLEs have the invariance property: if $ \hat \Theta$ is a maximum likelihood estimator of $\theta$, and the function $g(\hat \Theta)$ is continuous, then $g(\hat \Theta)$  is also an ML estimator of $g(\theta)$. 
+
+\section{Application of matrices: Least squares estimation}
+
+[Note: I draw heavily from 
+\cite{DraperSmith}, chapters 1 and 4; \cite{SenSrivastava}; and \cite{gelmanhill07}.]
+
+\bigskip
+
+
+
+
+Consider the goal of estimating the intercept and slope $\beta_0$ and $\beta_1$ (which are unknown population parameters) from a sample:
+
+\begin{equation} \label{eq1}
+Y_i = \beta_{0} + \beta_{1}X_i + \epsilon_i 
+\end{equation}
+
+Let's call the estimates of these parameters $\hat{\beta}_0$ and $\hat{\beta}_1$; $\hat{Y}$ is the predicted value of the dependent variable.
+
+\begin{equation}  \label{eq2}
+\hat{Y}_i = \hat{\beta}_{0} + \hat{\beta}_{1}X_i  
+\end{equation}
+
+
+We want to find those beta-hats where the sum of squares of deviation are minimized. I.e., squaring and rearranging (\ref{eq1}) we get:
+
+\begin{equation} \label{eq3}
+S=\overset{n}{\underset{i=1}\sum} \epsilon_{i}^2 = \overset{n}{\underset{i=1}\sum} (Y_i - \beta_{0} - \beta_{1}X_i)^2 
+\end{equation}
+
+If we differentiate with respect to $\beta_0$ and then $\beta_1$, we get:
+
+\begin{equation} \label{eq4}
+\frac{\partial S}{\partial \beta_0}=
+-2 \overset{n}{\underset{i=1}\sum} 
+(Y_i - \beta_{0} - \beta_{1}X_i) 
+\end{equation}
+
+and
+
+\begin{equation} \label{eq5}
+\frac{\partial S}{\partial \beta_1}=
+-2 \overset{n}{\underset{i=1}\sum} 
+X_i (Y_i - \beta_{0} - \beta_{1}X_i) 
+\end{equation}
+
+this gives us the beta-hats through the two equations:
+
+\begin{equation} \label{eq6}
+\overset{n}{\underset{i=1}\sum} 
+(Y_i - \hat{\beta}_{0} - \hat{\beta}_{1}X_i) = 0
+\end{equation}
+
+\begin{equation} \label{eq7}
+\overset{n}{\underset{i=1}\sum} 
+X_i (Y_i - \hat{\beta}_{0} - \hat{\beta}_{1}X_i) = 0
+\end{equation}
+
+Rearranging equations (\ref{eq6}) and (\ref{eq7}) we get the \textbf{normal equations}:
+
+\begin{equation} \label{eq8norm1}
+\hat{\beta}_0 + \hat{\beta}_1 \overset{n}{\underset{i=1}\sum} X_i =     \overset{n}{\underset{i=1}\sum} Y_i
+\end{equation}
+
+\begin{equation} \label{eq8norm2}
+\hat{\beta}_0 \overset{n}{\underset{i=1}\sum} X_i
+ + \hat{\beta}_1 \overset{n}{\underset{i=1}\sum} X{_i}^2 =      \overset{n}{\underset{i=1}\sum} X_i Y_i
+\end{equation}
+
+The above equations (\ref{eq8norm1}) and (\ref{eq8norm2}) are used to solve for the beta-hats.
+
+Next, we show how to state the normal equations in matrix form.
+
+Our linear model equation is a system of $i$ equations. 
+For each $i$, we can write the single equation:
+
+\begin{equation} \label{eq1a}
+Y_i = \beta_{0} + \beta_{1}X_i + \epsilon_i 
+\end{equation}
+
+\noindent
+can be expanded to:
+
+\begin{equation} \label{matrixeq1}
+ \begin{array}{ccccccc}
+Y_1    & = & \beta_0 & + & X_1 \beta_1 & + & \epsilon_1 \\
+Y_2    & = & \beta_0 & + & X_2 \beta_1 & + & \epsilon_2 \\
+Y_3    & = & \beta_0  & + & X_3 \beta_1 & + & \epsilon_3 \\
+Y_4    & = & \beta_0 & + & X_4 \beta_1 & + & \epsilon_4 \\
+\vdots &   & \vdots  &   & \vdots      &   & \vdots  \\
+Y_n    & = & \beta_0 & + & X_n \beta_1 & + & \epsilon_n \\
+\end{array} 
+\end{equation}
+
+And this system of linear equations can be restated in matrix form:
+
+\begin{equation}
+\mathbf{Y} = \mathbf{X} \mathbf{\beta} + \mathbf{\epsilon}
+\end{equation}
+
+\noindent
+where
+
+\textbf{Vector of responses}:
+
+\begin{equation} \label{matrixsum}
+\mathbf{Y} = \left( \begin{array}{c}
+Y_1 \\
+Y_2 \\
+Y_3 \\
+Y_4 \\
+\vdots \\
+Y_n \\
+\end{array} \right)
+\end{equation}
+
+\textbf{Design Matrix}:
+
+\begin{equation} \label{matrixsum}
+\mathbf{X} = \left( \begin{array}{cc}
+1 & X_1 \\
+1 & X_2 \\
+1 & X_3 \\
+1 & X_4 \\
+\vdots & \vdots \\
+1 & X_n \\
+\end{array} \right)
+\end{equation}
+
+\textbf{Vector of parameters}:
+
+\begin{equation} \label{matrixsum}
+\mathbf{\beta} = \left( \begin{array}{c}
+\beta_0 \\
+\beta_1 \\
+\end{array} \right)
+\end{equation}
+
+and 
+
+\textbf{Vector of error terms}:
+
+\begin{equation} \label{matrixsum}
+\mathbf{\epsilon} = \left( \begin{array}{c}
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
+\epsilon_4 \\
+\vdots \\
+\epsilon_n \\
+\end{array} \right)
+\end{equation}
+
+We could write the whole equation as:
+
+\begin{equation} \label{matrixsum}
+\left( \begin{array}{c}
+Y_1 \\
+Y_2 \\
+Y_3 \\
+Y_4 \\
+\vdots \\
+Y_n \\
+\end{array} \right)
+=
+\left( \begin{array}{cc}
+1 & X_1 \\
+1 & X_2 \\
+1 & X_3 \\
+1 & X_4 \\
+\vdots & \vdots \\
+1 & X_n \\
+\end{array} \right) 
+\times 
+\left( \begin{array}{c}
+\beta_1 \\
+\beta_2 \\
+\end{array} \right)
++
+\left( \begin{array}{c}
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
+\epsilon_4 \\
+\vdots \\
+\epsilon_n \\
+\end{array} \right)
+\end{equation}
+
+
+Now, we want to minimize the square of the error, as we did earlier. We can do this compactly using the matrix notation. Note that if we want to sum the squared values of a vector or numbers, we can either do it like this:
+
+<<>>=
+
+(epsilon<-rnorm(10))
+
+(epsilon.squared<-epsilon^2)
+
+sum(epsilon.squared)
+
+@
+
+\noindent
+or we can use matrix multiplication:
+
+<<>>=
+
+(t(epsilon)%*%epsilon)
+
+@
+
+
+We can apply this fact (that we can do all the computations we did above by hand using matrix multiplication) to state our least squares estimation problem by multiplying each side of the equation with its transpose (this is equivalent to taking the square):
+
+\begin{equation}
+S=\overset{n}{\underset{i=1}\sum} \epsilon_{i}^2  = \mathbf{\epsilon}' \mathbf{\epsilon} = (\mathbf{Y - X\beta})' (\mathbf{Y - X\beta})  
+\end{equation}
+
+Now, as we did earlier, we take the derivative with respect to the \textit{vector} $\mathbf{\beta}$, and we get:
+
+\begin{equation}
+\frac{dS}{d\beta}= -2 X'(Y-X\beta)
+\end{equation}
+
+Set this to 0 and solve for $\mathbf{\beta}$:
+
+\begin{equation}
+-2 X'(Y-X\beta) = 0
+\end{equation}
+
+Rearranging this equation gives us the normal equations we saw earlier, except that it's in matrix form:
+
+\begin{equation}
+X'Y = X'X\beta
+\end{equation}
+
+Here, we use the fact that multiplying a matrix by its inverse gives the identity matrix.
+This fact about inverses allows us to solve the equation.We just premultiply by the inverse of $X'X$ (written $(X'X)^{-1}$) on both sides:
+
+\begin{equation}
+(X'X)^{-1} X'Y = (X'X)^{-1} X'X\beta
+\end{equation}
+
+which gives us:
+
+\begin{equation} \label{eq:linearmodel}
+\beta=(X'X)^{-1} X'Y 
+\end{equation}
+
+Example:
+
+<<>>=
+beauty<-read.table("data/beauty.txt",header=TRUE)
+
+head(beauty)
+@
+
+Fit a linear model:
+
+<<>>=
+fm<-lm(evaluation~beauty,beauty)
+round(summary(fm)$coefficients,5)
+@
+
+<<fig=TRUE>>=
+with(beauty,plot(evaluation~beauty))
+abline(fm)
+@
+
+<<>>=
+X<-model.matrix(fm)
+head(X)
+Y<-beauty$evaluation
+@
+
+Use equation~\ref{eq:linearmodel} to find the intercept and slope:
+
+<<>>=
+solve(t(X)%*%X)%*%t(X)%*%Y
+@
+
+Compare with R output:
+
+<<>>=
+coef(fm)
+@
+
+\bibliographystyle{plain}
+\bibliography{/Users/shravanvasishth/Dropbox/Bibliography/bibcleaned}
+
+\end{document}
+
+
+
+\chapter{Vectors}
+
+A vector is an ordered n-tuple. 
+It has a geometric interpretation only when the coordinates are established.
+
+\begin{equation}
+  \vect{a} = (x_1,y_1,z_1)
+\end{equation}
+
+\textbf{Norm}
+
+\begin{equation}
+  \lVert \vect{a} \rVert = \sqrt{x_1^2 + y_1^2 + z_1^2}
+\end{equation}
+
+Vectors of norm 1 are called unit vectors. For each non-zero vector there is a unit vector going in the same direction.
+
+\begin{equation}
+u_{\vect{a}} = \frac{1}{\lVert \vect{a} \rVert}
+\end{equation}
+
+Also, every vector can be expressed as a linear combination of these three unit vectors:
+
+\begin{equation}
+\vect{i} = (1,0,0) \quad \vect{j} = (0,1,0) \quad \vect{k} = (0,0,1)	
+\end{equation}
+
+I.e., if 
+
+\begin{equation}
+	\vect{a} = (x_1,y_1,z_1)	
+\end{equation}
+
+then
+
+\begin{equation}
+\vect{a} = x_1 \vect{i} + y_1 \vect{j} + z_1 \vect{k} 
+\end{equation}
+
+Dot product:
+
+\begin{equation}
+	\vect{a}\cdot \vect{b} = a_1 b_1 + a_2 b_2 + a_3 b_3  
+\end{equation}
+
+Note that
+
+
+
+\begin{equation}
+\vect{a}\vect{a} = \mid\mid \vect{a} \mid \mid ^2
+\end{equation}
+
+and 
+
+\begin{equation}
+\vect{a}\cdot \vect{b} = \mid\mid\vect{a} \vect{b}\mid\mid \cos \theta
+\end{equation}
+
+Also, 
+
+\begin{equation}
+	\cos \theta = u_{\vect{a}} \cdot u_{\vect{b}}
+\end{equation}
+
