@@ -1,0 +1,309 @@
+\documentclass{article}
+\title{Survival examples}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section{Survival analysis}
+
+\subsection{R code}
+
+\subsubsection{Tumour data}
+
+<<>>=
+library(survival)
+load("data/tumour.Rdata")
+head(tumour)
+tumour_sv<-with(tumour,Surv(time,censor,
+                            type="right"))
+tumour_fit<-survfit(tumour_sv~1,data=tumour)
+summary(tumour_fit)
+@
+
+\textbf{Survival regression with Weibull and exponential}:
+
+What the regression output means:
+
+<<fig=TRUE>>=
+## example from stackoverflow:
+library(MASS)
+y <- rweibull(1000, shape=2, scale=5)
+r <- survreg(Surv(y)~1, dist="weibull")
+a <- 1/r$scale      # Approximately 2
+b <- exp( coef(r) ) # Approximately 5
+y2 <- b * ( -log( 1-runif(1000) ) ) ^(1/a)
+y3 <- rweibull(1000, shape=a, scale=5)
+# Check graphically that the distributions are the same
+plot(sort(y), sort(y2))
+abline(0,1)
+@
+
+
+<<>>=
+## Weibull:
+tumour_weibull<-survreg(tumour_sv ~ 1, data=tumour,
+                        dist="weibull")
+summary(tumour_weibull)
+## second weibull parameter, gamma?:
+exp(-1.02); tumour_weibull$scale
+
+## Weibull with scale=1 <=> Exponential
+tumour_weibull_exp<-survreg(tumour_sv ~ 1, data=tumour,
+                        dist="weibull",scale=1)
+summary(tumour_weibull_exp)
+
+## Exponential:
+tumour_exp<-survreg(tumour_sv ~ 1, data=tumour,
+                        dist="exponential")
+
+summary(tumour_exp)
+@
+
+\subsubsection{Lung cancer}
+
+<<>>=
+load("data/lcancer.Rdata")
+head(lcancer)
+lcancer_sv<-with(lcancer,Surv(time,censor,type="right"))
+lcancer_fit<-survfit(lcancer_sv~1,data=lcancer)
+@
+
+<<fig=TRUE>>=
+plot(lcancer_fit)
+@
+
+<<>>=
+lcancer_fit_exp<-survreg(lcancer_sv~1,
+                         data=lcancer,dist="exponential")
+
+est<-summary(lcancer_fit_exp)$coefficients
+## est for lambda as fit is on the log scale:
+lambda<-1/exp(est)
+## 95% CI:
+1/(exp(est)-1.96*est); 1/(exp(est)+1.96*est)    
+@
+
+\subsubsection{Task 2}
+
+Remission times of of two groups of leukemia patients randomized to treatment or control group:
+
+<<fig=TRUE>>=
+load("data/leukrem.Rdata")
+head(leukrem)
+leukrem_sv<-with(leukrem,Surv(time,censor,type="right"))
+leukrem_fit<-survfit(leukrem_sv~group,data=leukrem)
+summary(leukrem_fit)
+plot(leukrem_fit)
+@
+
+<<>>=
+## group 1 drug:
+leukrem_sv_trtmt<-with(subset(leukrem,group=="1"),
+                         Surv(time,censor,type="right"))
+leukrem_fit_t<-survfit(leukrem_sv_trtmt~1,
+                       data=subset(leukrem,group=="1"))
+summary(leukrem_fit_t)
+
+leukrem_sv_control<-with(subset(leukrem,group=="2"),
+                         Surv(time,censor,type="right"))
+leukrem_fit_c<-survfit(leukrem_sv_control~1,
+                       data=subset(leukrem,group=="2"))
+summary(leukrem_fit_c)
+@
+
+<<fig=TRUE>>=
+op<-par(mfrow=c(1,2),pty="s")
+plot(leukrem_fit_t,main="Drug")
+plot(leukrem_fit_c,main="Control")
+@
+
+Spoons data:
+
+<<fig=TRUE>>=
+load("data/spoons.Rdata")
+## type of spoon:
+table(spoons$Value)
+good_spoons<-subset(spoons,Value==2)
+bad_spoons<-subset(spoons,Value==1)
+## location:
+table(spoons$Access)
+## censoring:
+spoons$complete
+
+spoons_sv <- Surv(spoons$Day,spoons$complete,type="right")
+spoons_fit <- survfit(spoons_sv~1,spoons)
+summary(spoons_fit)
+plot(spoons_fit)
+@
+
+<<fig=TRUE>>=
+spoons_fit <- survfit(spoons_sv~Access,spoons)
+summary(spoons_fit)
+plot(spoons_fit)
+@
+
+Median survival times:
+
+<<>>=
+gspoons_sv <- Surv(good_spoons$Day,good_spoons$complete,type="right")
+gspoons_fit <- survfit(gspoons_sv~1,good_spoons)
+
+print(gspoons_fit,show.rmean=TRUE)
+
+bspoons_sv <- Surv(bad_spoons$Day,bad_spoons$complete,type="right")
+bspoons_fit <- survfit(bspoons_sv~1,bad_spoons)
+print(bspoons_fit,show.rmean=TRUE)
+@
+
+\subsection{Log-rank test (two sample test)}
+
+<<fig=TRUE>>=
+load("data/braintu.Rdata")
+braintu_sv<-with(braintu,Surv(time,censor,type="right"))
+braintu_fit<-survdiff(braintu_sv ~ as.factor(group),
+                      data=braintu)
+braintu_fit
+plot(survfit(braintu_sv ~ as.factor(group),
+             data=braintu),
+     lty=c(2,3),lwd=4,col=c("red","blue"))
+@
+
+\subsubsection{Task 3}
+
+Log rank test on leukemia remission:
+
+<<>>=
+leukrem_sv<-with(leukrem,Surv(time,censor,type="right"))
+leukrem_logrank<-survdiff(leukrem_sv~as.factor(group),
+                          data=leukrem)
+
+leukrem_logrank
+
+leukrem_svg1<-with(subset(leukrem,group==1),
+                   Surv(time,censor,type="right"))
+leukrem_svg2<-with(subset(leukrem,group==2),
+                   Surv(time,censor,type="right"))
+
+leukrem_fit_g1<-survreg(leukrem_svg1~1,
+                     dist="exponential",
+                          data=subset(leukrem,group==1))
+
+leukrem_fit_g2<-survreg(leukrem_svg2~1,
+                     dist="exponential",
+                          data=subset(leukrem,group==2))
+
+g1_est<-summary(leukrem_fit_g1)$coef
+g2_est<-summary(leukrem_fit_g2)$coef
+
+1/exp(g1_est)
+1/exp(g2_est)
+
+## median with 95% CI:
+g1.q1 <- predict(leukrem_fit_g1, type="uquantile", p=0.025, se.fit=T)
+g1.q2 <- predict(leukrem_fit_g1, type="uquantile", p=0.50, se.fit=T)
+g1.q3 <- predict(leukrem_fit_g1, type="uquantile", p=0.975, se.fit=T)
+
+g2.q1 <- predict(leukrem_fit_g2, type="uquantile", p=0.025, se.fit=T)
+g2.q2 <- predict(leukrem_fit_g2, type="uquantile", p=0.50, se.fit=T)
+g2.q3 <- predict(leukrem_fit_g2, type="uquantile", p=0.975, se.fit=T)
+
+g1.q1CI <- exp(g1.q1$fit[1] + c(-1,0,1)*1.96*g1.q1$se.fit[1])
+g1.q2CI <- exp(g1.q2$fit[1] + c(-1,0,1)*1.96*g1.q2$se.fit[1])
+g1.q3CI <- exp(g1.q3$fit[1] + c(-1,0,1)*1.96*g1.q3$se.fit[1])
+t.g1 <- rbind(g1.q1CI,g1.q2CI,g1.q3CI)
+rownames(t.g1) <- c("1st quartile","2nd quartile","3rd quartile")
+colnames(t.g1) <- c("LCL","q","UCL")
+t.g1
+
+g1.q1 <- predict(leukrem_fit_g1, type="uquantile", p=0.025, se.fit=T)
+g1.q2 <- predict(leukrem_fit_g1, type="uquantile", p=0.50, se.fit=T)
+g1.q3 <- predict(leukrem_fit_g1, type="uquantile", p=0.975, se.fit=T)
+
+g2.q1CI <- exp(g2.q1$fit[1] + c(-1,0,1)*1.96*g2.q1$se.fit[1])
+g2.q2CI <- exp(g2.q2$fit[1] + c(-1,0,1)*1.96*g2.q2$se.fit[1])
+g2.q3CI <- exp(g2.q3$fit[1] + c(-1,0,1)*1.96*g2.q3$se.fit[1])
+t.g2 <- rbind(g2.q1CI,g2.q2CI,g2.q3CI)
+rownames(t.g2) <- c("1st quartile","2nd quartile","3rd quartile")
+colnames(t.g2) <- c("LCL","q","UCL")
+t.g2
+@
+
+<<fig=TRUE>>=
+## from simon jackman:
+## http://jackman.stanford.edu/classes/350C/07/parametric.r
+library(MASS)
+plot(survfit(Surv(time,cens) ~ factor(temp),
+             data=motors),
+     conf.int=F)
+@
+
+<<>>=
+motor.wei <- survreg(Surv(time,cens) ~ temp,
+                     data=motors)
+summary(motor.wei)
+
+## predicted mean survival times, conditional on temp, with se
+predict(motor.wei,
+        list(temp=130),
+        se.fit=T)
+
+## predicted quantiles of survival time distribution
+## n.b., median survival time is different from expected value
+predict(motor.wei,
+        list(temp=130),
+        type="quantile",
+        p=c(.05,.10,.50,.90,.95))
+
+## confidence intervals on median survival time
+halfLife <- predict(motor.wei,
+                    list(temp=130),
+                    type="uquantile",  ## underlying log-time scale
+                    p=c(.05,.10,.50,.90,.95),
+                    se=T)
+exp(cbind(LB=halfLife$fit - 1.96*halfLife$se,    ## lower bound
+          UB=halfLife$fit + 1.96*halfLife$se))   ## upper bound
+@
+
+
+\section{Task 4}
+
+Accelerated Failure Time Models: Example from lecture notes
+
+<<>>=
+load("~/Dropbox/MScStatistics/2014-2015/MAS6012/SurvivalAnalysis/data/wbcleuk.Rdata")
+wbcleuk.sv<-with(wbcleuk,Surv(survival))
+
+## regexp=regression exponential:
+wbcleuk.regexp<-with(wbcleuk,survreg(wbcleuk.sv~log.wbc.,dist="exponential"))
+summary(wbcleuk.regexp)
+b_0<-coef(wbcleuk.regexp)[1]
+## MLE of lambda(0)=
+1/exp(b_0)
+
+## the mean survival time for a patient with a wbc of 54 is 1/lambdahat:
+(mean_survival54<-exp(sum(coef(wbcleuk.regexp)*c(1,log(54)))))
+
+#exp(7.845-0.889*log(54))
+## doesn't match lecture notes
+
+## approx SE:
+log(2)*mean_survival54
+@
+
+Weibull model to above data:
+
+<<>>=
+## weibull is default, so both the commands
+## below amount to the same thing:
+wbcleuk.regweib<-with(wbcleuk,survreg(wbcleuk.sv~log.wbc.,dist="weibull"))
+wbcleuk.regweib2<-with(wbcleuk,survreg(wbcleuk.sv~log.wbc.))
+summary(wbcleuk.regweib)
+summary(wbcleuk.regweib2)
+
+@
+
+\section{Task 5}
+
+\end{document}
