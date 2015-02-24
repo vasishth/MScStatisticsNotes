@@ -14,6 +14,7 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 1. GraduateCertificateNotes.{Rnw,pdf} Covering Mathematics, Probability, and Statistics
 
 *Year 1 (2012-13)*
+
 	http://maths.dept.shef.ac.uk/maths/module_info_1417.html
 
 1. LinearModels.{tex,pdf}. LinearModels2015.{Rnw} is newer. 
@@ -21,6 +22,7 @@ These are summary sheets and notes I made as part of an MSc in Statistics, at th
 3. LinearMixedModels.{Rnw,pdf}
 
 *Year 2 (2013-14)*
+
 	http://maths.dept.shef.ac.uk/maths/module_info_1421.html
 
 1. BayesianDataAnalysis.{Rnw,pdf}
