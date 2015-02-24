@@ -20,6 +20,8 @@ formatC(x,format="E",big.mark=",")
 .Machine
 @
 
+\end{document}
+
 <<>>=
 library(simgen)
 library(lme4)
@@ -52,4 +54,3 @@ tvals[i]<-summary(m0)$coef[2,3]
 @
 
 
-\end{document}
