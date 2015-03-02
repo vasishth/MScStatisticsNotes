@@ -16,6 +16,7 @@
 \usepackage{blkarray}
 \usepackage{multirow}
 
+\usepackage{cancel}
 
 \usepackage{tabu}
 
@@ -64,7 +65,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 % Don't print section numbers
-\setcounter{secnumdepth}{0}
+%\setcounter{secnumdepth}{0}
 
 
 \setlength{\parindent}{0pt}
@@ -111,7 +112,7 @@
 
 \newpage
 
-\begin{multicols}{2}
+\begin{multicols}{3}
 
 
 % multicol parameters
@@ -765,8 +766,8 @@ So, $Var(g(\lambda))= g''(\lambda) var(\lambda) = (1/\lambda^3) (\lambda^2/\sum 
 
 [Also see LinearModelsSummary.pdf]
 
-A deterministic model would be $y=f\phi(x,\beta)=\beta_0+\beta_1x$.
-Cf.\ a non-deterministic model: $y=f\phi(x,\beta,\epsilon)=\beta_0+\beta_1x+\epsilon$. The general linear model is:
+A deterministic model would be $y=\phi(f(x),\beta)=\beta_0+\beta_1x$.
+Cf.\ a non-deterministic model: $y=\phi(f(x),\beta,\epsilon)=\beta_0+\beta_1x+\epsilon$. The general linear model is:
 
 \begin{equation}
 Y=\sum_{i=1} f_i(x_i)\beta_i +\epsilon \quad E[Y]=\sum \mathbf{f(x)}\mathbf{\beta}
@@ -780,7 +781,7 @@ Y = X\beta + \epsilon \Leftrightarrow y_j = f(x_j)^T \beta + \epsilon_j, i=1,\do
 
 $E[Y]=X\beta$. X is the \textbf{design matrix}.
 
-\textbf{Example}: $y=\beta_0 + \beta_1 x + \epsilon$. Here, $f(x)= (1 x)$.
+\textbf{Example}: $y=\beta_0 + \beta_1 x + \epsilon$. Here, $f(x)= (1~x)$.
 
 \paragraph{Least squares estimation: Geometric argument}
 
@@ -811,8 +812,10 @@ Multiplying out the terms:
 \end{split}
 \end{equation}
 
-\textbf{This gives us the important result: $\hat\beta = (XX^T)^{-1}X^T Y$.}
-
+\textbf{This gives us the important result}: 
+\begin{equation}
+\hat\beta = (XX^T)^{-1}X^T Y
+\end{equation}
 X is of full rank, therefore $X^TX$ is positive definite symmetric $p\times p$ and invertible.
 
 [to-do: summarize ch 6 of Lay in matrix algebra notes]
@@ -825,7 +828,9 @@ E[\hat\beta] = (XX^T)^{-1}X^T Y = (XX^T)^{-1}X^T X\beta = \beta
 
 \begin{equation}
 \begin{split}
-Cov(\hat\beta) = Var(\hat\beta) = Var([(XX^T)^{-1}X^T] Y) =& [(XX^T)^{-1}X^T] \sigma^2 I  [(XX^T)^{-1}X^T]^{T}\\
+Cov(\hat\beta) =& Var(\hat\beta) \\
+=& Var([(XX^T)^{-1}X^T] Y) \\
+=& [(XX^T)^{-1}X^T] \sigma^2 I  [(XX^T)^{-1}X^T]^{T}\\
 =& [(XX^T)^{-1}X^T] \sigma^2 I  X[(XX^T)^{-1}]^{T} \\
 =& \sigma^2 (XX^T)^{-1} X^T X [(XX^T)^{-1}]^{T}\\
 =& \sigma^2 (XX^T)^{-1} X^T X (XX^T)^{-1} \\
@@ -896,15 +901,15 @@ There are four parameters, and three equations:
 These equations can't be solved (don't have a unique solution). The model is said to be overparameterized or underdetermined. 
 
 The solution is to place a restriction on the parameters: express one parameter in terms of the others. An example is sum contrast coding: if there are p parameters, then, just stipulate that 
-$\alpha_1 + \dots + \alpha_n=\sum_{i=1}^{p} \alpha_i = 0$.
+$\alpha_1 + \dots + \alpha_p=\sum_{i=1}^{p} \alpha_i = 0$.
 
 Another example is deviation regressors or \textbf{effects coding}: Let m be the maximum number of groups. For each of the j groups,
 
 \begin{equation}
 D_j= 
 \begin{cases}
-1 & group j \\
--1 & group m\\
+1 & \hbox{ group } j \\
+-1 & \hbox{ group } m\\
 0 & \hbox{otherwise}
 \end{cases}
 \end{equation}
@@ -925,7 +930,7 @@ Group & $\alpha_1$ & $\alpha_2$\\
 
 Here, we have constrained the parameters so that $\sum \alpha_i = 0$, i.e., 
 $\alpha_3 = - \alpha_1 -\alpha_2$.
-Now we have three equations and three parameters, which has a unique solution.
+Now we have three equations and three parameters; this system of equations has a unique solution.
 
 \begin{equation}
 \begin{split}
@@ -942,7 +947,8 @@ Note that two of the parameters are correlated when we use effects coding:
 <<>>=
 m<-matrix(c(c(rep(1,9)),
           c(rep(1,3),rep(0,3),rep(-1,3)),
-          c(rep(0,3),rep(1,3),rep(-1,3))),byrow=FALSE,nrow=9)
+          c(rep(0,3),rep(1,3),rep(-1,3))),
+          byrow=FALSE,nrow=9)
 cov(m)
 @
 
@@ -1072,8 +1078,8 @@ So, variance (accuracy) depends on depends on X and $x_0$.
 
 \begin{equation}
 \begin{split}
-Var(\hat y(x_0)) = Var(\hat \beta_0 + \hat \beta_1 x_0) =& 
-\frac{\sigma^2}{nS_{xx}} 
+Var(\hat y(x_0)) =& Var(\hat \beta_0 + \hat \beta_1 x_0) \\
+=&  \frac{\sigma^2}{nS_{xx}} 
 \begin{pmatrix}
 1 & x_0\\
 \end{pmatrix}
@@ -1089,7 +1095,7 @@ x_0\\
 \end{split}
 \end{equation}
 
-where $\bar{x} = \frac{\sum x}{n}$, and $S_{xx}=(\sum x_2) -n\bar{x}^2$. 
+where $\bar{x} = \frac{\sum x}{n}$, and $S_{xx}=(\sum x_2) -n\bar{x}^2$.  The above derivation is proved in equation~(\ref{task2exercise}) on page~\pageref{task2exercise}.
 
 One should avoid predicting outside the region containing the design points, because we usually have no idea whether the model holds outside the range of the design points. 
 
@@ -1110,6 +1116,465 @@ This is a very important equation for the next section.
 
 The SIM remains unchanged for different sample sizes.
 
+\subsection{Confidence regions}
+
+Recall that 
+\begin{enumerate}
+\item $\sigma^{-2} (\hat\beta-\beta)^T X^TX (\hat\beta-\beta) \sim \chi_p^2$
+\item
+$p^{-1} \sigma^{-2}  (\hat\beta-\beta)^T X^TX (\hat\beta-\beta) \sim F(p,n-p)$
+\end{enumerate}
+
+Therefore, a confidence region for the vector $\beta$ will take the form:
+
+\begin{equation}
+(\hat\beta-\beta)^T X^TX (\hat\beta-\beta) < \hbox{constant}
+\end{equation}
+
+where the RHS is the appropriate quantile of the $\chi^2$ or F-distribution.
+
+The size of this ellipsoid will depend on:
+
+\begin{enumerate}
+\item $\sigma^2$ or $\hat\sigma^2$ 
+\item The confidence level chosen
+\item The information matrix $X^TX$ (this also determines shape).
+\end{enumerate}
+
+\textbf{Examples}:
+
+Consider simple linear regression with observations x=-1,0,1, with $\sigma^2$ unknown. 
+
+<<>>=
+X<-matrix(c(rep(1,3),c(-1,0,1)),
+          byrow=FALSE,ncol=2)
+(XTX<-t(X)%*%X)
+@
+
+\begin{equation}
+p^{-1} \hat\sigma^{-2}  (\hat\beta-\beta)^T X^TX (\hat\beta-\beta) = 2^{-1}\sigma^{-2} 
+(\hat\beta-\beta)^T \begin{pmatrix}
+3 & 0 \\
+0 & 2\\
+\end{pmatrix}
+(\hat\beta-\beta)
+\end{equation}
+
+Multiplying out the terms, we get:
+
+\begin{equation}
+3(\hat\beta-\beta)^2+2(\hat\beta-\beta)^2 \leq 2 \hat\sigma^2 F_{2,1,1-\alpha}
+\end{equation}
+
+Example showing the ellipses:
+
+<<fig=TRUE>>=
+op<-par(mfrow=c(1,2),pty="s")
+library(ellipse)  
+# a) Plot density of betahat given 
+## the true par. vals
+# Consider model y=2+x+ epsilon, 
+## with epsilon ~ N(0,1)
+x<-c(-2,2) # specify design points
+
+X<-matrix(c(rep(1,length(x)),x),
+          nrow=length(x)) # Design matrix
+inv.info.matrix<-solve(t(X)%*%X) 
+# inverse of information matrix
+
+# From eqn(25), variance matrix of betahat is 
+# 2*inv.info.matrix
+plot(ellipse(2*inv.info.matrix,
+             centre=c(2,1),level=0.95),
+     type="l") # 95% joint probability 
+## contour
+lines(ellipse(2*inv.info.matrix,
+              centre=c(2,1),
+              level=0.5)) 
+# 50% joint probability contour
+
+lines(ellipse(2*inv.info.matrix,
+              centre=c(2,1),
+              level=0.05)) 
+# 5% joint probability contour
+
+x<-c(0,1,2) # alternative design
+X<-matrix(c(rep(1,length(x)),x),
+          nrow=length(x)) 
+inv.info.matrix<-solve(t(X)%*%X) 
+plot(ellipse(2*inv.info.matrix,
+             centre=c(2,1),
+             level=0.95),type="l") 
+lines(ellipse(2*inv.info.matrix,
+              centre=c(2,1),
+              level=0.5)) 
+lines(ellipse(2*inv.info.matrix,
+              centre=c(2,1),
+              level=0.05)) 
+@
+
+\subsection{Optimality criteria}
+
+Informally, a design is good if $X^T X$ is large, and its inverse small (we get lower SEs for the coefficient estimates).
+
+To-do: example showing optimal group size.
+
+\subsubsection{D-optimality}
+
+Maximize determinant of $X^TX$, or of $M$.
+In positive definite matrices, the determinant is the product of the eigenvalues (which are real and positive). This criterion minimize the area/volume of the ellipsoids discussed earlier.
+
+Example: Simple linear regression: $y=\beta_0 + \beta_1 x$.
+
+\begin{equation}
+X^TX = 
+\begin{pmatrix}
+n & \sum x\\
+\sum x & \sum x^2
+\end{pmatrix}
+\end{equation}
+
+So, 
+\begin{equation}
+det(X^TX)=n\sum x^2-(\sum x)^2=ns_{xx}
+\end{equation}
+
+It would be D-optimal to make $s_{xx}$ as large as possible, but this has the weird consequence that it's D-optimal to have half the values at the minimum, and half at the maximum. This has the disadvantage that we get no evidence for the middle range.
+
+Another example (Task 2): In the quadratic regression model
+
+\begin{equation}
+E[Y]= \beta_0 + \beta_1 x + \beta_{11} x^2 \quad x\in [-1,1]
+\end{equation}
+
+if the points are $x=-1, a, 1$, the D-optimal choice for a is 0. Proof:
+
+First note that the X matrix is square:
+
+\begin{equation}
+\begin{pmatrix}
+1 & -1 & 1\\
+1 & a & a^2\\
+1 & 1 & a\\
+\end{pmatrix}
+\end{equation}
+
+For a square matrix, $det(X^TX)= det(X^T)det(X)=det(X)^2$. So it is enough to find $det(X)^2$, and then maximize.
+
+\begin{equation}
+\begin{split}
+det\left( \begin{pmatrix}
+1 & -1 & 1\\
+1 & a & a^2\\
+1 & 1 & a\\
+\end{pmatrix}
+\right) =& \\
+1\times det \left( \begin{pmatrix}
+a & a^2\\
+1 & a\\
+\end{pmatrix}
+\right)
++&\\
+1\times 
+det\left( \begin{pmatrix}
+1 & a^2\\
+1 & a\\
+\end{pmatrix}
+\right)
++&\\
+1\times 
+det\left( \begin{pmatrix}
+1 & a\\
+1 & 1\\
+\end{pmatrix}
+\right) =& \cancel{a}- a^2 + 1 - a^2 + 1 - \cancel{a} \\
+=& 2 - 2a^2
+\end{split}
+\end{equation}
+
+So, 
+
+\begin{equation}
+y= det(X)^2 = (2 - 2a^2)^2
+\end{equation}
+
+Using the chain rule, 
+$dy/dx = -4a \times (2 - 2a^2)$. Equating this to zero:
+
+\begin{equation}
+-4a \times (2 - 2a^2) = 0 
+\end{equation}
+
+implies that, necessarily, a=0.
+
+Using the product rule,
+$dy^2/d^2x = -4a \times (-4a) -4\times(2 - 2a^2)=16a^2-8 + 8a^2=-8 < 0$ when a=0. Hence maximum at a=0.
+
+
+
+\subsubsection{G-optimality: Considers worst-case scenario}
+
+Minimize the maximum standardized variance over the design region $\Omega$:
+
+\begin{equation}
+\underset{x\in \Omega}{\hbox{ max }} d(\mathbf{x})
+\end{equation}
+
+For each potential design, evaluate the worst possible variance of prediction, then choose the design for which this is the least. 
+
+Example: Continuing with simple linear regression example for D-optimization:
+
+Recall that: 
+
+\begin{equation}
+\begin{split}
+d(x) =& n f(x)^{T} (X^T X)^{-1} f(x)\\
+=& f(x)^{T} M^{-1} f(x)
+\end{split}
+\end{equation}
+
+and $S_{xx}=(\sum x^2) -n\bar{x}^2$.
+
+We need to maximize d(x). For simple linear regression, d(x) will simplify to: 
+
+\begin{equation}
+\begin{split}
+d(x) =& n f(x)^{T} (X^T X)^{-1} f(x)\\
+=& n \begin{pmatrix}
+1 & x
+\end{pmatrix}
+\frac{1}{nS_{xx}} 
+\begin{pmatrix}
+\sum x^2 & -\sum x\\
+-\sum x & n\\
+\end{pmatrix}
+\begin{pmatrix}
+1\\
+x\\
+\end{pmatrix}\\
+=& 
+\frac{1}{S_{xx}}
+\begin{pmatrix}
+\sum x^2 - x\sum x & xn - \sum x\\
+\end{pmatrix}
+\begin{pmatrix}
+1\\
+x\\
+\end{pmatrix}\\
+=& \frac{1}{S_{xx}}
+\begin{pmatrix}
+\sum x^2 - x \sum x + x(xn - x\sum x)
+\end{pmatrix}\\
+=& \frac{1}{S_{xx}}
+\begin{pmatrix}
+\sum x^2 - 2x \sum x + x^2n
+\end{pmatrix}\\
+\end{split}
+\end{equation}
+
+Recall now that (\textbf{this should be committed to memory}): 
+
+\begin{equation} \label{task2exercise}
+\begin{split}
+~& (x-\bar{x})^2 = x^2 + \bar{x}^2 - 2x \bar{x}\\
+\Leftrightarrow & n(x-\bar{x})^2 = nx^2 + \mathbf{n \bar{x}^2} - 2n x \bar{x}\\
+\end{split}
+\end{equation}
+
+So we can write: 
+
+\begin{equation}
+n(x-\bar{x})^2 - \mathbf{n\bar{x}^2} = n\bar{x}^2 
+- 2n x\bar{x}
+\end{equation}
+
+We are going to replace the RHS above with the LHS in the equation below (see boldface part):
+
+\begin{equation}
+\begin{split}
+=& \frac{1}{S_{xx}}
+(\sum x^2 - 2x \sum x + x^2n)\\
+=& \frac{1}{S_{xx}}
+(\sum x^2 + x^2n - 2x \sum x)
+\\
+=& \frac{1}{S_{xx}}
+(\sum x^2 + x^2n - 2x \sum x)\\
+=& \frac{1}{S_{xx}}
+(\sum x^2 + x^2n - 2nx \bar{x}) \quad (\because 2x \sum x = 2nx \bar{x})  \\
+=& \frac{1}{S_{xx}}
+(\sum x^2 + n(x-\bar{x})^2 - \mathbf{n\bar{x}^2})
+\\
+=& \frac{1}{S_{xx}}
+(\sum x^2 - \mathbf{n\bar{x}^2} + n(x-\bar{x})^2)
+\\
+=& \frac{1}{S_{xx}}
+(S_{xx} + n(x-\bar{x})^2) \quad (\because S_{xx}=(\sum x^2) -n\bar{x}^2)\\
+=& 
+1 + \frac{n(x-\bar{x})^2)}{S_{xx}}\\
+\end{split}
+\end{equation}
+
+Therefore, we need to maximize:
+
+\begin{equation}
+d(x)=1 + \frac{n(x-\bar{x})^2)}{S_{xx}}
+\end{equation}
+
+This leads to the same design as D-optimality, as we can maximize this by making x as far as possible as $\bar{x}$.
+
+Example: quadratic regression example from previous section on D-optimality:
+
+<<>>=
+X<-matrix(c(1,1,1,-1,0,1,1,0,1),
+          ncol=3,byrow=F)
+## inverse:
+invXTX<-solve(t(X)%*%X)
+@
+
+Next, compute:
+
+\begin{equation}
+\begin{split}
+n 
+\begin{pmatrix}
+1 & x & x^2
+\end{pmatrix}
+\frac{\sigma^2}{n S_{xx}}
+\begin{pmatrix}
+1 & 0 & -1 \\ 
+ 0 & 0.5 & 0 \\ 
+ -1 & 0 & 1.5 \\ 
+\end{pmatrix}
+\begin{pmatrix}
+1 \\
+x\\
+x^2\\
+\end{pmatrix} 
+=&\\
+n 
+\frac{\sigma^2}{n S_{xx}}
+\begin{pmatrix}
+1 & x & x^2
+\end{pmatrix}
+\begin{pmatrix}
+1 & 0 & -1 \\ 
+ 0 & 0.5 & 0 \\ 
+ -1 & 0 & 1.5 \\ 
+\end{pmatrix}
+\begin{pmatrix}
+1 \\
+x\\
+x^2\\
+\end{pmatrix} ~&
+\end{split}
+\end{equation}
+
+\subsubsection{V-optimality}
+
+A design is V-optimal if it minimizes a weighted average of the standardized variance of prediction over the design region:
+
+\begin{equation}
+\int_{\Omega} d(x) w(x) \, dx
+\end{equation}
+
+Example: Simple linear regression with $x\in (-1,1)$ and uniform weighting, we minimize: 
+
+\begin{equation}
+\begin{split}
+\int_{-1}^1 d(x) w(x) \, dx =& \\ 
+=& \int_{-1}^1 1 + \frac{n(x-\bar{x})^2}{S_{xx}} \, dx\\
+=& \int_{-1}^1 1 + \frac{n}{S_{xx}}(x^2+\bar{x}^2-2x\bar{x}) \, dx\\
+=& 2 + \frac{n}{S_{xx}}(\frac{1}{3}+\bar{x}^2-\bar{x} - 
+(-\frac{1}{3}-\bar{x}^2-\bar{x}) ) \\
+=& 2 + \frac{n}{S_{xx}}(\frac{2}{3} + 2\bar{x}^2)\\
+=& 2 + \frac{n}{3S_{xx}}(2+6\bar{x}^2)\\
+\end{split}
+\end{equation}
+
+Here, too, minimizing the above amounts to taking half of the observations at each end-point (as in D- and G-optimality.), making $S_{xx}$ as large as possible and $\bar{x}=0$.
+
+
+\subsubsection{A-optimality}
+
+Minimize trace of $(X^T X)^{-1}$. Equivalently: minimize the sum of the variances of the parameter estimates; makes sense only if the parameters are estimated on the same dimension.
+
+(SV: Shouldn't scaling allow us to force that?)
+
+\subsection{Design for qualitative explanatory factors: one factor}
+
+\subsubsection{Randomization}
+
+Randomization adds to the robustness of the statistical procedures (see example in lecture notes; to-do).
+
+\subsubsection{Completely randomized design (CRD)}
+
+ 
+
+\subsection{Design for qualitative explanatory factors: multiple factors}
+
+\subsubsection{Latin Square designs}
+
+Consider the following example. Rows refers to Run (indexed by i), Columns refer to Position in machine (indexed by j), and the materials are A,B,C (indexed by k).
+
+\begin{table}[htdp]
+\caption{An example of a Latin square design.}
+\begin{center}
+\begin{tabular}{cccc}
+1 & A  & B  & C\\
+2 & C  & A  & B \\
+3 & B  & C  & A\\
+\end{tabular}
+\end{center}
+\label{latinsquare}
+\end{table}%
+
+The model is:
+
+\begin{equation}
+y_{ij} = \mu + \alpha_i + \beta_j + \tau_{kij} + \epsilon_{ij} 
+\quad \epsilon_{ij} \sim N(0,\sigma^2)
+\end{equation}
+
+The contraints on the parameters:
+\begin{enumerate}
+\item Run:
+$\alpha_3 = -\alpha_1 - \alpha_2$
+\item Position in machines:
+$\beta_3 = -\beta_1 - \beta_2$
+\item Materials:
+$\tau_3 = -\tau_1 - \tau_2$
+
+How to interpret the indexing: $\tau_{k=1(i=1,j=1)}$: treatment A, first row, first column.
+\end{enumerate}
+
+\begin{equation}
+\begin{pmatrix}
+\mu & \alpha_1 & \alpha_2 & \beta_1 & \beta_2 & \tau_1 & \tau_2 \\
+1 & 1 & 0 & 1 & 0 & 1 & 0\\
+1 & 1 & 0 & 0 & 1 & 0 & 1\\
+1 & 1 & 0 & -1 & -1 & -1 & -1 \\
+\cline{1-7}
+1 & 0 & 1 & 1 & 0 &  -1 & 1\\
+1 & 0 & 1 & 0 & 1 & 1 & 0\\
+1 & 0 & 1 & -1 & -1 & 0 & 1\\
+\cline{1-7}
+1 & -1 & -1 & 1 & 0 & 0 & 1\\
+1 & -1 & -1 &  0 & 1 & -1 & -1 \\
+1 & -1 & -1 & -1 &-1& 1& 0\\
+\end{pmatrix}
+\end{equation}
+
+The $\tau_k$ are perpendicular or orthogonal to all others. 
+
+Note that if we remove $\mu$, we can add at most one parameter.
+
+
+
+\subsubsection{Balanced incomplete block designs}
+
+
+
+\subsection{Factorial designs}
 
 \end{multicols}
 
