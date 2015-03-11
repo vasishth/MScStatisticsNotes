@@ -1044,7 +1044,7 @@ The general formula is:
 \begin{equation}
 x_t = \frac{y_{t-2}}{8} 
 + 
-\frac{y_{t-1} + y_t + y_{t+1}}{8}
+\frac{y_{t-1} + y_t + y_{t+1}}{4}
 +
 \frac{y_{t+2}}{8}
 \end{equation}
@@ -1224,12 +1224,13 @@ The convention usually is $Y_1,\dots, Y_n$ are random variables; and $y_1,\dots,
 
 \subsection{Strong stationarity}
 
-When the \textbf{joint} distribution $y_{t_1},\dots,y_{t_k}$ is the same 
+This occurs when  the \textbf{joint} distribution $y_{t_1},\dots,y_{t_k}$ is the same 
 as that of $y_{t_{1+s}},\dots,y_{t_{k+s}}$, for any $s, k, t_1, \dots, t_k$.
 
 The probability properties of the sequence don't change over time. 
+$y_t$ has the same distribution as $y_{t+s}$.
 
-If $y_t$ has the same distribution as $y_{t+s}$.
+Consequences:
 
 \begin{enumerate}
 \item
@@ -1239,7 +1240,7 @@ $\sigma_t^2 = Var(y_t) = Var(y_{t+s}) = \sigma_{t+s}^2=\sigma^2$
 \item
 Covariance function (function only of $h$): $\gamma_h = Cov(y_t, y_{t+h}) = Cov(y_{t+s}, y_{t+h+s})$. $\gamma_h$ is the covariance function at lag $h$.
 
-Note that know $\gamma_h$ for all $h$ tells us what the variance $\sigma^2$ is too, if $\gamma_0=\sigma^2$.
+Note that knowing $\gamma_h$ for all $h$ tells us what the variance $\sigma^2$ is too, since $\gamma_0=\sigma^2$.
 \end{enumerate}
 
 \subsection{Weak or second-order stationarity}
@@ -1276,7 +1277,7 @@ $\rho_h$ has the properties:
 
 \begin{enumerate}
 \item
-$-1\leq  \rho \leq 1$
+$-1\leq  \rho_h \leq 1$
 \item
 $\rho_h = \rho_{-h}$ 
 \item
@@ -1366,7 +1367,7 @@ y_t= \alpha y_{t-1}+ \eps_t \quad \eps_t \sim WN(0,\sigma^2)
 
 We can use the backward shift operator (a functional: a function that takes a function as an argument) B, to express AR(1).
 
-Let $B^0 y_t = 1$, and 
+By convention, we let $B^0 y_t = 1$. This allows us to write, more generally:
 
 \begin{equation}
 %By_t = y_{t-1} \quad \hbox{ or } 
@@ -1419,7 +1420,7 @@ y_t=& \alpha y_{t-1}+ \eps_t \\
 \end{split}
 \end{equation}
 
-As $t\rightarrow \infty$, if $\mid \alpha \mid < 1$ and $y_0$ finite,
+As $t\rightarrow \infty$, if $\mid \alpha \mid < 1$ and $y_0$ finite, we get:
 
 \begin{equation}
 \sum_{i=0}^{\infty} a^i \eps_{t-i}
@@ -1473,7 +1474,7 @@ E[\sum_{i=0}^{\infty} \alpha^i \eps_{t-i}
 \end{equation}
 
 \label{zeroexpectation}
-If $t-i \neq t+h -j$, we have $E[\eps_{t-i}\eps_{t+h-j}]=0$.
+If $t-i \neq t+h -j$, we have $E[\eps_{t-i}\eps_{t+h-j}]=0$ because the errors are independent.
 And if $t-i = t+h -j$, this implies that $j=i+h$. Consequently, for this case, we can write
 
 \begin{equation}
@@ -1620,7 +1621,7 @@ Var(y_t) =& Var(y_{t-1}) + Var(\eps_t)\\
 \end{split}
 \end{equation}
 
-So, as $t\rightarrow \infty$, $Var(y_t)\rightarrow \infty$, since $\sigma^2>0$. Actually, we don't even need to go so far as to find the limit, we just need to notes that $Var(y_t)$ depends on $t$, so the sequence 
+So, as $t\rightarrow \infty$, $Var(y_t)\rightarrow \infty$, since $\sigma^2>0$. Actually, we don't even need to go so far as to find the limit, we just need to note that $Var(y_t)$ depends on $t$, so the sequence 
 $\{y_t\}$ is not stationary. 
 \textbf{This kind of model is relevant in finance (stock prices).}
 
@@ -1737,7 +1738,7 @@ E[y_{t-h} \eps_t] ~&\\
 \end{split}
 \end{equation}
 
-We work out $E[y_{t-h}y_{t-1}]$. 
+We will now work out $E[y_{t-h}y_{t-1}]$. 
 We can rewrite this as $E[y_{(t-1)-(h-1)}y_{t-1}]$. Rewrite $t-1$ as $t*$.
 
 \begin{equation}
@@ -1747,7 +1748,7 @@ E[y_{t-h}y_{t-1}] =& E[y_{(t-1)-(h-1)}y_{t-1}]\\
 \end{split}
 \end{equation}
 
-The mode is causal, the ACF doesn't depend on t, so 
+The model is causal; the ACF doesn't depend on t, so 
 
 \begin{equation}
 E[y_{t*-(h-1)}y_{t*}]=\gamma_{h-1}
@@ -1850,14 +1851,14 @@ Var(y_t) =& Var(\sum_{i=0}^{q} \beta_i \eps_{t-i})\\
 \end{equation}
 
 Since $y_t = \sum_{i=0}^{q} \beta_i \eps_{t-i}$
-and $y_t = \sum_{j=0}^{q} \beta_j \eps_{t+h-j}$,
+and $y_{t+h} = \sum_{j=0}^{q} \beta_j \eps_{t+h-j}$,
 we can write the last line above as:
 
 \begin{equation}
 \begin{split}
- E[y_t y_{t+h}] = & E[\sum_{i=0}^{q} \sum_{i=0}^{q}
+ E[y_t y_{t+h}] = & E[\sum_{i=0}^{q} \sum_{j=0}^{q}
  \beta_i \beta_j \eps_{t-i}\eps_{t+h-j} ]\\
- = & \sum_{i=0}^{q} \sum_{i=0}^{q}
+ = & \sum_{i=0}^{q} \sum_{j=0}^{q}
  \beta_i \beta_j E[\eps_{t-i}\eps_{t+h-j}]\\
 \end{split}
 \end{equation}
@@ -1881,7 +1882,7 @@ The upper bound in the summation is $q-h$ because we have $i+h$ as a subscript, 
 So:
 
 \begin{equation}
-gamma_h= 
+\gamma_h= 
 \begin{cases}
  \sigma^2 \sum_{i=0}^{q-h} \beta_i \beta_{i+h} & \hbox{ if } 
 t-i = t+h-j  \\
@@ -1899,7 +1900,7 @@ It follows that
 Thus,
 
 \begin{equation}
-rho_h= 
+\rho_h= 
 \begin{cases}
 0 & \hbox{ for } h>q\\
 \frac{\sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\sum_{i=0}^{q}\beta_i} & \hbox{ for }  h\leq q\\
