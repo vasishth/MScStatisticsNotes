@@ -664,6 +664,8 @@ G<-factor(rep(c("M","F"),each=2,2))
 R<-factor(rep(c("Y","N"),each=4))
 T<-factor(rep(c("N","D"),4))
 m1<-glm(counts~G*T,family=poisson)
+
+
 #fitted(m1)
 m2<-glm(counts~G*T+R,family=poisson)
 #fitted(m2)
