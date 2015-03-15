@@ -6,6 +6,68 @@
 
 \maketitle
 
+\section{Time series primer in R}
+
+<<>>=
+library(astsa)
+data(jj)
+str(jj)
+
+time(jj)
+cycle(jj)
+plot(jj, ylab="Earnings per Share", main="J & J")   
+
+## has trend:
+plot(jj, type="o", col="blue", lty="dashed")
+
+
+
+## differencing after log: makes it stationary:
+plot(diff(log(jj)), main="logged and diffed") 
+
+## moving average:
+k = c(.5,1,1,1,.5)            # k is the vector of weights
+(k = k/sum(k))       
+fjj = filter(jj, sides=2, k)  
+plot(jj)
+## filtered MA:
+lines(fjj, col="red")         # adds a line to the existing plot
+
+## detrending using MA:
+plot(jj-fjj)
+
+## decomposition:
+str(decompose(jj))
+@
+
+<<>>=
+## make annual time series:
+(zardoz = ts(rnorm(48), start=c(2293,6), frequency=12))
+## extract part of object:
+(oz = window(zardoz, start=2293, end=c(2295,12)))
+@
+
+Plotting fake data:
+
+<<>>=
+x = -5:5                  # sequence of integers from -5 to 5
+y = 5*cos(x)              # guess
+par(mfrow=c(3,2))         # multifigure setup: 3 rows, 2 cols
+#---  plot:
+plot(x, main="plot(x)")
+plot(x, y, main="plot(x,y)")
+#---  plot.ts:
+plot.ts(x, main="plot.ts(x)")
+plot.ts(x, y, main="plot.ts(x,y)")
+#---  ts.plot:
+ts.plot(x, main="ts.plot(x)")
+ts.plot(ts(x), ts(y), col=1:2, main="ts.plot(x,y)")
+@
+
+
+
+
+
 \section{Problem 1}
 
 <<fig=TRUE>>=
@@ -25,6 +87,8 @@ seasonality: peaks at start of year (sometimes)
 randomness: some
 
 stationarity: yes
+
+
 
 <<fig=TRUE>>=
 sheftempq<-scan(paste(dir,"Sheftemq.txt",
@@ -46,6 +110,36 @@ randomness: some
 
 stationarity: yes
 
+For question 6, we now do differencing:
+<<>>=
+op<-par(mfrow=c(2,2),pty="s")
+plot(diff(shef_ts,lag=1))
+plot(diff(shef_ts,lag=2))
+plot(diff(shef_ts,lag=3))
+plot(diff(shef_ts,lag=4))
+@
+
+<<>>=
+acf(diff(shef_ts,lag=1))
+@
+
+\section{Detrending example}
+
+<<>>=
+x <- 1:100
+filter(x, rep(1, 3))
+filter(x, rep(1, 3), sides = 1)
+filter(x, rep(1, 3), sides = 1, circular = TRUE)
+
+filter(presidents, rep(1, 3))
+
+
+library(TSA)
+## centered 12 point MA:
+weights <- c(1/24,rep(1/12,11),1/24)
+
+@
+
 \section{The decompose function}
 
 <<>>=
@@ -62,7 +156,19 @@ plot(whisk_ts_decomp$random)
 acf(whisk_ts)
 @
 
+\section{Problem 3}
 
+<<>>=
+sunsp<-scan(paste(dir,"Sunsp.txt",
+                        sep=""))
+sunsp_ts<-ts(sunsp)
+@
+
+<<>>=
+plot(sunsp_ts,type="l")
+x<-seq(0,80,by=1)
+lines(x,sin((1/100)*x),lty=2)
+@
 
 
 \end{document}
