@@ -1049,7 +1049,27 @@ x_t = \frac{y_{t-2}}{8}
 \frac{y_{t+2}}{8}
 \end{equation}
 
-to-do: Detrending.
+\paragraph{Detrending using moving averages}
+
+<<>>=
+library(astsa)
+library(MASS)
+data(jj)
+## moving average:
+k = c(.5,1,1,1,.5)
+(k = k/sum(k)) 
+## weights:
+fractions(k)
+fjj = filter(jj, sides=2, k)  
+plot(jj)
+## filtered MA:
+lines(fjj, col="red")
+@
+  
+<<>>=  
+## detrending using MA:
+plot(jj-fjj)
+@
 
 %\subsubsection{Linear and polynomial estimates of trend}
 
@@ -1069,7 +1089,32 @@ time series. $m_t$ is estimated from $\hat m_t$.
 d_t = y-\hat m_t \approx s_t + r_t 
 \end{equation}
 
-to-do: some stuff about averaging that I didn't understand.
+This is the detrending example shown above with R.
+
+Take logs for multiplicative relationships to get back into linear space:
+
+\begin{equation}
+y_t =& m_t \times s_t \times r_t
+\end{equation}
+
+The decomposition can be done in R as follows:
+
+<<>>=
+#str(decompose(jj))
+@
+
+Decomposition is useful because:
+\begin{enumerate}
+\item You can isolate specific components
+\item Allows seasonal adjustment (done for monthly economic series and unemployment figures)
+
+\begin{equation}
+ y-\hat s_t \approx m_t + r_t 
+\end{equation}
+\item 
+Poor model performance in one component (trend, 
+seasonality) can be rectified in isolation.
+\end{enumerate}
 
 \subsection{Differencing}
 
@@ -1085,6 +1130,7 @@ Define an operator $B$, called a
 \begin{equation}
 B y_t = y_{t-1}
 \end{equation}
+
 
 This allows us to rewrite 
 
@@ -1102,14 +1148,36 @@ So what we have is \textbf{first-order differencing}, which removes linear trend
 \nabla y_t = (1- B) y_t
 \end{equation}
 
-\textbf{Second-order differencing}
+<<>>=
+## removes linear trend:
+plot(diff(jj))
+@
+
+\subsubsection{Second-order differencing}
+
+Note that $By_t = y_{t-1}$, and $B^2 y_t = y_{t-2}$.
+The ``power'' on B is telling you the lag, it's not a power.
+Maybe it'd be more transparent to write $B(2,y_t)$ instead of $B^2y_t$. But we all know by now that statistics notation sucks.
+
 
 \begin{equation}
 \begin{split}
 \nabla^2 y_t =& (y_t - y_{t-1}) - (y_{t-1} - y_{t-2})\\
-=& y_t - 2y_{t-1} + y_{t-2} = (1-B)^2 y_t
+=& y_t - 2y_{t-1} + y_{t-2}\\
+=&  (1-B)^2 y_t\\
 \end{split}
 \end{equation}
+
+The last line holds because 
+
+\begin{equation}
+\begin{split}
+(1-B)^2 y_t =& (1 - 2B + B^2) y_t\\
+=& y_t - 2B y_y + B^2 y_t\\
+=& y_t - y_{t-1} - y_{t-1} + y_{t-2}
+\end{split}
+\end{equation}
+
 
 Second-order differening removes polynomial trend.
 
@@ -1119,17 +1187,49 @@ Second-order differening removes polynomial trend.
 \nabla^k y_t = (1-B)^k y_t 
 \end{equation}
 
+\noindent
 removes k-th degree polynomial trend. Ususally, k=1 or 
-k=2 is enough. 
+k=2 is enough. Not really practical with k=2 or 3.
 
 ``First-, second-, \dots, k-th order differencing are 
 sometimes called \textbf{ordinary differencing}''.
 
-If there is seasonal variation with known cyclicity k, the 
-period can be removed by doing a k-order differencing:
+If there is \textbf{seasonal variation} with known 
+cyclicity k, the 
+period can be removed by doing a k-order differencing (Note: subscript on $\nabla$):
 
-For k=12, we say this is differencing with lag 12, or seasonal differencing if monthly series are involved.
+\begin{equation}
+y_t - y_{t-12}=\nabla_{12} y_t = (1-B^{12}) y_t
+\end{equation}
 
+For k=12, we say \textbf{this is differencing with lag 12}, or seasonal differencing if monthly series are involved. 
+
+\paragraph{Exercise}: Show $\nabla \nabla_{12} = 
+\nabla_{12}\nabla$, and interpret.
+
+\begin{equation}
+\begin{split}
+\nabla \nabla_{12} y_t =&  \nabla (y_t - y_{12})\\
+=& \nabla y_t -\nabla y_{12}\\
+=& (y_t- y_{t-1}) - (y_{t-12}- y_{t-12-1}) \\
+=& (y_t- y_{t-12}) - (y_{t-1}- y_{t-1-12})\\
+=& \nabla_{12} y_t - \nabla_{12} y_{t-1} \\
+=& \nabla_{12} (y_t - y_{t-1})\\
+=& \nabla_{12} \nabla y_t \\
+ =& \nabla^{13}y_t\\ 
+\end{split}
+\end{equation}
+
+So, there is k-th order differencing and differencing with lag:
+
+\begin{enumerate}
+\item
+k-th order diff: $\nabla^{k} y_t=(1-B)^k y_t$ 
+\item
+diff with lag k: $\nabla_{k} y_t=(1-B^k) y_t = y_t - y_{t-k}$
+\end{enumerate}
+
+to-do: Need to improve code examples below:
 
 <<echo=FALSE>>=
 dir<-"/Users/shravanvasishth/Dropbox/MScStatistics/2014-2015/MAS6011/Semester2/Data/"
@@ -1182,6 +1282,7 @@ ACF is not really a function, it's a sequence. It's a tool for
 detecting patterns in data. For each lag h, we compute the standard correlation
 coefficient. 
 
+
 \paragraph{Classical correlation} Suppose we have random variables
 X, Y. Then, correlation is:
 
@@ -1197,6 +1298,16 @@ r_h = \frac{\sum_{t=1}^{n-h} (Y_{t} - \bar{Y})(Y_{t+h} - \bar{Y})}{
 \sqrt{\sum_{t=1}^{n} (Y_t - \bar{Y})^2 \sum_{t=1}^{n-h} (Y_{t+h} - 
 \bar{Y})^2}}
 \end{equation}
+
+<<>>=
+dljj <- diff(log(jj)) 
+plot(dljj)
+## correlation structure:
+## dljj(t-lag) vs dljj(t)
+lag.plot(dljj, 9, do.lines=FALSE)  
+lag1.plot(dljj, 9)  ## astsa
+acf(dljj)
+@
 
 The \textbf{sample ACF} is: $h \mapsto r_h$, and the plot is called a
 \textbf{correlogram}. The plot is only made for $h\geq 1$. The correlation at h=0 is by definition 1.  
@@ -1289,6 +1400,8 @@ Note: if $\rho_h=0$, this does not entail $y_t$ and $y_{t+h}$ independent unless
 
 \subsection{Purely random series (white noise, WN)}
 
+This is a very important example of a stationary process. It's called white noise because, like with white light, all frequencies enter equally.
+
 Such a sequence is called a white noise sequence:
 
 \begin{equation}
@@ -1297,15 +1410,83 @@ y_t = \eps_t \quad E[\eps_t] = 0, Var( \eps_t) = \sigma^2
 
 $\rho_h=1$ for $h=0$, and 0 otherwise.
 
+\subsubsection{Example of stationary process: A moving average}
+
+See p.\ 14 of Cryer et al book.
+
+\subsubsection{Example of non-statinoary process: Random walk}
+
+Examples: stock prices and Brownian motion.
+Not stationary because of non-constant variance, and covariance function $\gamma_{t,s}=t\sigma^2$ does not depend on time lag.
+
+Let $e_1,e_2,\dots$ be an iid sequence of RVs, mean zero and variance $\sigma^2$.
+We can write:
+
+\begin{equation}
+y_t = y_{t-1} + e_1 = e_1 + \dots+e_t
+\end{equation}
+
+\begin{enumerate}
+\item $E[y_t] = 0$
+\item $Var(y_t) = t\sigma^2$
+\item Covariance function. Assume without loss of generality that $1\leq t \leq s$.
+Then:
+
+\begin{equation}
+\begin{split}
+\gamma_{t,s}=&Cov(y_t,y_s) \\
+=& Cov(e_1+\dots+e_t,e_1+\dots+e_s)\\
+=& Cov(\sum_{i=1}^{t}e_i,\sum_{i=1}^{s}e_j)\\
+\end{split}
+\end{equation}
+
+If $i\neq j$, then 0, else if $i=j$, it is $Var(e_i)=\sigma^2$.
+Since $1\leq t \leq s$, there are t such cases, so 
+
+\begin{equation}
+\gamma_{t,s}=t \sigma^2
+\end{equation}
+
+\item
+The ACF: 
+
+\begin{equation}
+\gamma_{t,s}=\frac{\gamma_{t,s}}{\sqrt{\gamma_{t,r}\gamma_{s,s}}}=\frac{t \sigma^2}{\sqrt{t}\sqrt{s}\sigma^2}= \sqrt{\frac{t}{s}}
+\end{equation}
+\end{enumerate}
+
+%% nice observation in Cryer and Chan p 14:
+Note in plot below that even though the theoretical mean is 0 for all time points, the fact that variance increases with time and that neighboring values have correlation nearly 1 means that we should expect long excursions of the process away from the mean of zero. 
+
+<<>>=
+ys<-rep(NA,1000)
+for(i in 1:1000){
+  if (i==1){ys[i]<-rnorm(1)} else{
+ys[i]<-ys[i-1]+rnorm(1)
+  }
+}
+plot(1:1000,ys,type="l")
+@
+
+Note that differencing: $\nabla y_t = y_t - y_{t-1}$ will make it stationary. See below.
+
+
+
+
+
+
+
+
+
 \subsection{Autoregressive (AR) models}
 
 This is the definition of an AR(p) sequence:
 
 \begin{equation}
-y_t = a_1y_{t-1} +a_2y_{t-2} +\dots+a_py_{t-p}  + \eps_t \quad E[\eps_t] = 0
+y_t = a_1y_{t-1} +a_2y_{t-2} +\dots+a_py_{t-p}  + \eps_t 
 \end{equation}
 
-$Var( \eps_t) = \sigma^2, \eps_t \sim WN(0,\sigma^2)$.
+$E[\eps_t] = 0,  Var( \eps_t) = \sigma^2, \eps_t \sim WN(0,\sigma^2)$.
 
 
 \paragraph{Example: Unemployment Figures}
@@ -1432,6 +1613,8 @@ Thus, as long as $\mid a_i\mid <1$, we have a \textbf{minimum moving average} re
 y_t = \sum_{i=0}^{\infty} a^i \eps_{t-i}
 \end{equation}
 
+[Recall definition of MA's, section~\ref{movavg}.]
+
 This will make it easier to compute mean, variance, and acf.
 
 \item \textbf{Expectation, variance and acf}:
@@ -1464,7 +1647,7 @@ $E[y_{t+h}] = \sum_{j=0}^{\infty} \alpha^j \eps_{t+h-j}$,
 \end{equation}
 
 \begin{equation}
-\begin{split}
+\begin{split} \label{expectationytytplush}
 E[y_ty_{t+h}] =& 
 E[\sum_{i=0}^{\infty} \alpha^i \eps_{t-i}
 \sum_{j=0}^{\infty} \alpha^j \eps_{t+h-j}]\\
@@ -1489,13 +1672,30 @@ E[\eps_{t-i}\eps_{t+h-(i+h)}]\\
 The last line above follows because 
 $Var(\eps_{t-i})=E[\eps_{t-i}^2]-E[\eps_{t-i}]^2=E[\eps_{t-i}^2]$.
 
-This allows us to write $E[\sum_{i,j=0}^{\infty} \alpha^i \eps_{t-i}
+Now, going back to equation~\ref{expectationytytplush},
+we can write $E[\sum_{i,j=0}^{\infty} \alpha^i \eps_{t-i}
 \alpha^j \eps_{t+h-j}]$ as:
 
 \begin{equation}
 \begin{split}
 E[y_ty_{t+h}] =& \sigma^2 \sum_{i=0}^{\infty} \alpha^{i}\alpha^{i+h} \quad j=i+h \\
-=& \sigma^2 \alpha^h\sum_{i=0}^{\infty}  \alpha^{2i}\\
+\end{split}
+\end{equation}
+
+This amounts to saying that
+
+\begin{equation}
+\begin{split}
+\sigma^2 \sum_{i=0}^{\infty} \alpha^{i}\alpha^{i+h} =& 
+\sigma^2 \sum_{i=0}^{\infty} \alpha^{i}\alpha^{i}\alpha^h\\
+=& \sigma^2 \alpha^h \sum_{i=0}^{\infty} \alpha^{2i}
+\end{split}
+\end{equation}
+
+So, 
+\begin{equation}
+\begin{split}
+E[y_ty_{t+h}] =& \sigma^2 \alpha^h\sum_{i=0}^{\infty}  \alpha^{2i}\\
 =& \frac{\sigma^2\alpha^h}{1-\alpha^2} \quad \mid \alpha \mid < 1
 \end{split}
 \end{equation}
@@ -1517,6 +1717,8 @@ ACF:
 =& \alpha^{\mid h \mid} \quad h=0, \pm 1, \dots \mid \alpha \mid < 1\\
 \end{split}
 \end{equation}
+
+[All that hard work, for this?]
 
 \textbf{So the mean, variance, and ACF do not depend on time t.} So, the $y_t$
 satisfies the conditions for stationarity.  
