@@ -461,10 +461,10 @@ h(t) & \lambda  &  \lambda \gamma t^{\gamma-1}\\
 
 In Weibull, if $\gamma>1$ hazard is increasing, and if $\gamma<1$ hazard is decreasing. If $\gamma=1$, then the Weibull reduces to the exponential.
 
-\subsubsection{Life tables}: to-do
+\subsection{Life tables}: to-do
 
 
-\subsubsection{Kaplan-Meier product estimates of S(t)}
+\subsection{Kaplan-Meier product estimates of S(t)}
 
 Here, we estimate the survival distribution without making any assumptions. The estimator is a \textbf{non-parametric MLE}.
 
@@ -591,7 +591,7 @@ summary(tumour_fit)
 
 to-do? (not sure if needed): Computing CIs by hand. See Harrell.
 
-\subsubsection{R code: Representative examples}
+\subsection{R code: Representative examples}
 
 The \texttt{survival} package has the following key functions:
 
@@ -604,7 +604,7 @@ The \texttt{survival} package has the following key functions:
 
 The package \texttt{coin} does conditional tests (\texttt{surv\_test}): to-do. See ??survival for a reference to an excellent vignette by Hothorn and Everett.
 
-\subsubsection{Parametric models (single-sample data)}
+\subsection{Parametric models (single-sample data)}
 
 Given non-negative failure times $T\sim f(t)$, cdf, $F(t)$, and $S(t)=1-F(t), h(t)=\frac{f(t)}{S(t)}$. The pdf $f(t)$ depends on some parameter $\theta$; we use MLE to estimate $\theta$ and get its variance and therefore get CIs for the parameter.
 
@@ -1241,7 +1241,7 @@ det(X^TX)=n\sum x^2-(\sum x)^2=ns_{xx}
 
 It would be D-optimal to make $s_{xx}$ as large as possible, but this has the weird consequence that it's D-optimal to have half the values at the minimum, and half at the maximum. This has the disadvantage that we get no evidence for the middle range.
 
-Another example (Task 2): In the quadratic regression model
+\textbf{Another example (Task 2)}: In the quadratic regression model
 
 \begin{equation}
 E[Y]= \beta_0 + \beta_1 x + \beta_{11} x^2 \quad x\in [-1,1]
@@ -1322,7 +1322,7 @@ Minimize the maximum standardized variance over the design region $\Omega$:
 
 For each potential design, evaluate the worst possible variance of prediction, then choose the design for which this is the least. 
 
-Example: Continuing with simple linear regression example for D-optimization:
+\textbf{Example}: Continuing with simple linear regression example for D-optimization:
 
 Recall that: 
 
@@ -1422,28 +1422,34 @@ d(x)=1 + \frac{n(x-\bar{x})^2)}{S_{xx}}
 
 This leads to the same design as D-optimality, as we can maximize this by making x as far as possible as $\bar{x}$.
 
-Example: quadratic regression example from previous section on D-optimality:
+\textbf{Another example (Task 2 continued)}: quadratic regression example from previous section on D-optimality:
 
 <<>>=
 X<-matrix(c(1,1,1,-1,0,1,1,0,1),
           ncol=3,byrow=F)
-## inverse:
-invXTX<-solve(t(X)%*%X)
+
+#X<-matrix(c(1,1,1,
+#            1,-1,0,
+#            1,1,0),
+#          ncol=3,byrow=F)
+
+## inverse multiplied by a constant:
+(inv<-4*(invXTX<-solve(t(X)%*%X)))
 @
 
-Next, compute:
+Next, since n=3, compute:
 
 \begin{equation}
 \begin{split}
-n 
+3 
 \begin{pmatrix}
 1 & x & x^2
 \end{pmatrix}
-\frac{\sigma^2}{n S_{xx}}
+\frac{1}{4}
 \begin{pmatrix}
-1 & 0 & -1 \\ 
- 0 & 0.5 & 0 \\ 
- -1 & 0 & 1.5 \\ 
+4 & 0 & -4 \\ 
+ 0 & 2 & 0 \\ 
+ -4 & 0 & 6 \\ 
 \end{pmatrix}
 \begin{pmatrix}
 1 \\
@@ -1451,24 +1457,12 @@ x\\
 x^2\\
 \end{pmatrix} 
 =&\\
-n 
-\frac{\sigma^2}{n S_{xx}}
-\begin{pmatrix}
-1 & x & x^2
-\end{pmatrix}
-\begin{pmatrix}
-1 & 0 & -1 \\ 
- 0 & 0.5 & 0 \\ 
- -1 & 0 & 1.5 \\ 
-\end{pmatrix}
-\begin{pmatrix}
-1 \\
-x\\
-x^2\\
-\end{pmatrix} ~&
+\frac{3}{4} (4- 6x^2 + 6x^4) ~&\\
+\frac{3}{4} (6(x^2 - \frac{1}{2})^2 + \frac{5}{2})
 \end{split}
 \end{equation}
 
+This is maximized when $x^2$ is as far as possible from $\frac{1}{2}$, which is  when $x=-1,0,1$. For each of these values of x, $d(x)=3$.
 \subsubsection{V-optimality}
 
 A design is V-optimal if it minimizes a weighted average of the standardized variance of prediction over the design region:
@@ -1481,13 +1475,11 @@ Example: Simple linear regression with $x\in (-1,1)$ and uniform weighting, we m
 
 \begin{equation}
 \begin{split}
-\int_{-1}^1 d(x) w(x) \, dx =& \\ 
-=& \int_{-1}^1 1 + \frac{n(x-\bar{x})^2}{S_{xx}} \, dx\\
+\int_{-1}^1 d(x) w(x) \, dx =& \int_{-1}^1 1 + \frac{n(x-\bar{x})^2}{S_{xx}} \, dx\\
 =& \int_{-1}^1 1 + \frac{n}{S_{xx}}(x^2+\bar{x}^2-2x\bar{x}) \, dx\\
 =& 2 + \frac{n}{S_{xx}}(\frac{1}{3}+\bar{x}^2-\bar{x} - 
 (-\frac{1}{3}-\bar{x}^2-\bar{x}) ) \\
-=& 2 + \frac{n}{S_{xx}}(\frac{2}{3} + 2\bar{x}^2)\\
-=& 2 + \frac{n}{3S_{xx}}(2+6\bar{x}^2)\\
+=& 2 + \frac{n}{S_{xx}}(\frac{2}{3} + 2\bar{x}^2)= 2 + \frac{n}{3S_{xx}}(2+6\bar{x}^2)\\
 \end{split}
 \end{equation}
 
@@ -1513,6 +1505,24 @@ Randomization adds to the robustness of the statistical procedures (see example 
 \subsection{Design for qualitative explanatory factors: multiple factors}
 
 \subsubsection{Latin Square designs}
+
+[Definitions and finite field theory taken almost  verbatim from Padraic Bartlett's lecture notes: http://math.ucsb.edu/$\sim$padraic/math.html]
+
+\begin{definition}
+A latin square of order n is a $n\times n$ array filled with n distinct symbols (by convention \{1,\dots, n\}), such that no symbol is repeated twice in any row or column.
+\end{definition}
+
+\begin{definition}
+A pair of $n\times $ Latin squares is called orthogonal if, when we superimpose them (i.e., place one on top of the other), each of the possible $n^2$ ordered pairs of symbols occur exactly once.
+\end{definition}
+
+\begin{definition}
+A collection of k $n\times n$ Latin squares is called mutually orthogonal if every pair of Latin squares in our collection is orthogonal.
+\end{definition}
+
+\begin{proposition}
+For any n, the maximum size of a set of $n\times n$ mutually orthogonal Latin squares is $n-1$.
+\end{proposition}
 
 Consider the following example. Rows refers to Run (indexed by i), Columns refer to Position in machine (indexed by j), and the materials are A,B,C (indexed by k).
 
@@ -1568,7 +1578,17 @@ The $\tau_k$ are perpendicular or orthogonal to all others.
 
 Note that if we remove $\mu$, we can add at most one parameter.
 
+\paragraph{Finite fields}
 
+\begin{definition}
+Roughly speaking, a field is a set F along with a pair of operations $+,\cdot$ that act on our field, that satisfy the same properties that $R$ does with respect to $+$ and $\cdot$. Formally, these properties are the following: Closure, identity, Commutativity, Associativity, Inverses, Distributivity. 
+\end{definition}
+
+A finite field just has finite elements.
+
+\begin{proposition}
+Let F be a finite field that contains $n$ elements. Then there is a collection of $n-1$ mutually orthogonal Latin squares.
+\end{proposition}
 
 \subsubsection{Balanced incomplete block designs}
 
