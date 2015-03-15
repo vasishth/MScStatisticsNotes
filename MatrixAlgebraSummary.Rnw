@@ -1,0 +1,693 @@
+\documentclass[12pt]{article}
+%\usepackage[landscape]{geometry}  
+\usepackage[landscape,hmargin=2cm,vmargin=1.5cm,headsep=0cm]{geometry} 
+% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+\usepackage{framed}
+
+\newcommand{\vect}[1]{\vec{#1}}
+
+
+\usepackage[table]{xcolor}
+
+\newcommand\x{\times}
+\newcommand\y{\cellcolor{green!10}}
+
+
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}
+
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+
+\newtheorem{fact}{Fact}
+
+\newtheorem{proposition}{Proposition}
+
+
+% Turn off header and footer
+\pagestyle{plain}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+\usepackage{Sweave}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%% taken from http://brunoj.wordpress.com/2009/10/08/latex-the-framed-minipage/
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+\usepackage{mathtools}
+\makeatletter
+ 
+\newcommand{\explain}[2]{\underset{\mathclap{\overset{\uparrow}{#2}}}{#1}}
+\newcommand{\explainup}[2]{\overset{\mathclap{\underset{\downarrow}{#2}}}{#1}}
+ 
+\makeatother
+
+\SweaveOpts{prefix.string=MatAlgfigs/MatAlgfig}
+
+\SweaveOpts{cache=TRUE}
+
+\title{Matrix Algebra Summary Sheet}
+\author{Shravan Vasishth (vasishth@uni-potsdam.de)}
+%\date{}                                           % Activate to display a given date or no date
+
+
+
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+\footnotesize
+\maketitle
+\tableofcontents
+
+\newpage
+
+\begin{multicols}{2}
+
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\begin{center}
+     \normalsize{Matrix Algebra Summary Sheet} \\
+    \footnotesize{
+    Compiled by: Shravan Vasishth (vasishth@uni-potsdam.de)\\
+    Version dated: \today}
+\end{center}
+
+<<echo=F>>=
+options(width=60)
+options(continue=" ")
+@
+
+\section{Vectors}
+
+
+A vector is an ordered triple. It has a geometric interpretation only when the coordinates are established.
+
+\begin{equation}
+  \vect{a} = (x_1,y_1,z_1)
+\end{equation}
+
+\textbf{Norm}
+
+\begin{equation}
+	\lVert \vect{a} \rVert = \sqrt{x_1^2 + y_1^2 + z_1^2}
+\end{equation}
+
+Vectors of norm 1 are called unit vectors. For each non-zero vector there is a unit vector going in the same direction.
+
+\begin{equation}
+u_{\vect{a}} = \frac{1}{\lVert \vect{a} \rVert}
+\end{equation}
+
+Also, every vector can be expressed as a linear combination of these three unit vectors:
+
+\begin{equation}
+\vect{i} = (1,0,0) \quad \vect{j} = (0,1,0) \quad \vect{k} = (0,0,1)	
+\end{equation}
+
+I.e., if 
+
+\begin{equation}
+	\vect{a} = (x_1,y_1,z_1)	
+\end{equation}
+
+then
+
+\begin{equation}
+\vect{a} = x_1 \vect{i} + y_1 \vect{j} + z_1 \vect{k} 
+\end{equation}
+
+Dot product:
+
+\begin{equation}
+	\vect{a}\cdot \vect{b} = a_1 b_1 + a_2 b_2 + a_3 b_3  
+\end{equation}
+
+Note that
+
+
+
+\begin{equation}
+\vect{a}\vect{a} = \mid\mid \vect{a} \mid \mid ^2
+\end{equation}
+
+and 
+
+\begin{equation}
+\vect{a}\cdot \vect{b} = \mid\mid\vect{a} \vect{b}\mid\mid \cos \theta
+\end{equation}
+
+Also, 
+
+\begin{equation}
+	\cos \theta = u_{\vect{a}} \cdot u_{\vect{b}}
+\end{equation}
+
+
+
+
+\section{Basic facts about matrices}
+
+\subsection{Determinant}
+
+The det[erminant] of a 2x2 matrix like the one below is ad-bc.
+
+The det of a nxn matrix A, $n>2$, is computed as follows:
+
+\begin{equation}
+det A = \sum_{j=1}^n (-1)^{1+j} a_{1j} det A_{1j} 
+\end{equation}
+
+An example makes it easier to understand:
+
+\begin{equation}
+A=\begin{pmatrix}
+1 & 5 & 0 \\
+2  & 4  & -1 \\
+0 & -2 & 0 \\
+\end{pmatrix}
+\end{equation}
+
+Then, the determinant is (the vectors in red disappear):
+
+\begin{equation*}
+det A = 1 \times 
+  \left(\begin{array}{>{\columncolor{red!20}}ccc}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
+- 5 \times 
+  \left(\begin{array}{c>{\columncolor{red!20}}cc}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
++ 0 \times 
+  \left(\begin{array}{cc>{\columncolor{red!20}}c}
+    \rowcolor{red!20}
+    1 & 5 & 0 \\
+    2   & 4  & -1 \\
+    0 & -2 & 0 \\
+  \end{array}\right)
+\end{equation*}
+
+Another trick, for 3x3 matrices for example, is the following (from Vinod's book):
+
+\begin{enumerate}
+\item Rewrite the matrix 
+$\begin{pmatrix}
+a & d & g \\
+b  & e &  h \\
+c & f & i \\
+\end{pmatrix}$
+by repeating the first two columns and coloring the matrix in two ways:
+$\begin{pmatrix}
+{\color{red} a} & {\color{green}d} & {\color{orange}g} & a & d\\
+b  & {\color{red} e}  & {\color{green}h} & {\color{orange}b}  & e\\
+c & f & {\color{red} i} & {\color{green}c} & {\color{orange}f}\\
+\end{pmatrix}$
+and
+$\begin{pmatrix}
+a & d & {\color{red}g} & {\color{green}a} & {\color{orange}d}\\
+b  & {\color{red}e} &  {\color{green}h} & {\color{orange}b}  & e\\
+{\color{red}c} & {\color{green}f} & {\color{orange}i} & c & f\\
+\end{pmatrix}$
+
+
+\item Then write out:
+
+$det=aei + dhc + gbf - ceg - fha - ibd$
+\end{enumerate}
+
+
+\subsection{Eigenvalue calculation}
+
+To find eigenvalues of a matrix M, solve the polynomial:
+
+\begin{equation}
+det(M - \lambda I) = 0
+\end{equation}
+
+Example: 
+
+Find the eigenvalues of 
+
+$A=\begin{pmatrix}
+1 & 3\\
+2 & 2
+\end{pmatrix}
+$
+
+Solve  $det(A-\lambda I)=0$:
+
+\begin{equation}
+det \begin{pmatrix}
+1-\lambda & 3\\
+2 & 2-\lambda 
+\end{pmatrix}
+=(1-\lambda) (2-\lambda) - 6
+\Rightarrow \lambda^2 - 3\lambda -4 = 0
+\end{equation}
+
+This gives us the factorization $(\lambda -4)(\lambda + 1)$. It follows that the eigenvalues are $\lambda_1 = -1, \lambda_2=4$ (we will order them from smallest to largest).
+
+\begin{leftbar}
+Recall the rule for figuring out the roots of a quadratic equation:
+
+$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$
+
+\end{leftbar}
+
+Associated with each eigenvalue we have a non-trivial solution to the equation $(A-\lambda I)x = 0$. Each of the solutions corresponding to each eigenvalue is called the eigenvector. So, once you have found an eigenvalue $\lambda_1$, you can find the eigenvector by solving the simultaneous linear equation  $(A-\lambda_1 I)x = 0$ using Gaussian elimination.
+
+\subsection{Inverse (2x2)}
+
+$\begin{pmatrix}
+a & b \\
+c & d\\
+\end{pmatrix}^{-1}
+= \frac{1}{det} 
+\begin{pmatrix}
+d & -b \\
+-c & a\\
+\end{pmatrix}$
+
+Note that $det(m)$ is going to be the same as 
+$det(m^{-1})$. We need this to prove proposition 1.9 in lecture notes. 
+%%to-do: give correct label for these notes to prop 1.9.
+
+\subsection{Inverse of 3x3 matrix}
+
+Say you are given (from Task 2):
+$\begin{pmatrix}
+2 & 0 & 0 \\
+0 & 2 & 1 \\
+0 & 1 & 2\\
+\end{pmatrix}
+$
+\begin{enumerate}
+\item
+Find determinant using above method. Det(m)=6.
+\item Define co-factors of matrix and add alternating +/- signs, then find determinants:
+
+$\begin{pmatrix}
++\begin{vmatrix}
+2 & 1 \\
+1 & 2\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+0 & 1 \\
+0 & 2\\
+\end{vmatrix}
+& 
++\begin{vmatrix}
+0 & 2 \\
+0 & 1\\
+\end{vmatrix}
+\\
+& & \\
+-\begin{vmatrix}
+0 & 0 \\
+1 & 2\\
+\end{vmatrix}
+&
++\begin{vmatrix}
+2 & 0 \\
+0 & 2\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+2 & 0 \\
+0 & 1\\
+\end{vmatrix}\\
+& & \\
++\begin{vmatrix}
+0 & 0 \\
+2 & 1\\
+\end{vmatrix}
+& 
+-\begin{vmatrix}
+2 & 0 \\
+0 & 1\\
+\end{vmatrix}
+& 
++\begin{vmatrix}
+2 & 0 \\
+0 & 2\\
+\end{vmatrix}
+\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+3 & 0 & 0 \\
+0 & 4 & -2 \\
+0 & -2 & 4\\
+\end{pmatrix}
+$
+\item
+Then take reflection of the above matrix; here, none is needed because it's symmetric. Then multiply by 1/det to get inverse:
+
+$
+\frac{1}{6} \times \begin{pmatrix}
+3 & 0 & 0 \\
+0 & 4 & -2 \\
+0 & -2 & 4\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.5 & 0 & 0 \\
+0 & 2/3 & -1/3 \\
+0 & -1/3 & 2/3\\
+\end{pmatrix}
+$
+\end{enumerate}
+
+
+\subsection{Inverse of non-singular matrices}
+If A and B are non-singular matrices then $(AB)^{-1} = B^{-1}A^{-1}$.
+
+\subsection{Diagonal matrix}
+
+Example:
+<<>>=
+diag(c(1,2,3))
+@
+
+\subsection{Identity matrix}
+
+Example:
+<<>>=
+diag(c(1,1,1))
+@
+
+
+
+
+\subsection{Symmetric square matrix} $A=A^T$. 
+
+If a symmetric matrix A is non-singular then $A^{-1}$ is also symmetric.
+
+$AA^{-1}=A^{-1}A=I$ given A is square and invertible.
+ 
+ If the symmetric matrix $A$ is non-singular then $A^{-1}$ is also symmetric.
+ 
+\subsubsection{Some key properties of real symmetric matrices}: 
+ 
+ \begin{itemize}
+ \item If A denotes a real symmetric $p \times p$ matrix, then A has p linearly independent eigenvectors.
+ 
+I.e., $AA' = A'A = I$.
+ 
+\item All the eigenvalues of A are real.
+\item Eigenvectors corresponding to distinct eigenvalues are orthogonal.
+\end{itemize}
+
+These properties are needed for working with the (sample) variance-covariance matrix. Actually, the properties are so important for Principal Components Analysis that we will state and prove two theorems:
+
+\begin{theorem}
+A matrix is symmetric if and only if it is orthogonally diagonalizable.
+\end{theorem}
+
+Proof: to-do
+
+\begin{theorem}
+A symmetric matrix is diagonalized by a matrix of its orthonormal eigenvectors.
+\end{theorem}
+
+
+
+
+
+ \subsection{Multiplication is distributive} Multiplication is distributive over addition and subtraction, so $(A-B)(C-D)=AC -BC-AD+BD$.
+
+\subsection{Transpose} $(A+B)^T =A^T+B^T$ and $(AB)^T =B^TA^T$
+
+\subsection{Sum of squares} $\sum x_i^2 = \mathbf{x}^T \mathbf{x}$.
+
+\subsection{Symmetry under multiplication} If A is $n\times p$, then $AA^T$ and $A^TA$ are symmetric.
+
+
+\subsection{Trace of a square matrix}
+
+\begin{enumerate}
+\item
+$tr(A)=\sum a_{ii}$
+\item
+$tr(A + B) = tr(A) + tr(B)$
+\item 
+$tr(cA) = ctr(A)$
+\item
+$tr(AB) = tr(BA)$
+\end{enumerate}
+
+Here's a trick used for evaluating MLE of MVN:
+
+\begin{equation}
+y'Sy = tr(y'Sy) = tr(yy'S)= tr(Syy')
+\end{equation}
+
+\subsection{Idempotent}  $A^2 = AA = A$. Example: $A = I_n$; this is the only non-singular idempotent matrix. For p=2, $I_p$ and $0_p$ are the only two idempotent matrices.
+
+If A is idempotent and if $A\neq I_n$, then A is singular and its trace is equal to its rank $n-p$, for some $p>0$.
+
+\subsubsection{Centering matrix}
+
+Let $H=I_n - \frac{1}{2} 1_n 1'_n$. Then $H_n$ is idempotent and is called a centering matrix.
+[to-do: add proof]
+
+\subsection{Inverse of a matrix product}
+If A and B are non-singular matrices then $(AB)^{-1} = B^{-1}A^{-1}$.
+
+\subsection{Rank} the number of linearly independent columns or rows of A.
+
+\subsection{How to determine linear independence of vectors}
+
+Iff the determinant of a matrix formed using the vectors as columns is 0, then we have linearly independent vectors.
+
+\section{Symmetric matrices and skew-symmetric matrices}
+
+$A_{n\times n}$ is symmetric if $A=A'$. 
+B is skew-symmetric if $B'=-B$ i.e. if $b_{ij}=-b_{ji}$.
+
+Any square matrix X can be expressed as the sum of a symmetric part and a skew-symmetric part:
+
+\begin{equation}
+X=\frac{1}{2}(X+X') + \frac{1}{2}(X-X')
+\end{equation}
+
+Note: $(X+X')' = X + X'$ and  $(X-X')' = -(X - X')$.
+
+[Need more detail here, see p.\ 39]
+
+\section{Orthogonal vectors}
+
+Two vectors $x_{1\times n}$ and $y_{n\times 1}$ are orthogonal if $x'y=0$.
+
+\section{Orthogonal matrices}
+
+$A_{n\times n}$ is orthogonal iff $A A'=A'A=I_p$.
+
+The product of two orthogonal matrices is orthogonal.
+
+\begin{theorem}
+The inverse of an orthogonal matrix is its transpose.
+\end{theorem}
+
+Proof: to-do
+
+
+\section{Normal matrices}
+
+$A_{n\times n}$ is orthogonal iff $A A'=A'A$.
+
+All symmetric, skew-symmetric, and orthogonal matrices are normal. 
+
+\section{Permutation matrices}
+
+$A_{n\times n}$ has only one 1 in any row or column; 0's in others.
+
+For any conformable matrix X, AX permutes X's rows, and XA permutes its columns.
+
+\section{Partitioned matrices}
+\subsection{Sub-matrix}
+
+A sub-matrix $A_{ij}$ of an $A_{m\times n}$ is a rectangular $m_1\times n_1$ section of A. 
+
+$A_{ij}$ can be expressed as a product EAF, where E and F are matrices with all entries 0 or 1. [to-do Example]
+
+\subsection{Manipulation of partitioned matrices}
+
+Let A be partitioned into four sub-matrices:
+
+\begin{equation}
+A=\begin{pmatrix}
+A_{11} & A_{12} \\
+A_{21} & A_{22} \\
+\end{pmatrix}
+\end{equation}
+
+Addition and multiplication proceeds as for matrices with numerical cell entries.
+
+\begin{equation}
+A'=\begin{pmatrix}
+A_{11} & A_{12} \\
+A_{21} & A_{22} \\
+\end{pmatrix}'
+=\begin{pmatrix}
+A_{11}' & \mathbf{A_{21}'} \\
+\mathbf{A_{12}'} & A_{22}' \\
+\end{pmatrix}
+\end{equation}
+
+\subsection{Block diagonal matrix}
+
+Let $X_ii$ be a $m_1\times n_1$ matrix. 0 are submatrices of conformable order.
+
+\begin{equation}
+\begin{pmatrix}
+Z_{11} & 0 & 0\\
+0 & Z_{22} & 0\\
+  0     &    0    & Z_{33}\\
+\end{pmatrix}'
+\end{equation}
+
+\section{Eigenequation}
+
+to-do
+
+\section{Linear and quadratic forms}
+
+Let a and x be p-vectors. Then the inner product $a'x = 
+a_1 x_1+a_1 x_1+\dots+a_p x_p$ is a linear form in x. (a is numbers, x is variables).
+
+Let $A_{p\times p}$. Then $x' Ax$ is a quadratic form in x. 
+$x' Ax$ is symmetric because it is $1\times 1$.
+
+\begin{enumerate}
+\item
+$x' Ax>0$: positive definite
+\item
+$x' Ax\geq 0$: positive semidefinite
+\item
+$x' Ax<0$: negative definite
+\item
+$x' Ax\leq 0$: negative semi-definite 
+\end{enumerate}
+
+\section{Generating correlated Random Variables}
+
+[Also see ComputationalInfererence notes]
+
+
+Suppose that we have a correlation matrix:
+
+<<>>=
+## correlation matrix:
+Omega_u<-matrix(c(1,.1,.5,.1,1,-.3,.5,-.3,1),byrow=TRUE,ncol=3)
+@
+
+We can compute the Cholesky decomposition of the correlation matrix Omega\_u:
+
+<<>>=
+## cholesky decomposition of Omega_u
+L_u<-chol(Omega_u)
+@
+
+Now, given a $n\times 3$ random samples from N(0,1), where n=10000:
+
+<<>>=
+## random uncorrelated values:
+z<-matrix(rnorm(3*10000),ncol=3)
+@
+
+We can derive a matrix of correlated values:
+
+<<>>=
+X1<-L_u%*%t(z)
+op<-par(mfrow=c(3,1),pty="s")
+plot(X1[1,],X1[2,],main="1 vs 2")
+plot(X1[1,],X1[3,],main="1 vs 3")
+plot(X1[2,],X1[3,],main="2 vs 3")
+@
+
+We can also derive a matrix of correlated values using the vector of standard deviations and the Cholesky decomposition.
+Suppose we have a vector of standard deviations:
+
+<<>>=
+## vector of sds:
+sigma_u<-diag(c(1,10,100))
+@
+
+<<>>=
+## this given the sqrt of the vcovmatrix:
+sigma_u%*%L_u
+X2<-sigma_u%*%L_u%*%t(z)
+## vcov matrix:
+cov(t(X2))
+@
+
+<<>>=
+op<-par(mfrow=c(3,1),pty="s")
+plot(X2[1,],X2[2,],main="1 vs 2")
+plot(X2[1,],X2[3,],main="1 vs 3")
+plot(X2[2,],X2[3,],main="2 vs 3")
+@
+
+\end{multicols}
+
+\end{document}
+
