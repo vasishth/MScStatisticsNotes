@@ -1156,9 +1156,7 @@ plot(diff(jj))
 \subsubsection{Second-order differencing}
 
 Note that $By_t = y_{t-1}$, and $B^2 y_t = y_{t-2}$.
-The ``power'' on B is telling you the lag, it's not a power.
-Maybe it'd be more transparent to write $B(2,y_t)$ instead of $B^2y_t$. But we all know by now that statistics notation sucks.
-
+The power on B is telling you the lag.
 
 \begin{equation}
 \begin{split}
@@ -1564,17 +1562,17 @@ y_t= \alpha y_{t-1}+ \eps_t
 as
 
 \begin{equation}
-y_t= \alpha B^{i}y_t+ \eps_t 
+y_t= \alpha By_t+ \eps_t 
 \end{equation}
 
 Rearranging to get $\eps_t$ on RHS:
 
 \begin{equation}
-y_t - \alpha B^{i}y_t= \eps_t \Rightarrow y_t(1 - \alpha B^{i})= \eps_t 
+y_t - \alpha By_t= \eps_t \Rightarrow y_t(1 - \alpha B)= \eps_t 
 \end{equation}
 
 \begin{equation}
-\phi(B)y_t = \eps_t \quad \phi(B)=(1 - \alpha B^{i})
+\phi(B)y_t = \eps_t \quad \phi(B)=(1 - \alpha B)
 \end{equation}
 
 Here, $\phi(B)$ is a polynomial of degree one (a linear function of B).
@@ -1582,10 +1580,10 @@ Here, $\phi(B)$ is a polynomial of degree one (a linear function of B).
 We can express $y_t$ as follows:
 
 \begin{equation}
-y_t = \phi(B)^{-1}\eps_t \quad \phi(B)=(1 - \alpha B^{i})
+y_t = \phi(B)^{-1}\eps_t \quad \phi(B)=(1 - \alpha B)
 \end{equation}
 
-\paragraph{Basic properties of AR(1) processes}
+\paragraph{Basic properties of AR(1) processes}\label{basicpropertiesAR1}
 
 \begin{enumerate}
 \item \textbf{MA($\infty$) representation}: Consider AR(1):
@@ -1718,7 +1716,7 @@ ACF:
 \end{split}
 \end{equation}
 
-[All that hard work, for this?]
+%[All that hard work, for this?]
 
 \textbf{So the mean, variance, and ACF do not depend on time t.} So, the $y_t$
 satisfies the conditions for stationarity.  
@@ -1743,7 +1741,7 @@ plot(h,alpha^h/(1-alpha^2),type="l",main=alpha)
 }
 @
 
-Note that $\mid \alpha \mid<1$ (in order for the series to converge).
+\textbf{Note that $\mid \alpha \mid<1$ (in order for the series to converge).} This fact appears below as well, section~\ref{arpolynomial}.
 
 \paragraph{Example of non-convergence when $ \alpha = 1$: Random Walk}
 
@@ -1851,11 +1849,11 @@ ts.plot(y)
 acf(y)
 @
 
-\subsection{AR(p), $p>1$}
+\subsection{AR(p), $p>1$}\label{arpprocess}
 
 Given an AR(p) process:
 
-\begin{equation}
+\begin{equation} 
 y_t = a_{1}y_{t-1} + \dots + a_p y_{t-p} + \eps_t 
 \end{equation}
 
@@ -1881,10 +1879,10 @@ y_t = \sum_{i=1}^{\infty} \psi_i \eps_t \quad \hbox{ where } \psi_i \hbox{ are a
 
 The polynomial $\phi(B) y_t = \eps_t$ is extremely important, because it determines whether we have a stationary process or not.
 
-\subsubsection{The AR Polynomial}
+\subsubsection{The Autoregressive Polynomial}\label{arpolynomial}
 
 \begin{equation}
-\phi(x) = 1- \alpha_1 x - \dots - \alpha_p x^p
+\phi(x) = 1- \alpha_1 x - \dots - \alpha_p x^p = 1- \sum_i^{p} a_i x^i 
 \end{equation}
 
 If $\phi(x)=0$, then $\mid x \mid >1$.
@@ -1892,6 +1890,34 @@ If $\phi(x)=0$, then $\mid x \mid >1$.
 \begin{definition}
 An AR(p) process is causal iff all roots of $\phi(x)= 0$ lie outside the unit circle.
 \end{definition}
+
+In sum:
+
+\begin{enumerate}
+\item The process
+
+\begin{equation} 
+y_t = a_{1}y_{t-1} + \dots + a_p y_{t-p} + \eps_t 
+\end{equation}
+
+is stationary iff the roots of the polynomial $\phi(x)$ lie outside the unit circle, i.e., $\phi(x) = 0 \Rightarrow \mid x \mid > 1$. (x can be real or complex)
+\item
+An AR(p) process is causal if 
+\begin{enumerate}
+\item it is stationary
+\item and can be represented in terms of the white noise variable $\eps_i$ in $MA(\infty)$ form:
+\begin{equation}
+y_t = \sum_{i=1}^{\infty} \psi_i \eps_{t-i} 
+\end{equation}
+
+Proof of above is in Brockwell and Davis 2002.
+
+The sequence $\{\psi_i \}$ depends on the AR parameters $a_j$ for $j = 1,\dots,p$. (the change in index is not a typo; think about it.)
+
+\end{enumerate}
+
+\end{enumerate}
+
 
 \paragraph{Example} AR(1)
 
@@ -1901,11 +1927,11 @@ In AR(1)
 y_t = ay_{t-1} + \eps_t
 \end{equation}
 
-was stationary if $\mid a \mid < 1$. If p=1, then the AR poylnomial is 
+was stationary if $\mid a \mid < 1$. If p=1, then the AR polynomial is 
 
 $\phi(x)= 1- ax$
 
-The root is $\phi(x)=0\Rightarrow x=\frac{1}{\mid a\mid}$. This implies that $\mid a\mid<1$.
+The root is $\phi(x)=0\Rightarrow x=\frac{1}{\mid a\mid}$. This implies that $\mid a\mid<1$. See discussion above on $\mid a\mid <1$ (section~\ref{basicpropertiesAR1}).
 
 \subsubsection{Deriving ACF for AR(p): The Yule-Walker (difference) equations}
 
@@ -2043,6 +2069,15 @@ Var(y_t) =& Var(\sum_{i=0}^{q} \beta_i \eps_{t-i})\\
 \end{split}
 \end{equation}
 
+Note that this implies that 
+
+\begin{equation}
+\gamma_0 = Cov(y_t y_{t+0}) =  Var(y_t) = \sigma^2 \sum_{i=0}^{q} \beta_i^2
+\end{equation}
+
+
+
+
 \subsubsection{ACF of MA(q)}
 
 \begin{equation}
@@ -2075,6 +2110,7 @@ So,
 \gamma_h = & Cov(y_t y_{t+h}) \\
 = & E[y_t y_{t+h}]\\
 = & \sum_{i=0}^{q-h} \beta_i \beta_{i+h} \sigma^2 \\
+=& \sigma^2 \sum_{i=0}^{q-h} \beta_i \beta_{i+h}\\
 =& \sigma^2 \sum_{i=0}^{q-h} \beta_i \beta_{i+h}\\
 \end{split}
 \end{equation}
@@ -2112,8 +2148,9 @@ Thus,
 So, we could in principle use ACF to identify which $q$ is appropriate, because as soon as $h>q$, the ACF function will a value of $\rho_h=0$.
 
 <<>>=
-y<-arima.sim(100,model=list(ar=.9))
+y<-arima.sim(1000,model=list(ar=.9))
 plot.ts(y)
+acf(y)
 @
 
 The above kind of plot is a very useful tool for identifying AR(q) produces.
@@ -2190,6 +2227,230 @@ y_t = - \sum_{i=1}^{\infty} (-\beta_i)^{i} y_{t-1} + \eps_t
 \end{equation}
 
 This is an $AR(\infty)$ iff $\mid \beta_1\mid < 1$. This rules out second model above as $\mid \frac{1}{\beta} \mid = \mid \beta' \mid > 1$.
+
+\section{ARMA(p,q) processes}
+
+\begin{definition}
+$y_t$ is an ARMA(p,q) process if it is stationary and satisfies:
+
+\begin{equation}
+y_t = 
+\underbrace{a_1 y_{t-1} + \dots + a_p y_{t-p} + \eps_{t}}_\text{AR(p)} + \underbrace{b_1 \eps_{t-1} + \dots + b_q \eps_{t-q}}_\text{MA(q)}
+\end{equation}
+\end{definition}
+
+We can simplify this by using the backward shift operator. 
+
+Let $\phi(x)=1-a_1 x - \dots - a_p x^p$ and $h(x)=1+b_1 x + \dots + b_q x^q$.
+
+Since 
+
+\begin{equation}
+y_t = 
+a_1 y_{t-1} + \dots + a_p y_{t-p} + e_t
+\end{equation}
+
+and assuming that $By_t = y_{t-1}$, we can write:
+
+\begin{equation}
+y_t = 
+a_1 By_t + a_2 B^2 y_t \dots + a_p B^py_t + \eps_t
+\end{equation}
+
+Moving all terms but $e_t$ to LHS:
+
+\begin{equation}
+y_t -a_1 By_t - a_2 B^2 y_t \dots - a_p B^py_t = 
+  \eps_t
+\end{equation}
+
+we get
+
+\begin{equation}
+y_t\underbrace{(1 -a_1 B - a_2 B^2  \dots - a_p B^p}_\text{$\phi(B)$} = 
+  \eps_t
+\end{equation}
+
+
+Similarly, (and recalling that we define $B^0 y_t = 1$), 
+we can define $B\eps_{t} = \eps_{t-1}$ and write:
+
+\begin{equation}
+b_0 \eps_t + b_1 \eps_{t-1} + \dots + b_q \eps_{t-q}
+\end{equation}
+
+as
+
+\begin{equation}
+b_0 B^0 \eps_t + b_1 B\eps_{t} + \dots + b_qB^q\eps_{t}
+\end{equation}
+
+or as
+
+\begin{equation}
+\underbrace{(1 + b_1 B + \dots + b_qB^q){h(B)}_\text{h(B)}\eps_{t}
+\end{equation}
+
+So, we can write an ARMA(p,q) process as:
+
+\begin{equation}
+\phi(B)y_t = h(B)\eps_{t}
+\end{equation}
+
+Notice that this yields a stationary $MA(\infty)$ representation:
+
+\begin{equation}
+y_t = (\phi(B))^{-1}h(B)\eps_{t} = \sum_{i=0}^{\infty} \psi_i \eps_{t-i}
+\end{equation}
+
+$\phi(B)$ (p parameters) is the \textbf{characteristic polynomial} of the AR model, and 
+$h(B)$ (q+1 parameters) is the \textbf{characteristic polynomial} of the MA model.
+
+\textbf{We get a stationary $MA(\infty)$ representation}
+
+\begin{equation}
+y_t = (\phi(B))^{-1} h(B) \eps_t = \sum_{i=0}^{\infty} \psi_i \eps{t-i}
+\end{equation}
+
+iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called \textbf{causal}. Recall that causality implies stationarity; so if you need to check for statiionarity, check for causality.
+
+\textbf{We get a stationary $AR$ representation}
+
+\begin{equation}
+\eps_t = \phi(B) (h(B))^{-1} \y_t = \sum_{j=0}^{\infty} \delta_j y_{t-j}
+\end{equation}
+
+iff all roots of h(x)=0 lie outside unit circle. The process is said to be \textbf{invertible}. \textbf{If this part is invertible, then the ARMA(p,q) process is invertible.}
+
+\subsection{ACF of an ARMA(p,q) process}
+
+The ACF of the AR part will be the ACF of the ARMA process.
+
+This is because, when we compute the acf, we have to compute the expectation of
+$y_{t-h}y_t$. Now,
+
+\begin{equation}
+y_{t-h}y_t = 
+y_{t-h}(a_1 y_{t-1} + \dots + a_p y_{t-p} + \eps_{t}}) + \underbrac{y_{t-h}(b_1 \eps_{t-1} + \dots + b_q \eps_{t-q})}_\text{Expectation 0}
+\end{equation}
+
+If $h>q$, then $y_{t-h}$ is uncorrelated with $\eps_t, \eps_{t+1},\dots,\eps_{t+q}$.
+This is because $y_{t-h}$ can be expressed in terms of $\eps$, and each of these will be independent from the $\eps$ in the MA part of the equation above. So, the part in underbrace will have expectation 0.
+
+The AR part will determine $\gamma_h$, and this can be computed as earlier.
+
+\textbf{We will not discuss the case where $h\leq q$ in the course.}
+
+Example: ARMA(1,1):
+
+\begin{equation}
+y_t = 0.8 y_{t-1} + \eps_t + 0.9 \eps_{t-1}
+\end{equation}
+
+<<>>=
+y <- arima.sim(100, model=list(ar=0.8,ma=0.9))
+ts.plot(y)
+acf(y)
+@
+
+\section{Non-stationary ARIMA}
+
+Stationarity is only studied for convenience, because it has nice properties. But real data is non-stationary.
+
+We will reduce a NS model to a stationary model by differencing, model the $\nabla$ series by a causal or invertible process, and then transform back to the NS process. This is the Box-Jenkins approach.
+
+Recall that 
+
+\begin{equation}
+\nabla^k y_t = (1-B)^k y_t 
+\end{equation}
+
+Let $y_t$ be the time series. If we apply d-th order differncing to it, we get
+
+\begin{equation}
+x_t =  (1-B)^d \eps_t 
+\end{equation}
+
+$x_t$ is now a stationary process, and we can define an ARMA model for it.
+
+\begin{definition}
+For integer $d\geq 0$, the series $y_t$ is an ARIMA(p,d,q) process (integrated autoregressive moving average process of order p,d,q) if the d-times differenced $y_t$, call it $x_t=(1-B)^d y_t$, is ARMA(p,q).
+
+That is:
+
+\begin{equation}
+\begin{split}
+~& \phi(B)x_t =  h(B) \eps_t\\
+~& \phi(B)(1-B)^d y_t = h(B)\eps_t
+\end{split}
+\end{equation}
+
+Now, $\phi_1 (B)  = \phi(B)(1-B)^d $  is of order p+d. 
+One root of $\phi_1 (B)$ is 1, and so $y_t$ is not stationary.
+\end{definition}
+
+\subsection{Seasonal ARIMA: SARIMA}
+
+Note: we will use D for seasonal differncing, instead of d. D is only rarely greater than 2.
+
+Recall: 
+\begin{enumerate}
+\item
+$\nabla_s = 1-B^s$, so $\nabla_s y_t = y_t - y_{t-s}$. For monthly data, s=12. Usually D=1 suffices.
+\item
+$\nabla^d=(1-B)^d$.
+\end{enumerate}
+
+Let $x_t = \nabla_s^{D} y_t$ be a D-times seasonally differenced series, where s is the length of the seasonal variation.
+
+In this case,
+
+\begin{equation}
+\begin{split}
+x_t =&  \nabla_s^{D} y_t\\
+=& (\nabla_s)^{D} y_t\\
+=& (1-B^s)^D y_t \quad \hbox{ as } 
+\nabla_s = 1-B^s 
+\end{split}
+\end{equation}
+
+If $x_t$ is ARMA(P,Q) then $y_t$ is ARIMA(P,D,Q)$_s$.
+
+If the data $y_t$ is non-stationary not due to seasonality but due to trends (for example),  then we can do differencing to get stationarity: 
+ 
+ \begin{equation}
+x_t = \nabla^d \nabla_s^D y_t 
+ \end{equation}
+
+Replacing each of the terms with their expansions:
+
+\begin{equation}
+x_t = \underbrace{(1-B)^d}_\text{$\nabla_d$} \underbrace{(1-B^s)^D }_\text{$\nabla_s^D$}y_t
+\end{equation}
+ 
+ Now we assume that $x_t$ follows an ARMA(P,Q) model for its seasonal terms (those lagged by s) and an ARMA(p,q) for its nonseasonal terms. 
+This means that there 
+
+\begin{equation} 
+\Phi_s (B^s) x_t = H_s(B^s)h(B)\eps_t
+\end{equation}
+
+Expanding out $x_t$:
+
+\begin{equation} 
+\underbrace{\Phi_s(B^s)}_\text{seasonal}\underbrace{\phi(B)}_\text{AR poly.}\underbrace{(1-B^s)^D y_t}_\text{stationary} ] = \underbrace{H_s (B^s)}_\text{seasonal} \underbrace{h(B)}_\text{MA poly.}\eps_t 
+\end{equation}
+ 
+$\Phi,\phi, H, h$  are polynomials.
+
+Such a model is called seasonal ARIMA(p,d,q)$\times$
+(P,D,Q)$_s$ with period s. 
+p,d,q refers to the trend, P,D,Q to the seasonal part.
+
+BTW, note how the Backward shift operator simplifies the notation.
+
+The application of this formula will be: Given a model SARIMA(p,d,q)$\times$
+(P,D,Q)$_s$ with some instantiated values, write down the form of the model in the form $y_t=\dots$. Or vice versa. 
 
 \end{multicols}
 
