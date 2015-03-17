@@ -1094,7 +1094,7 @@ This is the detrending example shown above with R.
 Take logs for multiplicative relationships to get back into linear space:
 
 \begin{equation}
-y_t =& m_t \times s_t \times r_t
+y_t = m_t \times s_t \times r_t
 \end{equation}
 
 The decomposition can be done in R as follows:
@@ -2102,7 +2102,7 @@ we can write the last line above as:
 
 Only when $t-i = t+h-j$, and consequently $j=i+h$, do we have a non-zero expectation. When $t-i \neq t+h-j$, expectation of the $\eps$ is 0. (see page~\pageref{zeroexpectation}).
 
-When $E[\cdot]\neq 0$, E[\eps_{t-i}^2] = Var(\eps_{t-i})=\sigma^2$.
+When $E[\cdot]\neq 0$, $E[\eps_{t-i}^2] = Var(\eps_{t-i})=\sigma^2$.
 So, 
 
 \begin{equation}
@@ -2288,7 +2288,7 @@ b_0 B^0 \eps_t + b_1 B\eps_{t} + \dots + b_qB^q\eps_{t}
 or as
 
 \begin{equation}
-\underbrace{(1 + b_1 B + \dots + b_qB^q){h(B)}_\text{h(B)}\eps_{t}
+\underbrace{(1 + b_1 B + \dots + b_qB^q)}_\text{h(B)}\eps_{t}
 \end{equation}
 
 So, we can write an ARMA(p,q) process as:
@@ -2330,9 +2330,13 @@ This is because, when we compute the acf, we have to compute the expectation of
 $y_{t-h}y_t$. Now,
 
 \begin{equation}
-y_{t-h}y_t = 
-y_{t-h}(a_1 y_{t-1} + \dots + a_p y_{t-p} + \eps_{t}}) + \underbrac{y_{t-h}(b_1 \eps_{t-1} + \dots + b_q \eps_{t-q})}_\text{Expectation 0}
+\begin{split}
+~& y_{t-h}y_t = 
+y_{t-h}(a_1 y_{t-1} + \dots + a_p y_{t-p} +\eps_{t}) \\
+~&+ \underbrace{y_{t-h}(b_1 \eps_{t-1} + \dots + b_q \eps_{t-q})}_\text{Expectation 0}\\
+\end{split}
 \end{equation}
+
 
 If $h>q$, then $y_{t-h}$ is uncorrelated with $\eps_t, \eps_{t+1},\dots,\eps_{t+q}$.
 This is because $y_{t-h}$ can be expressed in terms of $\eps$, and each of these will be independent from the $\eps$ in the MA part of the equation above. So, the part in underbrace will have expectation 0.
@@ -2437,7 +2441,7 @@ This means that there
 
 Expanding out $x_t$:
 
-\begin{equation} 
+\begin{equation} \label{sarimaformula}
 \underbrace{\Phi_s(B^s)}_\text{seasonal}\underbrace{\phi(B)}_\text{AR poly.}\underbrace{(1-B^s)^D y_t}_\text{stationary} ] = \underbrace{H_s (B^s)}_\text{seasonal} \underbrace{h(B)}_\text{MA poly.}\eps_t 
 \end{equation}
  
@@ -2451,6 +2455,67 @@ BTW, note how the Backward shift operator simplifies the notation.
 
 The application of this formula will be: Given a model SARIMA(p,d,q)$\times$
 (P,D,Q)$_s$ with some instantiated values, write down the form of the model in the form $y_t=\dots$. Or vice versa. 
+
+\textbf{Example}:
+Write down the model SARIMA(1,1,0)$\times$ (0,1,1)$_4$ as $y_t=\dots$.
+
+\begin{enumerate}
+\item Step 1: list all variables:
+
+\begin{table}[htdp]
+\begin{center}
+\begin{tabular}{cc}
+Trend & Seasonal\\
+p=1 & P=0\\
+d=1 & D=1\\
+q=0 & Q=1\\
+    & s=4
+\end{tabular}
+\end{center}
+\end{table}%
+
+These variables will determine what the polynomials should be. 
+
+\item Step 2: Replace values of s and D in formula in equation~\ref{sarimaformula}:
+
+\begin{equation} \label{sarimaformula2}
+\begin{split}
+~& \underbrace{\Phi_s(B^4)}_\text{P=0 so 1}\underbrace{\phi(B)}_\text{p=1 so $1-aB$}\underbrace{(1-B^4)^1 y_t}_\text{stationary} ] \\
+~& = \underbrace{H_s (B^4)}_\text{Q=1 so $1+bB^4$} \underbrace{h(B)}_\text{q=0 so 1}\eps_t 
+\end{split}
+\end{equation}
+
+This gives us:
+
+\begin{equation}
+1(1-aB)(1-B^4)(1-B)y_t = (1+bB^4)\eps_t
+\end{equation}
+
+After some algebra, we get:
+
+\begin{equation}
+\begin{split}
+~& (1-(a+1)B + aB^2-B^4 + (a+1)B^5 -aB^6) y_t \\
+~& = (1+bB^4)\eps_t
+\end{split}
+\end{equation}
+
+After some more algebraic manipulation,
+
+\begin{equation}
+\begin{split}
+~& y_t = (a+1) \underbrace{y_{t-1}}_\text{$By_t$} + ay_{t-2} - y_{t-4} + (a+1) t_{t-5} - a y_{t-6}\\
+~&= \eps_t + b\underbrace{\eps_{t-4}}_\text{$B^4$}
+\end{split}
+\end{equation}
+
+Move everything but $y_t$ to RHS:
+
+\begin{equation}
+y_t = (a+1) y_{t-1} - ay_{t-2} + y_{t-4} - (a+1)y_{t-5} + ay_{t-6} + \eps_t + b\eps_{t-4}
+\end{equation}
+
+\end{enumerate}
 
 \end{multicols}
 
