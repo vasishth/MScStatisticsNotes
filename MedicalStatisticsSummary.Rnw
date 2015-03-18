@@ -1483,7 +1483,7 @@ Example: Simple linear regression with $x\in (-1,1)$ and uniform weighting, we m
 \end{split}
 \end{equation}
 
-Here, too, minimizing the above amounts to taking half of the observations at each end-point (as in D- and G-optimality.), making $S_{xx}$ as large as possible and $\bar{x}=0$.
+Here, too, minimizing the above amounts to taking half of the observations at each end-point (as in D- and G-optimality), making $S_{xx}$ as large as possible and $\bar{x}=0$.
 
 
 \subsubsection{A-optimality}
@@ -1500,9 +1500,41 @@ Randomization adds to the robustness of the statistical procedures (see example 
 
 \subsubsection{Completely randomized design (CRD)}
 
+ Here, every possible allocation of subjects to treatments is equally likely.
  
+Here, i indexes group, j indexes observation in i-th group, $n_i$ is sample size in i-th group.
+
+ \begin{equation}
+ y_{ij}= \mu_i + \epsilon_{ij} \quad i=1,\dots,m; j=1,\dots,n_i
+ \end{equation}
+
+$\mu_i$ is unknown mean in i-th group.
+
+\begin{equation}
+\hat\mu_i = Y_{i\cdot} \quad Var(\hat\mu_i) = \frac{\sigma^2}{n_i}
+\end{equation}
+
+Red Sum Sq is the usual one, with n-k degrees of freedom (n: total num.\ of obs.). This leads to the one way analysis of variance.
+
+\paragraph{Blocking}
+
+One can group subjects into blocks, thereby reducing variance within group (which affects $\sigma^2$).
+
+\subsubsection{Randomized block design (RBD)}
+
+We have several block (say, male, female) and equal nos.\ of treatment within each block, with randomization being done independently within each block.
+
+Let b be no. of blocks, t be no. of treatments. The model is a two-way analysis of variance:
+
+\begin{equation}
+y_{ij}= \mu + \alpha_i + \tau_j + \epsilon_{ij} \quad i=1,\dots,b; j=1,\dots,t
+\end{equation}
+
+to-do
 
 \subsection{Design for qualitative explanatory factors: multiple factors}
+
+This is relevant for the situation where we have several factors with multiple levels.
 
 \subsubsection{Latin Square designs}
 
@@ -1513,7 +1545,7 @@ A latin square of order n is a $n\times n$ array filled with n distinct symbols 
 \end{definition}
 
 \begin{definition}
-A pair of $n\times $ Latin squares is called orthogonal if, when we superimpose them (i.e., place one on top of the other), each of the possible $n^2$ ordered pairs of symbols occur exactly once.
+A pair of $n\times n$ Latin squares is called orthogonal if, when we superimpose them (i.e., place one on top of the other), each of the possible $n^2$ ordered pairs of symbols occur exactly once.
 \end{definition}
 
 \begin{definition}
@@ -1524,19 +1556,15 @@ A collection of k $n\times n$ Latin squares is called mutually orthogonal if eve
 For any n, the maximum size of a set of $n\times n$ mutually orthogonal Latin squares is $n-1$.
 \end{proposition}
 
-Consider the following example. Rows refers to Run (indexed by i), Columns refer to Position in machine (indexed by j), and the materials are A,B,C (indexed by k).
+Consider the following example. 
+Rows refers to Run (indexed by i), Columns refer to Position in machine (indexed by j), and the materials are A,B,C (indexed by k).
 
-\begin{table}[htdp]
-\caption{An example of a Latin square design.}
-\begin{center}
 \begin{tabular}{cccc}
-1 & A  & B  & C\\
-2 & C  & A  & B \\
-3 & B  & C  & A\\
+      & pos 1 & pos 2 & pos 3\\
+run 1 & A  & B  & C\\
+run 2 & C  & A  & B \\
+run 3 & B  & C  & A\\
 \end{tabular}
-\end{center}
-\label{latinsquare}
-\end{table}%
 
 The model is:
 
@@ -1556,6 +1584,79 @@ $\tau_3 = -\tau_1 - \tau_2$
 
 How to interpret the indexing: $\tau_{k=1(i=1,j=1)}$: treatment A, first row, first column.
 \end{enumerate}
+
+
+The design matrix will be set up as follows.  We have 9 rows and 7 parameters. We create a $9\times 7$ matrix. The first three rows refer to the first run, the second three to the second run, and the third to the third run.
+
+\begin{enumerate}
+\item First code the $\alpha_1$ column: 
+
+\begin{equation}
+\alpha_1= 
+\begin{cases}
+1 & \hbox{ if row 1 } \\
+0 & \hbox{ if row 2 } \\
+-1 & \hbox{ if row 3 }
+\end{cases}
+\end{equation}
+
+-1 if row 3 because $\alpha_3 = -\alpha_1 -\alpha_2$, so, -1 for $\alpha_1$ and $\alpha_2$ in row 3 means $\alpha_3$.
+
+\item Then code $\alpha_2$ column:
+
+\begin{equation}
+\alpha_1= 
+\begin{cases}
+0 & \hbox{ if row 1 } \\
+1 & \hbox{ if row 2 } \\
+-1 & \hbox{ if row 3 }
+\end{cases}
+\end{equation}
+\item $\beta_1$: codes position 1 (columns in latin square):
+
+\begin{equation}
+\beta_1= 
+\begin{cases}
+1 & \hbox{ if pos 1 } \\
+0 & \hbox{ if pos 2 } \\
+-1 & \hbox{ if pos 3 }
+\end{cases}
+\end{equation}
+
+\item $\beta_2$: codes position 2 (columns in latin square):
+
+\begin{equation}
+\beta_2= 
+\begin{cases}
+0 & \hbox{ if pos 1 } \\
+1 & \hbox{ if pos 2 } \\
+-1 & \hbox{ if pos 3 }
+\end{cases}
+\end{equation}
+\item $\tau_1$ codes material A. 
+
+\begin{equation}
+\tau_1= 
+\begin{cases}
+1 & \hbox{ if A } \\
+0 & \hbox{ if B } \\
+-1 & \hbox{ if C }
+\end{cases}
+\end{equation}
+
+\item $\tau_1$ codes material B. 
+
+\begin{equation}
+\tau_2= 
+\begin{cases}
+0 & \hbox{ if A } \\
+1 & \hbox{ if B } \\
+-1 & \hbox{ if C }
+\end{cases}
+\end{equation}
+\end{enumerate}
+
+Now it's just a matter of filling in the design matrix:
 
 \begin{equation}
 \begin{pmatrix}
@@ -1591,6 +1692,84 @@ Let F be a finite field that contains $n$ elements. Then there is a collection o
 \end{proposition}
 
 \subsubsection{Balanced incomplete block designs}
+
+If there are too many trtmts to be accomodated in each block, each block contains only a subset of trtmts.
+\begin{enumerate}
+\item  All blocks (rows) have same size
+\item No treatment occurs more than once in a block
+\item Each treatment appears the same number of times
+\item Each pair of trmts appears in same no. of blocks
+\end{enumerate}
+
+Let b be blocks, t treatment, k no. of units in a block, r the no. of applications of each treatment, $\lambda$ the no. of times each pair of treatments appears together in a block.
+
+Then: 
+
+bk= rt = total no. of observations
+
+$r(k-1) = \lambda (t-1)$ = total no. of block neighbors of a given trtmt
+
+We can determine the ratio b:r:t given these equations.  
+
+One question that can be asked is: does a BIBD exist for given values of the variables? Another is: what's the smallest BIBD that can be built given some values for the variables? 
+
+\subsubsection{Systematic ways of creating Latin Squares}
+
+\begin{enumerate}
+\item Unreduced designs:
+For any given t and k, take each possible combination of k out of t in a different block.
+Here,
+
+\begin{equation}
+b={t \choose k} = \frac{t!}{k!(t-k)!}
+\end{equation}
+
+\begin{equation}
+r = {t-1 \choose k-1} \quad \lambda = {t-2 \choose k-2}
+\end{equation}
+
+\item Design based on Latin square
+\begin{enumerate}
+\item Delete last row of Latin sq and then use columns as blocks. If LS is t$\times$t, then we get an unreduced design where k=t-1.
+\item More subtle use of LS: see ex 1.
+If we have k-1 mutually orthogonal $k\times k$ 
+LSs, all superimposed.
+
+If no. of trtmts is $t=k^2$, label the cells, each with a diff. treatment label.
+
+Create blocks of size k as follows:
+
+\begin{itemize}
+\item The first k blocks have trtmts in each of the rows of the square
+\item
+The second k blocks have trtmts in each of the cols of the square
+\item
+The next k blocks contain the treatment acc.\ to the Latin labels
+\item
+The next k to the Greek labels. Etc.
+\end{itemize}
+
+Such a BIBD has:
+
+\begin{equation}
+\begin{split}
+~& t = k^2\\
+~& b = k(k+1)
+~& r = k+1
+~& \lambda =1   
+\end{split}
+\end{equation}
+
+Example: to-do (also see ex 1)
+
+
+\end{enumerate}
+\item Complementary designs:
+
+Just replace each block by treatments that did not appear in that block.
+
+\end{enumerate}
+
 
 
 
