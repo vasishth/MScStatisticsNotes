@@ -97,6 +97,14 @@
 \author{Shravan Vasishth (vasishth@uni-potsdam.de)}
 \date{\today}                                           % Activate to display a given date or no date
 
+\newcommand\myfigure[1]{%
+\medskip\noindent\begin{minipage}{\columnwidth}
+\centering%
+#1%
+%figure,caption, and label go here
+\end{minipage}\medskip}
+
+
 \begin{document}
 
 \SweaveOpts{concordance=TRUE}
@@ -1297,7 +1305,7 @@ r_h = \frac{\sum_{t=1}^{n-h} (Y_{t} - \bar{Y})(Y_{t+h} - \bar{Y})}{
 \bar{Y})^2}}
 \end{equation}
 
-<<>>=
+<<fig=FALSE>>=
 dljj <- diff(log(jj)) 
 plot(dljj)
 ## correlation structure:
@@ -2512,10 +2520,145 @@ After some more algebraic manipulation,
 Move everything but $y_t$ to RHS:
 
 \begin{equation}
-y_t = (a+1) y_{t-1} - ay_{t-2} + y_{t-4} - (a+1)y_{t-5} + ay_{t-6} + \eps_t + b\eps_{t-4}
+\begin{split}
+y_t =& (a+1) y_{t-1} - ay_{t-2} + y_{t-4} - \\
+~& (a+1)y_{t-5} + ay_{t-6} + \eps_t + b\eps_{t-4}
+\end{split}
 \end{equation}
 
 \end{enumerate}
+
+More examples are in the problem sets.
+
+\section{Inference}
+
+The Box-Jenkins iterative approach:
+
+\begin{enumerate}
+\item Identify initial values of p,d,q and P,D,Q
+\item Estimate ARIMA parameters
+\item  Diagnosis and model criticism
+\item Modify the model based on 3 above (i.e., change p,d,q and P,D,Q) and go back to 2.
+\end{enumerate}
+
+\subsection{Identifying model}
+
+\begin{figure}[H]
+\includegraphics[width=8cm,height=8cm,angle=-90]{diggleplot}
+\caption{Plot after Diggle.}\label{fig:diggleplot}
+\end{figure}
+
+Six ways to identify model:
+
+\begin{enumerate}
+\item Time plot: can indicate non-stationarity, seasonality, need to difference
+
+<<>>=
+## shows seasonality:
+ts.plot(shef_ts,ylab="temp.",
+         xlab="quarter")
+@
+
+\item ACF/Correlogram: can indicate non-stationarity, seasonality
+
+<<>>=
+## shows seasonality:
+acf(shef_ts)
+@
+
+\begin{enumerate}
+\item An ACF not decaying to 0 suggests non-stationarity
+\item An ``oscillating'' ACF suggests seasonality (see above \texttt{shef} example).
+\end{enumerate}
+\item Test for white noise: Plot 95\% CIs in Correlogram, if sample autocorrelations $r_h$ lie outside intervals, then not white noise.
+
+
+\underline{Details}: Under null hyp.\ $H_0: 
+\rho_h = 0$ for $h\geq 1$. So, 
+
+$r_h \sim N(9,1/n)$, for h=1,2,\dots
+
+More generally, for ARMA processes, under $H_0$:
+
+$(r_1, \dots, r_h)' ~ N((\rho_1, \dots,\rho_h)', \frac{1}{n} W)$ 
+
+where
+
+\begin{equation}
+\begin{split}
+W_{i,j}=&  \sum_{k=1}^{\infty} (\rho_{k+i}+\rho_{k-i} - 2\rho_i \rho_k)\\
+~& (\rho_{k+j}+\rho_{k-j}-2\rho_j\rho_k) \quad t,j=1,\dots,h
+\end{split}
+\end{equation}
+
+Note that this does not test the hypothesis $\rho_h = 0$, where, $h\geq p > 1$.
+(what? this doesn't make sense)
+
+\item Test for MA(q): If WN is ruled out, test for MA(q). Recall that for MA(q), $\rho_h = 0$ for $h>q$. 
+Under $H_0: \rho_h = 0$, the $\rho_h$ for $h=q+1,q+1,\dots$ are independent. 
+So, for an MA(q) process we expect 
+for large $n$:
+
+\begin{equation}
+r_h \sim N(0,\frac{1+2\sum_{j=1}^q\rho_j^2}{n})
+\end{equation}
+
+independently for $h>q$.
+
+So, a CI based test (could be done visually):
+
+\begin{equation}
+r_h \in \pm 2\sqrt{\frac{1+2\sum_{j=1}^q\rho_j^2}{n}} \quad \hbox{ for } h>q (h=q+1,q+2,\dots)
+\end{equation}
+
+Example: to-do
+
+\item Test for AR(p): Partial ACF.The ACF of an AR(p) model does not cut off sharply but decays geometrically to 0. However, the PACF does does cut off to zero sharply beyond p, just like the MA(q)'s ACF is 0 beyond q.
+
+
+To construct PACF, we successively build AR(1), AR(2), AR(3), \dots models.
+
+\begin{equation}
+\begin{split}
+p=1 =& y_t = a_1^{(1)}y_{t-1} + \eps_t\\
+p=2 =& y_t = a_1^{(2)}y_{t-1} + a_2^{(2)}y_{t-2} + \eps_t\\
+p=3 =& y_t = a_1^{(3)}y_{t-1} + a_2^{(3)}y_{t-2} +
+a_3^{(3)}y_{t-2} + \eps_t\\
+ & \vdots \\
+\end{split}
+\end{equation}
+
+We define the PACF at lag h to be $\hat\a_h^{(h)}$. It can be thought of as a measure of the linear dependence of $y_t$ on $y_{t-h}$ after dependence on the intervening values $y_{t-1}, y_{t-(h-1)}$ has been taken into account. To simplify notation we can drop the hat on a and also drop the superscript ($a_h$ instead of 
+$\hat a_h^{(h)}$).
+
+So the statistical test is that 
+$a_h \approx 0$ for $h>p$, i.e., that the PACF cuts off sharply after p.
+
+If $y_t$ is a WN process (i.e., if it is not AR(p)), then 
+
+\begin{equation}
+a_h \sim N(0,1/n) \hbox{ independently for } h\geq 1
+\end{equation}
+
+Visual check using PACF (just like ACF based test): the lines $\pm 2\sqrt{\frac{1}{n}}$ are the rejection regions. If for a given p+1, $a_{p+1}$ lies inside the CI, then it is an AR(p) process.
+
+Calculating PACF: to-do
+
+\item Principle of parsimony: If AR, MA are not plausible, seek ARMA(p,q), but starting with simplest, i.e., p=q=1.
+\end{enumerate}
+
+\subsection{Fitting}
+
+\subsubsection{MLE}
+
+\subsection{Error analysis}
+
+\subsection{Model selection}
+
+
+\section{Forecasting}
+
+
 
 \end{multicols}
 
