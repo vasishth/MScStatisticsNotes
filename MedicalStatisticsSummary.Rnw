@@ -1775,6 +1775,50 @@ Just replace each block by treatments that did not appear in that block.
 
 \subsection{Factorial designs}
 
+\subsection{Complete factorial design}
+
+If we scale the factors to be -1 and +1, then we cannot include polynomial terms ($x^2$). 
+
+\subsection{Blocking Factorial Designs}
+
+Specify a block generator; the price paid is that higher order interactions have to be excluded as they'd be identical to block coding.
+
+Example block generator: Blk1: $x_1 x2 x_3 x_4 x_5$, and Blk2: $x2 x_3 x_4 x_5$. One has to always consider $Blk1 \times Blk2$, which here is identical to $x_1$, i.e., it's identical to the main effect (bad).
+
+<<>>=
+X<-matrix(c(rep(1,8),
+            c(rep(c(1,-1),each=4,1)),   #x1
+            c(rep(c(-1,1),each=2,2)),#x2
+            c(rep(c(-1,1),4))),        # x3
+            byrow=FALSE,ncol=4)
+
+Z<-cbind(X[,3]*X[,4],X[,2]*X[,4])
+Z1Z2<-Z[,1]*Z[,2]
+
+X<-cbind(X,Z,Z1Z2)
+
+colnames(X)<-c("beta0","x1","x2","x3","z1","z2","z1z2")
+X<-data.frame(X)
+
+blocks<-ifelse(X$z1==1  & X$z2==1,"block1",
+        ifelse(X$z1==1  & X$z2==-1,"block2",
+        ifelse(X$z1==-1 & X$z2==1,"block3",
+        ifelse(X$z1==-1 & X$z2==-1,"block4",
+                     NA))))
+
+Xfinal<-cbind(X,blocks)
+## Diagonal matrix: orthogonal coefs:
+t(as.matrix(X))%*%as.matrix(X)
+@
+
+\subsection{Fractional Factorial Design}
+
+m factors require $2^m$ observations in a CFD. If we have $n< 2^m$, we can use an FFD.
+
+The approach is to define t Block generators. This gives $2^t$ blocks. For the FFD, we choose just one block.
+
+The number of observations needed now is $2^m/2^t=2^{m-t}$.
+
 \end{multicols}
 
 
