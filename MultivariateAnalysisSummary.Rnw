@@ -2658,6 +2658,167 @@ Calculating PACF: to-do
 
 \section{Forecasting}
 
+Given data $y_{1:t}$, we want to forecast/predict $\hat y_{t+i}$. $t$ is called the \textbf{forecast origin} and $i$ is called \textbf{lead time}.
+
+\subsection{Criterion for choice of $\hat y_{t+i}$: Minimum mean square error predictor}
+
+Minimize: 
+
+\begin{equation}
+E[(\hat y_{t+i} - y_{t+i})^2 \mid y_{1:t}]
+\end{equation}
+
+The conditioning takes into account that we have observed $y_{1:t}$ and want to build this information in. 
+
+$\hat y_{t+i}$, and $i\geq 1$ is called ``out of 
+sample'' forecast in economics. 
+If Z is a random variable, $Var(Z)<\infty$, 
+
+\begin{equation}
+f(a) = E[(z-a)^2]
+\end{equation}
+
+is minimized. Proof:
+
+\begin{equation}
+\begin{split}
+f(a) =& E[z^2 - 2az + a^2]\\
+=& E[z^2] - 2a E[z] + a^2\\
+\end{split}
+\end{equation}
+
+Taking derivative:
+
+\begin{equation}
+\frac{d(f(a))}{da} = -2 E[z] + 2a 
+\end{equation}
+
+Equating this to $0$, we get $a = E[z]$.
+
+The second derivative is positive: 
+$\frac{d^2(f(a))}{da^2}=2$. Hence this is a minimum.
+
+So, 
+
+\begin{equation}
+\hat y_{t+i} = E[y_{t+i} \mid  y_{1:t}]
+\end{equation}
+
+\subsection{Forecasting ARMA(p,q) process}
+
+Model:
+
+\begin{equation}\label{armaequation}
+y_t = 
+\underbrace{a_1 y_{t-1} + \dots + a_p y_{t-p} + \eps_{t}}_\text{AR(p)} + \underbrace{b_1 \eps_{t-1} + \dots + b_q \eps_{t-q}}_\text{MA(q)}
+\end{equation}
+
+i.e., 
+
+\begin{equation}
+\phi(B) y_t = h(B) \epsilon_t
+\end{equation}
+
+Assume that we know $a,b,\sigma^2$ and that $E[y_t]= 0$.
+
+Invertibility guarantees that (via the $AR(\infty)$ representation): 
+
+\begin{equation}
+\epsilon_t = h(B)^{-1} \phi(B) y_t = 
+\sum_{j=0}^{\infty} = \delta_i y_{t-j}
+\end{equation}
+
+($\delta_j$ are determined by $a$'s and $b$'s.). So if we know $y_t$, we know $\epsilon_t$.
+
+Also, from the $MA(\infty)$ representation:
+
+\begin{equation}
+y_t = 
+\sum_{i=0}^{\infty} = \zeta_i \epsilon_{t-i}
+\end{equation}
+
+So, we can go from $y_t$ to $\epsilon_t$. This becomes relevant below.
+
+\begin{equation}
+y_t = E[y_{t+1}\mid y_{1:t}]
+\end{equation}
+
+Replacing $t+1$ for $t$ in equation \ref{armaequation}:
+$y_{t+1} = 
+a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q}$.
+
+
+\begin{equation}
+\begin{split}
+y_t =& E[y_{t+1}\mid y_{1:t}] \\
+=& 
+E[a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q} \mid y_{1:t}]\\
+=&
+E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
+\end{split}
+\end{equation}
+
+Now, if we want $E[y_t \mid y_{1:t}]$, this will simply be the observed value $y_t$ in the vector $y_{1:t}$, since that is all the information we have about it. \textbf{Note that $y_t$ is not a random variable, it is an observed value}.
+
+So, we can write:
+
+\begin{equation}
+\begin{split}
+y_t =& E[y_{t+1}\mid y_{1:t}] \\
+=&
+E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
+=& E[a_1 y_{t}\mid y_{1:t}] + \dots + E[a_p y_{t+1-p}\mid y_{1:t}] \\
+~& + E[\eps_{(t+1)}\mid y_{1:t}] \\
+~& + E[b_1 \eps_{t}\mid y_{1:t}] + \dots + E[b_q \eps_{t+1-q}\mid y_{1:t}]\\
+=& a_1 y_{t} + \dots + a_p y_{t+1-p} +
+b_1 \eps_{t} + \dots + b_q \eps_{t+1-q}
+\end{split}
+\end{equation}
+
+The term $E[\eps_{(t+1)}\mid y_{1:t}]=0$, because 
+
+\begin{equation}
+\begin{split}
+E[\eps_{(t+1)}\mid y_{1:t}] =& E[\eps_{(t+1)} 
+\mid \eps_1,\dots, \eps_t]\\
+=& E[\eps_{(t+1)} \quad \hbox{ independence }\\
+=& 0 \hbox{ by WN }
+\end{split}
+\end{equation}
+
+This gives us the:
+
+\subsection{One-step predictor}
+
+\begin{equation}
+\hat y_{t+1} = 
+a_1 y_{t} + \dots + a_p y_{t+1-p} +
+b_1 \eps_{t} + \dots + b_q \eps_{t+1-q}
+\end{equation}
+
+\subsection{Two- and i-step predictor}
+
+For the $t+2$-th step predictor:
+
+\begin{equation}
+\begin{split}
+\hat y_{t+2} =&  
+a_1 \hat y_{t+1} + a_2 y_{t} \dots + a_p y_{t+2-p} \\
+~& +
+b_1 \eps_{t} + \dots + b_q \eps_{t+2-q}
+\end{split}
+\end{equation}
+
+For $t+i$-th step predictor (to-do: 
+check this):
+
+\begin{equation}
+\begin{split}
+\hat y_{t+i} =& 
+a_1 \hat y_{t+i-1} + a_2  y_{t} \dots + a_p y_{t+i-p} \\
+~& + b_1 \eps_{t} + \dots + b_q \eps_{t+i-q}
+\end{split}
+\end{equation}
 
 
 \end{multicols}
