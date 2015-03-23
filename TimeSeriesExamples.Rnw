@@ -78,6 +78,8 @@ whisk<-read.table(paste(dir,"Whisk.txt",
 whisk_ts<-ts(whisk,start=c(1980),end=1987,
              frequency=12)
 ts.plot(whisk_ts,ylab="hectoliters of whiskey per month",xlab="month")
+## oscillating  ACF: seasonality:
+acf(whisk_ts)
 @
 
 trend: none
@@ -170,5 +172,80 @@ x<-seq(0,80,by=1)
 lines(x,sin((1/100)*x),lty=2)
 @
 
+\section{Practicalities p 55}
+
+<<>>=
+y<-arima.sim(100,model=list(ar=0.5,ma=0.4))
+plot(y)
+fit<-arima(y,order=c(1,0,1))
+fit
+
+y<-arima.sim(100,model=list(ar=0.9,order=c(1,0,0)))+50
+plot(y)
+fit<-arima(y,order=c(1,0,0))
+
+y<-arima.sim(n=300,
+             model=list(ar=0.7,
+                        order=c(1,1,0)))
+ts.plot(y)
+acf(y)
+fit<-arima(y,order=c(1,0,0))
+
+x<-diff(y,lag=1)
+ts.plot(x)
+acf(x)
+acf(x,type="partial")
+
+fit1<-arima(x,order=c(1,0,0))
+fit1a<-arima(y,order=c(1,1,0))
+
+y<-read.table(paste(dir,"ar1sim.txt",sep=""))
+y<-ts(y)
+ts.plot(y)
+acf(y)
+
+x<-diff(y,lag=1)
+ts.plot(x)
+acf(x)
+
+fit1<-arima(x,order=c(1,0,0))
+fit2<-arima(x,order=c(2,0,0))
+fit3<-arima(x,order=c(3,0,0))
+
+fit1$aic
+fit2$aic
+fit3$aic
+
+fit1$loglik
+fit2$loglik
+fit3$loglik
+
+tsdiag(fit1)
+
+pred_fit1<-predict(fit1,n.ahead=10)$pred
+predse_fit1<-predict(fit1,n.ahead=10)$se
+
+ts.plot(x,xlim=c(0,310))
+lines(301:310,pred_fit1)
+lines(301:310,pred_fit1-2*predse_fit1,lty=2)
+lines(301:310,pred_fit1+2*predse_fit1,lty=2)
+
+fit1<-arima(y,order=c(1,0,0),xreg=1:301)
+for1<-predict(fit1,n.ahead=9,newxreg=302:310)
+for1$pred
+lower<-for1$pred-2*for1$se
+upper<-for1$pred+2*for1$se
+
+ts.plot(y,xlim=c(1,310))
+lines(302:310,for1$pred,lty=1)
+lines(302:310,lower,lty=2)
+lines(302:310,upper,lty=2)
+@
 
 \end{document}
+
+
+
+
+
+
