@@ -2628,7 +2628,7 @@ a_3^{(3)}y_{t-2} + \eps_t\\
 \end{split}
 \end{equation}
 
-We define the PACF at lag h to be $\hat\a_h^{(h)}$. It can be thought of as a measure of the linear dependence of $y_t$ on $y_{t-h}$ after dependence on the intervening values $y_{t-1}, y_{t-(h-1)}$ has been taken into account. To simplify notation we can drop the hat on a and also drop the superscript ($a_h$ instead of 
+We define the PACF at lag h to be $\hat a_h^{(h)}$. It can be thought of as a measure of the linear dependence of $y_t$ on $y_{t-h}$ after dependence on the intervening values $y_{t-1}, y_{t-(h-1)}$ has been taken into account. To simplify notation we can drop the hat on a and also drop the superscript ($a_h$ instead of 
 $\hat a_h^{(h)}$).
 
 So the statistical test is that 
@@ -2819,6 +2819,324 @@ a_1 \hat y_{t+i-1} + a_2  y_{t} \dots + a_p y_{t+i-p} \\
 ~& + b_1 \eps_{t} + \dots + b_q \eps_{t+i-q}
 \end{split}
 \end{equation}
+
+\section{State Space Models}
+
+\subsection{Recall linear regression}
+
+\begin{enumerate}
+\item
+an $n\times 1$ response vector $y_{1:t}$
+\item 
+$p$ predictor variables $x_{it}, i=1,\dots,n$. So, we have
+
+$x_{11}, x_{12},\dots,x_{1t}$
+
+$x_{21}, x_{22},\dots,x_{2t}$
+
+etc., so that
+$x_t = (x_{1t},\dots,x_{pt})^{T}$. 
+
+For example, $[1 1]^T$ for t=1. For p=2, t=5:
+
+<<>>=
+## x^T:
+matrix(rep(1,2*5),ncol=2)
+@
+\end{enumerate}
+
+
+\begin{equation}
+y_t = x_{1t}\beta_1 + \dots + x_{pt} \beta_p + \eps_t = \x_t^T \beta+ \eps_t
+\end{equation}
+
+where $\beta=(\beta_1,\dots,\beta_p)^T$, a p-variate vector of regression coefficients.
+
+$\eps_t$ is the error or innovation (white noise).
+
+Estimation is done by minimizing sum of squares:
+
+\begin{equation}
+S(\beta) = \sum{t=1}^{n} (y_y - x_t^T \beta)^T
+\end{equation}
+
+The vector $\beta$ is time-invariant:  $\beta_n=\beta_{n-1}=\dots=\beta_1=\beta_0$.
+
+\subsection{An almost time-invariant model}
+
+When we have
+
+\begin{equation}
+\beta_t \approx \beta_{t-1}
+\end{equation}
+
+this can be described by the model
+
+\begin{equation}
+\beta_t = \beta_{t-1} + \zeta_t 
+\end{equation}
+
+$\zeta_t$ is a random variable, and so $\beta_t$ is also a random variable and is known as a \textbf{state vector}.
+
+This gives us:
+
+\begin{equation}
+\begin{split}
+y_t =& x_t^T \beta_t + \eps_t \quad \hbox{observation model}\\
+\beta_t =& \beta_{t-1} + \zeta_t \quad \hbox{transition model}\\
+\end{split}
+\end{equation}
+
+$\beta_t$ is modeled as a random walk.
+
+If we set x=1 for all t:
+$x_1 = x_2 = \dots = x_t=1$. Then, we get the 
+\textbf{local level plus noise model}:
+
+\begin{equation}
+y_t = \beta_t + \eps_t \quad 
+\beta_t = \beta_{t-1} + \zeta_t
+\end{equation}
+
+\textbf{The level of the time series}: $E[y_t\mid \beta_t]= \beta_t$. 
+
+\subsection{The general state space model}
+
+Replaces the random walk of $\beta_t$ with a \textbf{more general Markov chain}. That is:
+
+\begin{equation}
+\begin{split}
+y_t =& x_t^T \beta_t + \eps_t \hbox{observation model}\\
+\beta_t = F\beta_{t-1}+ \zeta_t \hbox{transition model}\\ 
+\end{split}
+\end{equation}
+
+$\eps_t \sim N(0,\sigma^2) \zeta_t \dim N(0,Z)$
+
+E.g., 
+
+\begin{equation}
+Z=
+\begin{pmatrix}
+\sigma_1^2 & 0 \\
+0 & \sigma_2^2
+\end{pmatrix}
+\end{equation}
+
+Z is the transition covariance matrix.
+
+$\sigma^2$ and $Z$ can be time-varying; in such a case, we would write  $\sigma_t^2$ and $Z_t$.
+In finance, $\sigma^2$ represents volatility. 
+
+For now, assume $\sigma^2$ is time-invariant, and $Z_t$ is time-varying. Since $\beta$ are random variables, we have to specify a prior for $\beta_0$:
+
+\begin{equation}
+\beta_{0} \sim N(\hat \beta_{0\mid 0}, P_{0\mid 0})
+\end{equation}
+
+\subsection{Filtering: Kalman Filter (Theorem 5.1)}
+
+Given:
+
+\begin{equation}
+\begin{split}
+y_t =& x_t^T \beta_t + \eps_t \quad \hbox{(observational model)}\\
+\beta_1 =& F\beta_{t-1} + \zeta_t \quad \hbox{(transition model)}\\
+\beta_{0} =& N(\hat \beta_{0\mid 0}, P_{0\mid 0})\\
+\end{split}
+\end{equation}
+
+For each $t=1,\dots,n$, the following applies:
+
+\begin{enumerate}
+\item 
+The forecast distribution of $\beta_t$ at $t-1$ is 
+
+\begin{equation}
+\beta_t \mid y_{1:t-1}\sim N(\hat \beta_{t\mid t-1}, P_{t\mid t-1})
+\end{equation}
+
+where 
+\begin{enumerate}
+\item
+$\beta_{t\mid t-1} = F\hat \beta_{t-1\mid t-1}$
+\item
+$P_{t\mid t-1} = FP_{t-1\mid t-1} F^T + Z_t$
+\end{enumerate}
+
+(The transition matrix F gives the next value.)
+
+\item The posterior distribution of $\beta_t$ at time $t$ is 
+
+\begin{equation}
+\beta_t \mid y_{1:t}  \sim N(\hat \beta_{t\mid t}, P_{t\mid t})
+\end{equation}
+
+\noindent
+where 
+
+\begin{enumerate}
+\item
+$\hat \beta_{t\mid t} = \hat \beta_{t\mid t-1} + k_t \eps_t$
+\item 
+$\hat y_{t\mid t-1} = x_t^T \hat \beta_{t\mid t-1}$
+\item 
+$e_t = y_t - \hat y_{t\mid t-1}$
+\item Forecast variance:
+$q_{t\mid t-1} = x_t^T P_{t\mid t-1} x_t + \sigma^2$
+\item Kalman gain:
+$k_t = \frac{P_{t\mid t-1} x_t}{q_{t\mid t-1}}$
+\item 
+$P_{t\mid t} = P_{t\mid t-1} - q_{t\mid t-1} k_t k_t^T$
+
+Note that 
+$P_{t\mid t-1} = U_p D_p^2 U_p^T$
+\end{enumerate}
+\end{enumerate}
+
+Some notes:
+
+\begin{enumerate}
+\item 
+$\hat \beta_{t\mid t-1}$ is the \textbf{mean} at time $t$ given data up to time $t-1$: $E[\beta_t \mid y_{1:t-1}]$.
+\item
+When $y_t$ is observed, the data set goes from
+
+$1:y_{t-1}$ to $1:y_t$ and then the $\hat \beta_{t\mid t}$ is the mean $E[\beta_t \mid t_{1:t}]$.
+\item
+\begin{enumerate}
+\item
+So, $t\mid t-1$ means: \textbf{forecast} at time t given information $y_{1:t}$.
+\item
+$t\mid t$ means \textbf{filtered estimate} at time $t$ given information $y_{1:t}$.
+\end{enumerate}
+\item 
+$\hat y_{t\mid t-1}$ is the one-step ahead forecast of $y_t$ given information $y_{1:t-1}$.
+\item
+$e_t$ is the one-step ahead prediction error.
+\item 
+The conditional distribution of $\beta_t\mid y_{1:t}$ is the posterior distribution of $\beta_t$ at time $t$. 
+
+\begin{equation}
+p(\beta_t \mid y_{1:t}) \propto \explain{p(y_t \mid \beta_t)}{\hbox{Lik.}} 
+\explain{p(\beta_t\mid y_{1:t-1})}{\hbox{Prior}}
+\end{equation}
+
+\begin{enumerate}
+\item
+The likelihood is from a single observation
+\item
+The prior is at time $t$.
+\end{enumerate}
+
+\end{enumerate}
+
+So, the Kalman filter gives:
+
+\begin{table}[htdp]
+%\caption{default}
+\begin{center}
+\begin{tabular}{ccccccc}
+$t$ & 0 & 1 & 1 & 2 & 3 & 4\\
+$y_t$ &  & $y_1$ & $y_2$ & $y_3$ & $y_4$\\
+$\beta_{t\mid t}$ & $\hat \beta_{1\mid 0}$ & $\hat \beta_{2\mid 1}$ & $\hat \beta_{2\mid 2}$ & &\\
+$P_{t\mid t}$ & $P_{1\mid 0}$ & $P_{2\mid 1}$ & $P_{2\mid 2}$ & & \\
+\end{tabular}
+\end{center}
+%\label{default}
+\end{table}%
+
+The great thing about the Kalman filter is that to compute $\hat \beta_{2\mid 2}$ we only need $\hat \beta_{2\mid 1}$, and to compute $P_{2\mid 2}$ only need $P_{2\mid 1}$. 
+
+%\begin{equation}
+%F=
+%\begin{pmatrix}
+%1 & 1\\
+%0 & 1\\
+%\end{pmatrix}
+%\quad 
+%\beta_{t-1}= 
+%\begin{pmatrix}
+%\beta_0_{t-1}\\
+%\beta_1_{t-1}\\
+%\end{pmatrix}
+%\end{equation}
+
+\subsection{Forecasting}
+
+Given data: $y_{1:t} = \{ y_1,\dots, y_t\}$, need to derive the distribution of
+
+\begin{enumerate}
+\item $\beta_{t+i}$, the \textbf{i-step ahead forecast state}
+\item $y_{t+i}$, the \textbf{i-step ahead observation distribution}
+\end{enumerate}
+
+The variable $i$ is called \textbf{lead time}. and the maximum value $i$ takes is called forecast horizon.
+
+\subsection{Fully worked examples using library \texttt{dlm}}
+
+The data-set is Central England temperatures.
+
+<<echo=FALSE>>=
+dir<-"/Users/shravanvasishth/Dropbox/MScStatistics/2014-2015/MAS6011/Semester2/Data/"
+@
+
+<<>>=
+library(dlm)
+
+## Central England temperatures:
+temp<-read.table(paste(dir,"temp.txt",
+                        sep=""))
+temp<-ts(temp[,2],start=1659,
+         frequency=1)
+x<-matrix(1)
+## transition matrix:
+F<-matrix(1)
+## epsilon:
+sigma2<-1
+## zeta variance matrix:
+Z<-10
+## Prior beta ~ N(beta0,P0):
+beta0<-9
+P0<-1000
+## model:
+mod<-dlm(temp,
+         FF=x, ## predictor 
+         GG=F, ## transition matrix
+         V=sigma2, ## epsilon var
+         W=Z,      ## zeta var
+         m0=beta0, ## prior mean beta
+         C0=P0)    ## prior var  beta
+fit<-dlmFilter(temp,mod)   
+
+## Forecasting:
+modForecast<-dlmForecast(mod=mod,nAhead=3)
+
+## invariant forecast mean is 
+## a characteristic of the local 
+## level model:
+modForecast$a[[1]]
+modForecast$a[[2]]
+modForecast$a[[3]]
+
+modForecast$Q[[1]]
+modForecast$Q[[2]]
+modForecast$Q[[3]]
+
+lower<-rep(NA,3)
+upper<-rep(NA,3)
+## intervals:
+for(i in 1:3){
+lower[i]<-modForecast$a[[i]]
+           -2*sqrt(modForecast$Q[[i]])
+upper[i]<-modForecast$a[[i]]
+           +2*sqrt(modForecast$Q[[i]])
+}
+## uncertainty increases with i:
+(forecst<-data.frame(i=1:3,lower=lower,
+                     upper=upper))
+@
+
 
 
 \end{multicols}
