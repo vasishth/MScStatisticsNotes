@@ -2906,13 +2906,16 @@ Replaces the random walk of $\beta_t$ with a \textbf{more general Markov chain}.
 
 \begin{equation}
 \begin{split}
-y_t =& x_t^T \beta_t + \eps_t \hbox{observation model}\\
-\beta_t = F\beta_{t-1}+ \zeta_t \hbox{transition model}\\ 
+y_t =& x_t^T \beta_t + \eps_t \quad \hbox{observation model}\\
+\beta_t =& F\beta_{t-1}+ \zeta_t \quad \hbox{transition model}\\ 
 \end{split}
 \end{equation}
 
-$\eps_t \sim N(0,\sigma^2) \zeta_t \dim N(0,Z)$
-
+\begin{enumerate}
+\item
+$\eps_t \sim N(0,\sigma^2)$
+\item
+$\zeta_t \sim N(0,Z)$
 E.g., 
 
 \begin{equation}
@@ -2924,6 +2927,8 @@ Z=
 \end{equation}
 
 Z is the transition covariance matrix.
+\end{enumerate}
+
 
 $\sigma^2$ and $Z$ can be time-varying; in such a case, we would write  $\sigma_t^2$ and $Z_t$.
 In finance, $\sigma^2$ represents volatility. 
@@ -3033,20 +3038,18 @@ The prior is at time $t$.
 
 So, the Kalman filter gives:
 
-\begin{table}[htdp]
 %\caption{default}
 \begin{center}
 \begin{tabular}{ccccccc}
-$t$ & 0 & 1 & 1 & 2 & 3 & 4\\
-$y_t$ &  & $y_1$ & $y_2$ & $y_3$ & $y_4$\\
-$\beta_{t\mid t}$ & $\hat \beta_{1\mid 0}$ & $\hat \beta_{2\mid 1}$ & $\hat \beta_{2\mid 2}$ & &\\
-$P_{t\mid t}$ & $P_{1\mid 0}$ & $P_{2\mid 1}$ & $P_{2\mid 2}$ & & \\
+$t$ & 0 & 1 & 2 & 3 & 4\\
+$y_t$ & - & $y_1$ & $y_2$ & $y_3$ & $y_4$\\
+$\beta_{t\mid t}$ & $\hat \beta_{1\mid 0}$ & $\hat \beta_{1\mid 1}$ & $\hat \beta_{2\mid 2}$ & \dots &   \\
+$P_{t\mid t}$ & $P_{1\mid 0}$ & $P_{1\mid 1}$ & $P_{2\mid 2}$ \dots & & \\
 \end{tabular}
 \end{center}
 %\label{default}
-\end{table}%
 
-The great thing about the Kalman filter is that to compute $\hat \beta_{2\mid 2}$ we only need $\hat \beta_{2\mid 1}$, and to compute $P_{2\mid 2}$ only need $P_{2\mid 1}$. 
+The great thing about the Kalman filter is that to compute $\hat \beta_{2\mid 2}$ we only need $\hat \beta_{1\mid 1}$, and to compute $P_{2\mid 2}$ only need $P_{1\mid 1}$. 
 
 %\begin{equation}
 %F=
@@ -3071,7 +3074,132 @@ Given data: $y_{1:t} = \{ y_1,\dots, y_t\}$, need to derive the distribution of
 \item $y_{t+i}$, the \textbf{i-step ahead observation distribution}
 \end{enumerate}
 
-The variable $i$ is called \textbf{lead time}. and the maximum value $i$ takes is called forecast horizon.
+The variable $i$ is called \textbf{lead time}. and the maximum value $i$ takes is called the \textbf{forecast horizon}.
+
+\subsubsection{Theorem 5.2}
+
+Given $y_{1:t} = \{ y_1,\dots, y_t\}$, 
+
+\begin{enumerate}
+\item The i-step ahead forecast state distribution is 
+
+\begin{equation}
+\beta_{t+i\mid y_{1:t}} \sim N(\hat \beta_{t+i\mid t}, P_{t+i\mid t})
+\end{equation}
+
+where
+
+\begin{equation}
+\hat \beta_{t+i\mid t} = F^i \hat \beta_{t\mid t}
+\end{equation}
+($\beta_{t\mid t}$ is computed using Kalman filter)
+
+and 
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z_{t+i-k} (F^k)^T
+\end{split}
+\end{equation}
+
+($P_{t\mid t}$ is computed using Kalman filter)
+
+\item The i-step ahead forecast observation distribution is
+
+\begin{equation}
+y_{t+i}\mid y_{1:t} \sim N(\hat y_{t+i}\mid t,q_{t+i}\mid t)
+\end{equation}
+
+where
+
+\begin{enumerate}
+\item $\hat y_{t+i\mid t} = x_{t+i}^T \hat \beta_{t+i\mid t}$
+\item $q_{t+i\mid t} = x_{t+i}^T P_{t+i\mid t} x_{t+i}+\sigma^2$
+\end{enumerate}
+\end{enumerate}
+
+Some comments:
+
+\begin{enumerate}
+\item $y_{t+i}\mid y_{1:t}$ is the \textbf{i-step ahead forecast distribution}.
+\item $\beta_{t+i}\mid y_{1:t}$ is the \textbf{state forecast distribution} or the \textbf{forecast state distribution}.
+\item The forecast mean is a function of i=1,2,\dots. It is therefore called the \textbf{forecast function}, and can be used for classifying different models aimed at forecasting.
+
+The forecast function:
+
+\begin{equation}
+\hat y_{t+i\mid t} = x_{t+1}^T F^i \hat \beta_{t\mid t}
+\end{equation}
+\item 
+If $Z_t =Z$, i.e., if Z is time-invariant, we covariance matrix 
+$P_{t+i\mid t}$ takes the simplified form:
+
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z (F^k)^T
+\end{split}
+\end{equation}
+
+Compare this with the time-varying version:
+
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z_{t+i-k} (F^k)^T
+\end{split}
+\end{equation}
+
+\item $\hat \beta_{t\mid t-1}$, \textbf{the mean vector of the one-step forecast state distrn.}, and $P_{t\mid t-1}$, \textbf{the covariance matrix of the one-step forecast state distribution of $\beta_t$ given $y_{1:t-1}$}, are needed to calculate the predictive distribution of $\beta_t$ at time $t-1$: $\beta_t\mid y_{1:t-1}$.
+
+Similarly, we have
+$y_{t\mid t-1}$, the \textbf{mean of the one-step forecast observation distribution of $y_t$ given $y_{1:t-1}$}, and $q_{t\mid t-1}$, the variance of the one-step forecast distribution of $y_t$ given $y_{1:t-1}$.
+
+\item $y_{t+i}$'s forecast interval is
+
+\begin{equation}
+\hat y_{t+i\mid t} \pm z \sqrt{q_{t+i\mid t}}
+\end{equation}
+where
+$z=z_{1-\alpha/2}$\%th quantile of the standard Gaussian distribution N(0,1).
+
+\item At each time t we compute $\hat \beta_{t\mid t}$ and $P_{t\mid t}$ using the Kalman filter, then we calculate 
+
+\begin{equation}
+\begin{split}
+~& \hat \beta_{t+i\mid t}\\
+~& P_{t+i\mid t}
+~& \hat y_{t+i\mid t}
+~& q_{t+i\mid t}
+\end{split}
+\end{equation}
+\end{enumerate}
+
+So, the procedure is: compute
+
+1. initial state distribution
+
+2. i-step forecast state distribution
+
+3. i-step forecast observation distribution
+
+\section{SSMs: Model specification}
+
+\subsection{Trend SSMs}
+
+\subsection{Superposition of SSMs}
+
+\subsection{Fourier form seasonal models}
+
+These are models exhibiting periodicity/seasonality. Definition of periodic function: $f(\cdot)$ is periodic if $f(t+T)=f(t)$.
+
+A deterministic periodic function can be represented as a Fourier series:
+
+\begin{equation}
+a_0 + \sum_{i=1}^{\infty} [a_i \cos(i\omega t) + b_i \sin(i\omega t)]
+\end{equation}
+
+where a_0, a_i, b_i are known as the Fourier coefficients.
 
 \subsection{Fully worked examples using library \texttt{dlm}}
 
