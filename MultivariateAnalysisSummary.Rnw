@@ -9,6 +9,9 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{epstopdf}
+
+\usepackage{framed}
+
 \usepackage{multicol}
 
 \usepackage{graphicx}
@@ -1420,7 +1423,7 @@ $\rho_h=1$ for $h=0$, and 0 otherwise.
 
 See p.\ 14 of Cryer et al book.
 
-\subsubsection{Example of non-statinoary process: Random walk}
+\subsubsection{Example of non-stationary process: Random walk}
 
 Examples: stock prices and Brownian motion.
 Not stationary because of non-constant variance, and covariance function $\gamma_{t,s}=t\sigma^2$ does not depend on time lag.
@@ -1442,7 +1445,7 @@ Then:
 \begin{split}
 \gamma_{t,s}=&Cov(y_t,y_s) \\
 =& Cov(e_1+\dots+e_t,e_1+\dots+e_s)\\
-=& Cov(\sum_{i=1}^{t}e_i,\sum_{i=1}^{s}e_j)\\
+=& Cov(\sum_{i=1}^{t}e_i,\sum_{j=1}^{s}e_j)\\
 \end{split}
 \end{equation}
 
@@ -1457,12 +1460,14 @@ Since $1\leq t \leq s$, there are t such cases, so
 The ACF: 
 
 \begin{equation}
-\gamma_{t,s}=\frac{\gamma_{t,s}}{\sqrt{\gamma_{t,r}\gamma_{s,s}}}=\frac{t \sigma^2}{\sqrt{t}\sqrt{s}\sigma^2}= \sqrt{\frac{t}{s}}
+%% was incorrectly written as \gamma_{t,s}
+\rho_s =
+=\frac{\gamma_{t,s}}{\sqrt{\gamma_{t,s}\gamma_{s,s}}}=\frac{t \sigma^2}{\sqrt{t}\sqrt{s}\sigma^2}= \sqrt{\frac{t}{s}}
 \end{equation}
 \end{enumerate}
 
-%% nice observation in Cryer and Chan p 14:
-Note in plot below that even though the theoretical mean is 0 for all time points, the fact that variance increases with time and that neighboring values have correlation nearly 1 means that we should expect long excursions of the process away from the mean of zero. 
+\textbf{Interesting observation in Cryer and Chan p 14}:
+Note that in the plot below that even though the theoretical mean is 0 for all time points, the fact that variance increases with time and that neighboring values have correlation nearly 1 means that we should expect long excursions of the process away from the mean of zero. 
 
 <<>>=
 ys<-rep(NA,1000)
@@ -1591,6 +1596,12 @@ We can express $y_t$ as follows:
 y_t = \phi(B)^{-1}\eps_t \quad \phi(B)=(1 - \alpha B)
 \end{equation}
 
+\begin{framed}
+More generally, for an AR(p) process,
+
+$\phi(B)=1-a_1 B^1 -\dots-a_p B^p$
+\end{framed}
+
 \paragraph{Basic properties of AR(1) processes}\label{basicpropertiesAR1}
 
 \begin{enumerate}
@@ -1603,7 +1614,7 @@ y_t=& \alpha y_{t-1}+ \eps_t \\
 =& \alpha (\alpha (\alpha y_{t-3}+ \eps_{t-2})+ 
 \eps_{t-1}) + \eps_t \\
 =& \dots\\
-=& \alpha^t y_0 + \sum_{i=0}^{t-1} \alpha_i \eps_{t-i}  
+=& \alpha^t y_0 + \sum_{i=0}^{t-1} \alpha^i \eps_{t-i}  
 \end{split}
 \end{equation}
 
@@ -1670,7 +1681,7 @@ And if $t-i = t+h -j$, this implies that $j=i+h$. Consequently, for this case, w
 \begin{split}
 E[\eps_{t-i}\eps_{t+h-j}] =& 
 E[\eps_{t-i}\eps_{t+h-(i+h)}]\\
-=& E[\eps_{t-i}\eps_{t-i)}]\\
+=& E[\eps_{t-i}\eps_{t-i}]\\
 =& E[\eps_{t-i}^2]=Var(\eps_{t-i})=\sigma^2
 \end{split}
 \end{equation}
@@ -2088,7 +2099,15 @@ Note that this implies that
 
 \subsubsection{ACF of MA(q)}
 
+We just established (above) that:
+
 \begin{equation}
+\gamma_0 = Cov(y_t y_{t+0}) =  Var(y_t) = \sigma^2 \sum_{i=0}^{q} \beta_i^2
+\end{equation}
+
+Next, we derive $\gamma_h$, in order to compute the ACF $\rho_h = \gamma_h/\gamma_0$.
+
+\begin{equation} \label{gammahmaq}
 \begin{split}
 \gamma_h = & Cov(y_t y_{t+h}) \\
 = & E[y_t y_{t+h}]\\
@@ -2097,7 +2116,7 @@ Note that this implies that
 
 Since $y_t = \sum_{i=0}^{q} \beta_i \eps_{t-i}$
 and $y_{t+h} = \sum_{j=0}^{q} \beta_j \eps_{t+h-j}$,
-we can write the last line above as:
+we can write the last line in equation~\ref{gammahmaq} as:
 
 \begin{equation}
 \begin{split}
@@ -2123,7 +2142,7 @@ So,
 \end{split}
 \end{equation}
 
-The upper bound in the summation is $q-h$ because we have $i+h$ as a subscript, and $(q-h) + h = q$, which is the maximum value we can have. Hence, i can only have maximal value $q-h$.
+The upper bound in the summation is $q-h$ because we have $i+h$ as a subscript, and $(q-h) + h = q$, which is the maximum value we can have. Hence, $i$ can only have maximal value $q-h$ when $j=i+h$.
 
 So:
 
@@ -2139,8 +2158,8 @@ t-i = t+h-j  \\
 It follows that 
 
 \begin{equation}
-\rho_h = \frac{\gamma_h}{\gamma_0} = \frac{\cancel{\sigma^2} \sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\cancel{\sigma^2} \sum_{i=0}^{q}\beta_i}
-= \frac{\sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\sum_{i=0}^{q}\beta_i}
+\rho_h = \frac{\gamma_h}{\gamma_0} = \frac{\cancel{\sigma^2} \sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\cancel{\sigma^2} \sum_{i=0}^{q}\beta_i^2}
+= \frac{\sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\sum_{i=0}^{q}\beta_i^2}
 \end{equation}
 
 Thus,
@@ -2149,7 +2168,7 @@ Thus,
 \rho_h= 
 \begin{cases}
 0 & \hbox{ for } h>q\\
-\frac{\sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\sum_{i=0}^{q}\beta_i} & \hbox{ for }  h\leq q\\
+\frac{\sum_{i=0}^{q-h} \beta_i \beta_{i+h}}{\sum_{i=0}^{q}\beta_i^2} & \hbox{ for }  h\leq q\\
 \end{cases}
 \end{equation}
 
@@ -2161,7 +2180,7 @@ plot.ts(y)
 acf(y)
 @
 
-The above kind of plot is a very useful tool for identifying AR(q) produces.
+The above kind of plot is a very useful tool for identifying MA(q) processes.
 
 \paragraph{Notes}
 
@@ -2251,7 +2270,7 @@ We can simplify this by using the backward shift operator.
 
 Let $\phi(x)=1-a_1 x - \dots - a_p x^p$ and $h(x)=1+b_1 x + \dots + b_q x^q$.
 
-Since 
+Since, in an AR(p) process,
 
 \begin{equation}
 y_t = 
@@ -2317,7 +2336,7 @@ $h(B)$ (q+1 parameters) is the \textbf{characteristic polynomial} of the MA mode
 \textbf{We get a stationary $MA(\infty)$ representation}
 
 \begin{equation}
-y_t = (\phi(B))^{-1} h(B) \eps_t = \sum_{i=0}^{\infty} \psi_i \eps{t-i}
+y_t = (\phi(B))^{-1} h(B) \eps_t = \sum_{i=0}^{\infty} \psi_i \eps_{t-i}
 \end{equation}
 
 iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called \textbf{causal}. Recall that causality implies stationarity; so if you need to check for statiionarity, check for causality.
@@ -2325,7 +2344,7 @@ iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called
 \textbf{We get a stationary $AR$ representation}
 
 \begin{equation}
-\eps_t = \phi(B) (h(B))^{-1} \y_t = \sum_{j=0}^{\infty} \delta_j y_{t-j}
+\eps_t = \phi(B) (h(B))^{-1} y_t = \sum_{j=0}^{\infty} \delta_j y_{t-j}
 \end{equation}
 
 iff all roots of h(x)=0 lie outside unit circle. The process is said to be \textbf{invertible}. \textbf{If this part is invertible, then the ARMA(p,q) process is invertible.}
@@ -2377,7 +2396,7 @@ Recall that
 \nabla^k y_t = (1-B)^k y_t 
 \end{equation}
 
-Let $y_t$ be the time series. If we apply d-th order differncing to it, we get
+Let $y_t$ be the time series. If we apply d-th order differencing to it, we get
 
 \begin{equation}
 x_t =  (1-B)^d \eps_t 
@@ -2441,7 +2460,7 @@ x_t = \underbrace{(1-B)^d}_\text{$\nabla_d$} \underbrace{(1-B^s)^D }_\text{$\nab
 \end{equation}
  
  Now we assume that $x_t$ follows an ARMA(P,Q) model for its seasonal terms (those lagged by s) and an ARMA(p,q) for its nonseasonal terms. 
-This means that there 
+This means that  
 
 \begin{equation} 
 \Phi_s (B^s) x_t = H_s(B^s)h(B)\eps_t
@@ -2453,7 +2472,21 @@ Expanding out $x_t$:
 \underbrace{\Phi_s(B^s)}_\text{seasonal}\underbrace{\phi(B)}_\text{AR poly.}\underbrace{(1-B^s)^D y_t}_\text{stationary} ] = \underbrace{H_s (B^s)}_\text{seasonal} \underbrace{h(B)}_\text{MA poly.}\eps_t 
 \end{equation}
  
-$\Phi,\phi, H, h$  are polynomials.
+$\Phi,\phi, H, h$  are polynomials:
+
+\begin{framed}
+Recall that
+
+$\Phi(B)= 1-a_1 B^1 -\dots-a_PB^P$
+
+$\phi(B)= 1-a_1 B^1 -\dots-a_p B^p$
+
+$H(B)= 1+b_1 B^1 +\dots+b_Q B^Q$
+
+$h(B)= 1+b_1 B^1 +\dots+b_q B^q$
+\end{framed}
+
+
 
 Such a model is called seasonal ARIMA(p,d,q)$\times$
 (P,D,Q)$_s$ with period s. 
@@ -2507,6 +2540,8 @@ After some algebra, we get:
 ~& = (1+bB^4)\eps_t
 \end{split}
 \end{equation}
+
+[to-do need to check above]
 
 After some more algebraic manipulation,
 
@@ -2781,7 +2816,7 @@ The term $E[\eps_{(t+1)}\mid y_{1:t}]=0$, because
 \begin{split}
 E[\eps_{(t+1)}\mid y_{1:t}] =& E[\eps_{(t+1)} 
 \mid \eps_1,\dots, \eps_t]\\
-=& E[\eps_{(t+1)} \quad \hbox{ independence }\\
+=& E[\eps_{(t+1)}] \quad \hbox{ independence }\\
 =& 0 \hbox{ by WN }
 \end{split}
 \end{equation}
@@ -2837,7 +2872,7 @@ $x_{21}, x_{22},\dots,x_{2t}$
 etc., so that
 $x_t = (x_{1t},\dots,x_{pt})^{T}$. 
 
-For example, $[1 1]^T$ for t=1. For p=2, t=5:
+For example, $[1~1]^T$ for t=1. For p=2, t=5:
 
 <<>>=
 ## x^T:
@@ -2847,7 +2882,7 @@ matrix(rep(1,2*5),ncol=2)
 
 
 \begin{equation}
-y_t = x_{1t}\beta_1 + \dots + x_{pt} \beta_p + \eps_t = \x_t^T \beta+ \eps_t
+y_t = x_{1t}\beta_1 + \dots + x_{pt} \beta_p + \eps_t = x_t^T \beta+ \eps_t
 \end{equation}
 
 where $\beta=(\beta_1,\dots,\beta_p)^T$, a p-variate vector of regression coefficients.
@@ -2857,7 +2892,7 @@ $\eps_t$ is the error or innovation (white noise).
 Estimation is done by minimizing sum of squares:
 
 \begin{equation}
-S(\beta) = \sum{t=1}^{n} (y_y - x_t^T \beta)^T
+S(\beta) = \sum{t=1}^{n} (y_t - x_t^T \beta)^T
 \end{equation}
 
 The vector $\beta$ is time-invariant:  $\beta_n=\beta_{n-1}=\dots=\beta_1=\beta_0$.
@@ -2911,11 +2946,9 @@ y_t =& x_t^T \beta_t + \eps_t \quad \hbox{observation model}\\
 \end{split}
 \end{equation}
 
-\begin{enumerate}
-\item
-$\eps_t \sim N(0,\sigma^2)$
-\item
-$\zeta_t \sim N(0,Z)$
+Where $\eps_t \sim N(0,\sigma^2)$
+and
+$\zeta_t \sim N(0,Z)$.
 E.g., 
 
 \begin{equation}
@@ -2927,8 +2960,6 @@ Z=
 \end{equation}
 
 Z is the transition covariance matrix.
-\end{enumerate}
-
 
 $\sigma^2$ and $Z$ can be time-varying; in such a case, we would write  $\sigma_t^2$ and $Z_t$.
 In finance, $\sigma^2$ represents volatility. 
@@ -3199,7 +3230,322 @@ A deterministic periodic function can be represented as a Fourier series:
 a_0 + \sum_{i=1}^{\infty} [a_i \cos(i\omega t) + b_i \sin(i\omega t)]
 \end{equation}
 
-where a_0, a_i, b_i are known as the Fourier coefficients.
+where $a_0, a_i, b_i$ are known as the Fourier coefficients.
+
+This series can be approximated by a finite sum (a trig.\ polynomial):
+
+\begin{equation}
+S_N(t) = a_0 + \sum_{i=1}^{N} [a_i \cos(i\omega t) + b_i \sin(i\omega t)]
+\end{equation}
+
+$a_1,\dots,a_N$ and $b_1,\dots,b_N$ complex numbers and $\omega=2\pi/T$ the frequency.
+
+To approximate a stochastic process $\{y_t\}$ with a Fourier form, we construct $S_N(t)$ by adding noise to it. We do this by superposing N component state space models; these are called \textbf{harmonic state space models}. 
+
+\subsubsection{Harmonic state space models}
+
+The components are:
+
+\begin{equation}
+x_{it}=x = \begin{pmatrix}
+1\\
+0
+\end{pmatrix}
+\quad F_i = 
+\begin{pmatrix}
+\cos(i\omega) &  \sin(i\omega)\\
+-\sin(i\omega) & \cos(i\omega)\\
+\end{pmatrix}
+\end{equation}
+
+$y_{it}, i=1,\dots,N$ represents the term
+$a_0 +  [a_i \cos(i\omega t) + b_i \sin(i\omega t)]$  plus noise. Proof:
+The observation equation is:
+
+\begin{equation}
+\begin{split}
+y_{it} =& x_{it}^T \beta_{it} + \eps_{it}\\
+=& 
+\begin{pmatrix}
+1 & 0\\
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{i,1,t}\\
+\beta_{i,2,t}\\
+\end{pmatrix}
++
+\eps_{it}\\
+=& \beta_{i,1,t} + \eps_{it}
+\end{split}
+\end{equation}
+
+So, $y_{it} = \beta_{i,1,t} + \eps_{it}$
+
+The transition equation is:
+
+\begin{equation}
+\begin{pmatrix}
+\beta_{i,1,t}\\
+\beta_{i,2,t}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\cos(i\omega) &  \sin(i\omega)\\
+-\sin(i\omega) & \cos(i\omega)\\
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{i,1,t-1}\\
+\beta_{i,2,t-1}
+\end{pmatrix}
++
+\begin{pmatrix}
+\zeta_{i,1,t}\\
+\zeta_{i,2,t}
+\end{pmatrix}
+\end{equation}
+
+This amounts to two equations:
+
+\begin{equation}
+\beta_{i,1,t} = \cos(i\omega)\beta_{i,1,t-1}+
+\sin(i\omega)\beta_{i,2,t-1} + \zeta_{i,1,t}
+\end{equation}
+
+\begin{equation}
+\beta_{i,2,t} = -\sin(i\omega)\beta_{i,1,t-1}+
+\cos(i\omega)\beta_{i,2,t-1} + \zeta_{i,2,t}
+\end{equation}
+
+Recursively substituting the expansion of 
+$\beta_{i,2,t}$ in the first equation by using the second equation, we get all the way to the equation for t=0:
+
+\begin{equation}
+\beta_{i,1,t} = \cos(i\omega)\beta_{i,1,0}+
+\sin(i\omega)\beta_{i,2,0} + \hbox{error}
+\end{equation}
+
+where error is some function of $\zeta_t$. Substituting $\beta_{i,1,t}$ into: 
+
+\begin{equation}
+\begin{split}
+y_{it} =& \beta_{i,1,t} + \eps_{it}\\
+=& \cos(i\omega)\beta_{i,1,0}+
+\sin(i\omega)\beta_{i,2,0} + \hbox{error} + \eps_{it}\\
+\end{split}
+\end{equation}
+
+So, $a_i = \beta_{i,1,0}$ and $b_i = \beta_{i,2,0}$.
+
+To build the state space representation of the seasonal time series, we construct a superposition of N harmonic state space models, along with a local level model for $a_0$. So,
+
+$y_t = \sum_{i=0}^{N} y_{it}$, where $y_{0t}$ has a local level model defined for it.
+
+First define N=T/2 if T is even, or N=(T-1)/2 if T is odd. 
+
+\begin{framed}
+For illustration, suppose T=2.
+
+Then $\omega=2\pi/2=\pi$.  This means that 
+
+$
+F_N = 
+\begin{pmatrix}
+\cos(\pi) &  \sin(\pi)\\
+-\sin(\pi) & \cos(\pi)\\
+\end{pmatrix}=
+\begin{pmatrix}
+-1 &  0\\
+0 & -1\\
+\end{pmatrix}
+$
+
+If T=4, then 
+
+$
+F_N = 
+\begin{pmatrix}
+\cos(\pi/2) &  \sin(\pi/2)\\
+-\sin(\pi/2) & \cos(\pi/2)\\
+\end{pmatrix}=
+\begin{pmatrix}
+0 &  1\\
+-1 & 0\\
+\end{pmatrix}
+$
+
+If T=12, then  (to-do: NOT SURE ABOUT THIS)
+
+$
+F_N = 
+\begin{pmatrix}
+\cos(\pi/6) &  \sin(\pi/6)\\
+-\sin(\pi/6) & \cos(\pi/6)\\
+\end{pmatrix}\approx
+\begin{pmatrix}
+1 &  1/2\\
+-1/2 & 1\\
+\end{pmatrix}
+$
+
+If T=365, then
+$
+F_N = 
+\begin{pmatrix}
+\cos(2\pi/365) &  \sin(2\pi/365)\\
+-\sin(2\pi/365) & \cos(2\pi/365)\\
+\end{pmatrix}\approx
+\begin{pmatrix}
+1 &  0\\
+0s & 1\\
+\end{pmatrix}
+$
+\end{framed}
+Next we define N. Once defined, we can specify:
+
+\begin{equation}
+x_t^T = x^T = 
+\begin{pmatrix}
+1 & x_1 & \dots & x_N\\
+\end{pmatrix}
+F=
+\begin{pmatrix}
+1 & 0 & \dots & 0\\
+0 & F_1 & \dots & 0\\
+\vdots & \vdots & \vdots & \vdots \\ 
+0 & 0 & \dots & F_N\\
+\end{pmatrix}
+\end{equation}
+
+where $F_i = 
+\begin{pmatrix}
+\cos(i\omega) &  \sin(i\omega)\\
+-\sin(i\omega) & \cos(i\omega)\\
+\end{pmatrix}$.
+
+The above is the \textbf{full-effects Fourier form model}. When T is large (e.g., 365), we just take a smaller N than required by N=T/2, as that would entail a lot of parameters. The reduced-N model is called the \textbf{reduced-effects Fourier model}.
+
+\textbf{Example}: Let T=4. Then N=2, so we will have two transition sub-matrices $F_1$ and $F_2$.
+
+We let (not sure how this was determined, the last two elements seem arbitrary) 
+
+$x_t^T=\begin{pmatrix}
+1 &
+1 &
+0 &
+1\\
+\end{pmatrix}
+$
+
+and 
+
+$F_1 = \begin{pmatrix}
+ 0 & 1 \\
+ -1 & 0 \\
+\end{pmatrix}
+\quad 
+F_2 = \begin{pmatrix}
+-1\\
+\end{pmatrix}
+$
+
+$F_2=-1$ because, as i=2, it has the form:
+
+$
+\begin{pmatrix}
+\cos(i\omega) &  \sin(i\omega)\\
+-\sin(i\omega) & \cos(i\omega)\\
+\end{pmatrix}=
+\begin{pmatrix}
+\cos(2\omega) &  \sin(2\omega)\\
+-\sin(2\omega) & \cos(2\omega)\\
+\end{pmatrix}=
+\begin{pmatrix}
+\cos(\pi) &  \sin(\pi)\\
+-\sin(\pi) & \cos(\pi)\\
+\end{pmatrix}=
+\begin{pmatrix}
+-1 &  0\\
+0 & 1\\
+\end{pmatrix}
+$.
+
+Since $F_2$ can only have dimension $1\times 1$ due to the fact that we have four $\beta$ parameters), we take the top-left corner (I think this is how it works---not sure).
+
+So here is what we get:
+
+\begin{equation}
+\begin{split}
+y_{t} =& x_t^T \beta + \eps_{t}\\
+=& 
+\begin{pmatrix}
+1 &
+1 &
+0 &
+1\\
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{1t} \\
+\beta_{2t} \\
+\beta_{3t} \\
+\beta_{4t}\\
+\end{pmatrix}
++ \eps_{t}
+\end{split}
+\end{equation}
+
+So, the \textbf{local level observation model} is:
+
+\begin{equation}
+y_t = \beta_{1t} + \beta_{2t}+ \beta_{4t} + \eps_t
+\end{equation}
+
+Next, we define the \textbf{transition model}:
+
+\begin{equation}
+\begin{split}
+\beta_{t} =&
+\begin{pmatrix}
+\beta_{1t} \\
+\beta_{2t} \\
+\beta_{3t} \\
+\beta_{4t}\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0 & 0 & 0\\
+1 & 0 & 1 & 0\\
+0 & -1 & 0 & 0\\
+0 & 0 & 0 & -1\\
+\end{pmatrix}
++ \zeta_{t}
+\end{split}
+\end{equation}
+
+[The top left corner of the F matrix is for the local level model.]
+
+The above transition model gives four equations:
+
+[This transition model is for the local level:]
+
+\begin{equation}
+\beta_{1,t} = \beta_{1,t-1} + \zeta_{1,t}
+\end{equation}
+
+[These transition models are for the seasonal components:]
+
+\begin{equation}
+\beta_{2,t} = \beta_{1,t-1} + \beta_{2,t-1} \zeta_{2,t}
+\end{equation}
+
+\begin{equation}
+\beta_{3,t} = - \beta_{2,t-1} + \zeta_{3,t}
+\end{equation}
+
+\begin{equation}
+\beta_{4,t} = -\beta_{4,t-1}+ \zeta_{4,t}
+\end{equation}
+
+
 
 \subsection{Fully worked examples using library \texttt{dlm}}
 
