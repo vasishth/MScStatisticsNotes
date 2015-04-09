@@ -2469,7 +2469,7 @@ This means that
 Expanding out $x_t$:
 
 \begin{equation} \label{sarimaformula}
-\underbrace{\Phi_s(B^s)}_\text{seasonal}\underbrace{\phi(B)}_\text{AR poly.}\underbrace{(1-B^s)^D y_t}_\text{stationary} ] = \underbrace{H_s (B^s)}_\text{seasonal} \underbrace{h(B)}_\text{MA poly.}\eps_t 
+\underbrace{\Phi_s(B^s)}_\text{seasonal}\underbrace{\phi(B)(1-B)^d}_\text{AR poly.}\underbrace{(1-B^s)^D y_t}_\text{stationary} ] = \underbrace{H_s (B^s)}_\text{seasonal} \underbrace{h(B)}_\text{MA poly.}\eps_t 
 \end{equation}
  
 $\Phi,\phi, H, h$  are polynomials:
@@ -2611,7 +2611,7 @@ acf(shef_ts)
 \underline{Details}: Under null hyp.\ $H_0: 
 \rho_h = 0$ for $h\geq 1$. So, 
 
-$r_h \sim N(9,1/n)$, for h=1,2,\dots
+$r_h \sim N(0,1/n)$, for h=1,2,\dots
 
 More generally, for ARMA processes, under $H_0$:
 
@@ -2630,8 +2630,7 @@ Note that this does not test the hypothesis $\rho_h = 0$, where, $h\geq p > 1$.
 (what? this doesn't make sense)
 
 \item Test for MA(q): If WN is ruled out, test for MA(q). Recall that for MA(q), $\rho_h = 0$ for $h>q$. 
-Under $H_0: \rho_h = 0$, the $\rho_h$ for $h=q+1,q+1,\dots$ are independent. 
-So, for an MA(q) process we expect 
+Under $H_0: \rho_h = 0$, the $\rho_h$ for $h=q+1,q+2,\dots$ are independent.  So, for an MA(q) process we expect 
 for large $n$:
 
 \begin{equation}
