@@ -1024,7 +1024,7 @@ where $y_t$ is the observation at time $t$.
 Taking a moving average amounts to weighting each $y_t$ by 1/span:
 
 \begin{equation}
-\sum a_i y_{t+1} \hbox{ against } t \quad \sum a_i = 1
+x_i = \sum a_i y_{t+1} \hbox{ against } t \quad \sum a_i = 1
 \end{equation}
 
 The moving average is the special case where 
@@ -1059,6 +1059,8 @@ x_t = \frac{y_{t-2}}{8}
 +
 \frac{y_{t+2}}{8}
 \end{equation}
+
+to-do: Add examples from problems
 
 \paragraph{Detrending using moving averages}
 
@@ -1127,7 +1129,7 @@ Poor model performance in one component (trend,
 seasonality) can be rectified in isolation.
 \end{enumerate}
 
-\subsection{Differencing}
+\subsection{Differencing (this detrends)}
 
 This provides a simple method of removing trend, without explicitly estimating it.
 
@@ -1138,10 +1140,11 @@ This provides a simple method of removing trend, without explicitly estimating i
 Define an operator $B$, called a 
 \textbf{backward shift operator}: 
 
+\begin{framed}
 \begin{equation}
 B y_t = y_{t-1}
 \end{equation}
-
+\end{framed}
 
 This allows us to rewrite 
 
@@ -1192,9 +1195,11 @@ Second-order differening removes polynomial trend.
 
 \textbf{k-th order differencing}
 
+\begin{framed}
 \begin{equation}
 \nabla^k y_t = (1-B)^k y_t 
 \end{equation}
+\end{framed}
 
 \noindent
 removes k-th degree polynomial trend. Ususally, k=1 or 
@@ -1213,8 +1218,7 @@ y_t - y_{t-12}=\nabla_{12} y_t = (1-B^{12}) y_t
 
 For k=12, we say \textbf{this is differencing with lag 12}, or seasonal differencing if monthly series are involved. 
 
-\paragraph{Exercise}: Show $\nabla \nabla_{12} = 
-\nabla_{12}\nabla$, and interpret.
+\paragraph{Exercise (Task 3)}: Show $\nabla \nabla_{12} =  \nabla_{12}\nabla$, and interpret.
 
 \begin{equation}
 \begin{split}
@@ -1268,7 +1272,7 @@ ts.plot(shef_ts,ylab="temp.",
 
 The decompose function:
 
-<<echo=FALSE>>=
+<<>>=
 whisk_ts_decomp<-decompose(whisk_ts)
 #str(whisk_ts_decomp)
 @
@@ -1456,13 +1460,20 @@ Since $1\leq t \leq s$, there are t such cases, so
 \gamma_{t,s}=t \sigma^2
 \end{equation}
 
+Note also that 
+
+\begin{equation}
+\gamma_{s,s}=s \sigma^2 \quad \gamma_{t,t}=t \sigma^2 
+\end{equation}
+
+
 \item
 The ACF: 
 
 \begin{equation}
 %% was incorrectly written as \gamma_{t,s}
 \rho_s =
-=\frac{\gamma_{t,s}}{\sqrt{\gamma_{t,s}\gamma_{s,s}}}=\frac{t \sigma^2}{\sqrt{t}\sqrt{s}\sigma^2}= \sqrt{\frac{t}{s}}
+=\frac{\gamma_{t,s}}{\sqrt{\gamma_{t,t}\gamma_{s,s}}}=\frac{t \sigma^2}{\sqrt{t}\sqrt{s}\sigma^2}= \sqrt{\frac{t}{s}}
 \end{equation}
 \end{enumerate}
 
@@ -1480,7 +1491,6 @@ plot(1:1000,ys,type="l")
 @
 
 Note that differencing: $\nabla y_t = y_t - y_{t-1}$ will make it stationary. See below.
-
 
 
 
@@ -1621,7 +1631,7 @@ y_t=& \alpha y_{t-1}+ \eps_t \\
 As $t\rightarrow \infty$, if $\mid \alpha \mid < 1$ and $y_0$ finite, we get:
 
 \begin{equation}
-\sum_{i=0}^{\infty} a^i \eps_{t-i}
+y_t = \sum_{i=0}^{\infty} a^i \eps_{t-i}
 \end{equation}
 
 Thus, as long as $\mid a_i\mid <1$, we have a \textbf{minimum moving average} representation of AR(1):
@@ -1636,10 +1646,13 @@ This will make it easier to compute mean, variance, and acf.
 
 \item \textbf{Expectation, variance and acf}:
 
+\underline{Expectation}
 
 \begin{equation}
 E[y_t] = \sum_{i=0}^{\infty} \alpha^i E[\eps_{t-i}] = 0
 \end{equation}
+
+\underline{Variance}
 
 \begin{equation}
 Var(y_t) = \sum_{i=0}^{\infty} \alpha^{2i} 
@@ -1649,15 +1662,21 @@ Var(y_t) = \sum_{i=0}^{\infty} \alpha^{2i}
 
 The above follows due to the geometric series (infinite sum).
 
+\underline{Covariance}
+
 The covariance: (Recall: Cov(X,Y)=E[XY] - E[X]E[Y])
 
 \begin{equation}
-\gamma_h = E[y_ty_{t+h}]-\explain{E[y_t]}{=0}\explain{E[y_{t+h}]}{=0} =
-E[y_ty_{t+h}]
+\begin{split}
+~& Cov(y_t, y_{t+h}) \\
+\gamma_h = 
+~& E[y_t y_{t+h}]-\explain{E[y_t]}{=0}\explain{E[y_{t+h}]}{=0} =
+E[y_ty_{t+h}] \\
+\end{split}
 \end{equation}
 
-Since $E[y_t] = \sum_{i=0}^{\infty} \alpha^i \eps_{t-i}$ and 
-$E[y_{t+h}] = \sum_{j=0}^{\infty} \alpha^j \eps_{t+h-j}$,
+Since $y_t = \sum_{i=0}^{\infty} \alpha^i \eps_{t-i}$ and 
+$y_{t+h} = \sum_{j=0}^{\infty} \alpha^j \eps_{t+h-j}$,
 
 \begin{equation}
 \gamma_h = E[y_ty_{t+h}]-\explain{E[y_t]}{=0}\explain{E[y_{t+h}]}{=0}
@@ -1723,8 +1742,7 @@ So, we have:
 \gamma_h = \frac{\sigma^2\alpha^h}{1-\alpha^2}
 \end{equation}
 
-
-ACF: 
+\underline{ACF}
 
 \begin{equation}
 \begin{split}
@@ -1737,7 +1755,7 @@ ACF:
 
 %[All that hard work, for this?]
 
-\textbf{So the mean, variance, and ACF do not depend on time t.} So, the $y_t$
+\textbf{So the mean, variance, covariance, and ACF do not depend on time t.} So, the $y_t$
 satisfies the conditions for stationarity.  
 
 
@@ -1846,7 +1864,7 @@ $\{y_t\}$ is not stationary.
 
 \textbf{Note that for AR(1) in general, $Var(y_t)<\infty \Leftrightarrow$ stationarity}.
 
-Note that differencing will reduce $y_t$ to stationarity:
+\underline{Note that differencing will reduce $y_t$ to stationarity}:
 
 \begin{equation}
 \nabla y_t = y_t - y_{t-1} = \cancel{y_{t-1}} + \eps_t - \cancel{y_{t-1}} =
@@ -1952,9 +1970,13 @@ $\phi(x)= 1- ax$
 
 The root is $\phi(x)=0\Rightarrow x=\frac{1}{\mid a\mid}$. This implies that $\mid a\mid<1$. See discussion above on $\mid a\mid <1$ (section~\ref{basicpropertiesAR1}).
 
+to-do: Add Task 9 examples
+
+$\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+
 \subsubsection{Deriving ACF for AR(p): The Yule-Walker (difference) equations}
 
-We are going to derive $\gamma_h$.
+We are going to derive $\gamma_h$ for AR(p).
 
 Recall that (we proved this earlier) that 
 $\gamma_h = E[y_{t-h} y_t]=\gamma_{-h}$, because ACF depends only on lag, not on time t.
@@ -2040,11 +2062,15 @@ So, ACF of AR(p) is given by
 
 In other words:
 
+\begin{framed}
 \begin{equation}
 \rho_h=a_1 \rho_{h-1}+ \dots+a_p \rho_{h-p}
 \end{equation}
+\end{framed}
 
 The above is the \textbf{Yule-Walker (difference) equation}.
+
+to-do add Problem 14 here (also 10 or 11?)
 
 For example, an AR(2) process:
 $y_t = 0.5 y_t + 0.25 y_{t-2} + \eps_t$.
@@ -2255,6 +2281,8 @@ y_t = - \sum_{i=1}^{\infty} (-\beta_i)^{i} y_{t-1} + \eps_t
 
 This is an $AR(\infty)$ iff $\mid \beta_1\mid < 1$. This rules out second model above as $\mid \frac{1}{\beta} \mid = \mid \beta' \mid > 1$.
 
+to-do: Add problem 11 on invertibility
+
 \section{ARMA(p,q) processes}
 
 \begin{definition}
@@ -2339,7 +2367,7 @@ $h(B)$ (q+1 parameters) is the \textbf{characteristic polynomial} of the MA mode
 y_t = (\phi(B))^{-1} h(B) \eps_t = \sum_{i=0}^{\infty} \psi_i \eps_{t-i}
 \end{equation}
 
-iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called \textbf{causal}. Recall that causality implies stationarity; so if you need to check for statiionarity, check for causality.
+iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called \textbf{causal}. Recall that causality implies stationarity; so if you need to check for stationarity, check for causality.
 
 \textbf{We get a stationary $AR$ representation}
 
@@ -2348,6 +2376,8 @@ iff all roots of $\phi(x)=0$ lie outside the unit circle. This process is called
 \end{equation}
 
 iff all roots of h(x)=0 lie outside unit circle. The process is said to be \textbf{invertible}. \textbf{If this part is invertible, then the ARMA(p,q) process is invertible.}
+
+to-do add problem 12
 
 \subsection{ACF of an ARMA(p,q) process}
 
@@ -2422,7 +2452,7 @@ One root of $\phi_1 (B)$ is 1, and so $y_t$ is not stationary.
 
 \subsection{Seasonal ARIMA: SARIMA}
 
-Note: we will use D for seasonal differncing, instead of d. D is only rarely greater than 2.
+Note: we will use D for seasonal differencing, instead of d. D is only rarely greater than 2.
 
 Recall: 
 \begin{enumerate}
@@ -2477,11 +2507,11 @@ $\Phi,\phi, H, h$  are polynomials:
 \begin{framed}
 Recall that
 
-$\Phi(B)= 1-a_1 B^1 -\dots-a_PB^P$
+$\Phi_s(B^s)= 1-a_1 B^1 -\dots-a_PB^P$
 
 $\phi(B)= 1-a_1 B^1 -\dots-a_p B^p$
 
-$H(B)= 1+b_1 B^1 +\dots+b_Q B^Q$
+$H_s(B^s)= 1+b_1 B^1 +\dots+b_Q B^Q$
 
 $h(B)= 1+b_1 B^1 +\dots+b_q B^q$
 \end{framed}
@@ -2496,6 +2526,8 @@ BTW, note how the Backward shift operator simplifies the notation.
 
 The application of this formula will be: Given a model SARIMA(p,d,q)$\times$
 (P,D,Q)$_s$ with some instantiated values, write down the form of the model in the form $y_t=\dots$. Or vice versa. 
+
+to-do add Exercise 2 examples
 
 \textbf{Example}:
 Write down the model SARIMA(1,1,0)$\times$ (0,1,1)$_4$ as $y_t=\dots$.
@@ -2786,13 +2818,21 @@ a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + 
 \begin{split}
 y_t =& E[y_{t+1}\mid y_{1:t}] \\
 =& 
-E[a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q} \mid y_{1:t}]\\
+E[a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + \\
+~& b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q} \mid y_{1:t}]\\
 =&
-E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
+E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + \\
+~& b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
 \end{split}
 \end{equation}
 
-Now, if we want $E[y_t \mid y_{1:t}]$, this will simply be the observed value $y_t$ in the vector $y_{1:t}$, since that is all the information we have about it. \textbf{Note that $y_t$ is not a random variable, it is an observed value}.
+Now, if we want $E[y_t \mid y_{1:t}]$, this will simply be the observed value $y_t$ in the vector $y_{1:t}$, since that is all the information we have about it. 
+
+\begin{framed}
+Remember the notion of conditional expectation of a RV. This is different than the expectation of a RV. If say you have Y a RV and X another RV, then you can define $E(Y \mid X=x)$ the expectation of Y given that the RV X took the value x. Now it is clear that if Y is a linear combination of X (still a RV) and since X is observed to be equal to x, \textbf{then Y is no more random, as it is a function of the observed x}. This is different than taking E(Y) in which Y is random (even if it is a function of X) as now we are not conditioning upon X=x.
+\end{framed}
+
+%\textbf{Note that $y_t$ is not a random variable, it is an observed value}.
 
 So, we can write:
 
@@ -2800,7 +2840,8 @@ So, we can write:
 \begin{split}
 y_t =& E[y_{t+1}\mid y_{1:t}] \\
 =&
-E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
+E[a_1 y_{t} + \dots + a_p y_{t+1-p} + \eps_{(t+1)} + \\
+~& b_1 \eps_{t} + \dots + b_q \eps_{t+1-q} \mid y_{1:t}]\\
 =& E[a_1 y_{t}\mid y_{1:t}] + \dots + E[a_p y_{t+1-p}\mid y_{1:t}] \\
 ~& + E[\eps_{(t+1)}\mid y_{1:t}] \\
 ~& + E[b_1 \eps_{t}\mid y_{1:t}] + \dots + E[b_q \eps_{t+1-q}\mid y_{1:t}]\\
@@ -2822,7 +2863,20 @@ E[\eps_{(t+1)}\mid y_{1:t}] =& E[\eps_{(t+1)}
 
 This gives us the:
 
-\subsection{One-step predictor}
+\subsubsection{One-step predictor}
+
+\begin{equation}
+\begin{split}
+\hat y_{t+1} =& E[y_{t+1}\mid y_{1:t}]\\
+=& E[a_1 y_t + \dots + a_p y_{t+1-p} \\
+~& +\epsilon_{t+1}\\
+~& +b_1 \epsilon_t + \dots + b_q \epsilon_{t+1-q}\mid y_{1:t}]\\
+\end{split}
+\end{equation}
+
+[Notice that $E[a_1 y_t + \dots + a_p y_{t+1-p}]$ is $a_1 y_t + \dots + a_p y_{t+1-p}$ because we have already observed $y_{1:t}$.]
+
+$E[\epsilon_{t+1}\mid y_{1:t}]=0$ because $\epsilon_{t+1}$ comes after $y_{1:t}$.
 
 \begin{equation}
 \hat y_{t+1} = 
@@ -2830,29 +2884,215 @@ a_1 y_{t} + \dots + a_p y_{t+1-p} +
 b_1 \eps_{t} + \dots + b_q \eps_{t+1-q}
 \end{equation}
 
-\subsection{Two- and i-step predictor}
+The MA part of the terms, $b_1 \eps_{t} + \dots + b_q \eps_{t+1-q}$, arise because $E[\epsilon_t\mid y_{1:t}]=\epsilon_t$, $E[\epsilon_{t-1}\mid y_{1:t}]=\epsilon_{t-1}$, etc.
+
+\subsubsection{Two- and i-step predictor}
+
+We are looking for the conditional distribution of $y_{t+i}$ given $y_{1:t}$.
 
 For the $t+2$-th step predictor:
 
 \begin{equation}
 \begin{split}
-\hat y_{t+2} =&  
+\hat y_{t+2} 
+=& 
 a_1 \hat y_{t+1} + a_2 y_{t} \dots + a_p y_{t+2-p} \\
 ~& +
-b_1 \eps_{t} + \dots + b_q \eps_{t+2-q}
+b_2 \eps_{t} + \dots + b_q \eps_{t+2-q}
 \end{split}
 \end{equation}
 
-For $t+i$-th step predictor (to-do: 
-check this):
+For $t+i$-th step predictor:
 
 \begin{equation}
 \begin{split}
-\hat y_{t+i} =& 
-a_1 \hat y_{t+i-1} + a_2  y_{t} \dots + a_p y_{t+i-p} \\
-~& + b_1 \eps_{t} + \dots + b_q \eps_{t+i-q}
+\hat y_{t+i} =& E[y_{t+i}\mid y_{1:t}]\\
+=&
+E[a_1  y_{t+i-1} +  a_2 y_{t+i-2} \dots + a_p y_{t+i-p} + \epsilon_{t+i} \\
++& b_1 \eps_{t+1} + \dots + b_q \eps_{t+i-q}\mid y_{1:t}]\\
+=& 
+E[a_1 y_{t+i-1} +  a_2 y_{t+i-2} \dots + a_p y_{t+i-p} \mid y_{1:t} ]\\
++& E[\epsilon_{t+i}\mid y_{1:t}] + E[b_1 \eps_{t+1} + \dots + b_q \eps_{t+i-q}\mid y_{1:t}]\\
+=&  a_1 \hat y_{t+i-1} + a_2  y_{t+i -2} \dots + a_p y_{t+i-p} \\
+~& + b_i \eps_{t+i} + \dots + b_q \eps_{t+i-q}
 \end{split}
 \end{equation}
+
+\textbf{Note that we begin the MA part of the equation with $b_i$, not $b_1$}. That's because all ``preceding'' expectations are 0. (to-do: spell this out, see p.\ 66)
+
+\subsection{Prediction variance and prediction intervals}
+
+We have to compute $V=Var(y_{t+i}\mid y_{1:t})$, and then
+
+\begin{equation}
+\hat y_{t+1} \pm 2 \sqrt{V} 
+\end{equation}
+
+\underline{Example AR(1)}
+
+Suppose we have a zero mean AR(1) process, 
+
+$y_t =a_1 y_{t-1} + \epsilon_t$
+
+where $\epsilon_t$ is white noise and normally distributed. Assume that $a_1$ and $\sigma^2$ have been estimated using MLE. Given data $y_{1:n}$, we want to estimate a prediction interval for $\hat y_{n+i}$.
+
+\underline{Calculate $\hat y_{n+i}$}
+
+Express $\hat y_{n+i}$ as a function of the observed data $y_{1:n}$.
+
+\begin{equation}
+\begin{split}
+y_{n+i} = & ay_{n+i -1} + \epsilon_{n+i}\\
+= & a(ay_{(n+i-1)-1} + \epsilon_{(n+i)-1}) + \epsilon_{n+i}\\
+= & a(ay_{n+i-2} + a\epsilon_{n+i-1} + \epsilon_{n+i}\\
+= & dots \\
+= & a^i y_n + \sum_{j=0}^{i-1} a^j \epsilon_{n+i-j}\\
+\end{split}
+\end{equation}
+
+\begin{framed}
+\begin{equation}
+\hat y_{n+i}= E[y_{n+i}\mid y_{1:n}] = a^i y_n
+\end{equation}
+
+because $E[\epsilon_t]=0$ for all t.
+\end{framed}
+
+\underline{Calculate V}
+
+\begin{equation}
+\begin{split}
+V =& Var(y_{n+i}\mid y_{1:n})\\
+=& \sum_{j=0}^{i-1} a^{2j} Var(\epsilon_{n+i-j})\\
+=& \sigma^2 \sum_{j=0}^{i-1} a^{2j} \\
+=& \sigma^2 \frac{1-a^{2i}}{(1-a^2)}
+\end{split}
+\end{equation}
+
+The last line is the sum of a finite geometric series: $\sum_{j=0}^{i-1} a^{2j}$. (to-do: unpack this).
+
+\begin{framed}
+\begin{equation}
+\hat y_{n+i} \pm 2\sqrt{V} = a^i y_n + 2\sigma \sqrt{\frac{1-a^{2i}}{1-a^2}} 
+\end{equation}
+\end{framed}
+
+\subsection{Prediction for ARIMA and SARIMA processes}
+
+Let
+
+\begin{equation}
+y_t \sim ARIMA(p,d,q)
+\end{equation}
+
+Transforming gives us
+
+\begin{equation}
+x_t = (1-B)^d y_t \sim ARMA(p,q)
+\end{equation}
+
+Recall that $B^i y_t = y_{t-i}$.
+
+\subsubsection{Consider the case where d=1}
+
+Note that:
+$\nabla y_t = x_t = y_t - y_{t-1}$
+
+and
+
+$y_t = x_t + y_{t-1}$.
+
+Write $x_{t+i} = y_{t+i} - y_{t+i-1}$ as
+
+$y_{t+i}= x_{t+i} + y_{t+i-1}$
+
+\begin{equation}
+E[y_{t+i}\mid y_{1:t}] = E[x_{t+i} \mid y_{1:n}]+ E[y_{t+i-1}\mid y_{1:t}] 
+\end{equation}
+
+This gives us:
+
+\begin{framed}
+\begin{equation}
+\hat y_{t+i}= \hat x_{t+i} + \hat y_{t+i-1}  
+\end{equation}
+\end{framed}
+
+For i=1, we have 
+
+\begin{equation}
+\begin{split}
+\hat y_{t+1}=& \hat x_{t+1} + \hat y_{t+1-1}  \\
+=& \hat x_{t+1} + \hat y_{t}\\
+\end{split}
+\end{equation}
+
+For i=2, we have
+
+\begin{equation}
+\begin{split}
+\hat y_{t+2}=& \hat x_{t+2} + \hat y_{t+2-1}  \\
+=& \hat x_{t+2} + \hat y_{t+1}  \\
+\end{split}
+\end{equation}
+
+Since $\hat y_{t+1} = \hat x_{t+1}+y_t$, we can write the last line as
+
+\begin{equation}
+\hat x_{t+2} + \hat y_{t+1}= \hat x_{t+2} + \hat x_{t+1}+y_t
+\end{equation}
+
+and so on.
+
+\subsubsection{Consider the case where d>1}
+
+If we have a trend TS $y_t$ and difference it d times to remove the trend, $x_t$.
+
+\begin{equation}
+x_t = (1-B)^d y_t 
+\end{equation}
+
+expanding the RHS using the binomial theorem: (to-dp: define here)
+
+\begin{equation}
+\begin{split}
+x_t  =& y_t+\sum_{j=0}^{d} {n \choose k} (-B) y_t  \\
+=&  y_t+ \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t-j}  \\
+\end{split}
+\end{equation}
+
+Now, 
+
+$\hat x_{t+1}=y_{t+1}+ \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+1-j}$.
+
+Therefore,
+
+$y_{t+1} = \hat x_{t+1} - \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+1-j}$
+
+\subsubsection{Consider the SARIMA case}
+
+If $y_t$ is seasonal, we would transform as follows:
+
+\begin{equation}
+\begin{split}
+x_t =& (1-B^s)^D y_t\\
+=& y_t + \sum_{j=0}^D {n \choose j}(-B)^j y_t \\
+\end{split}
+\end{equation}
+
+Extracting the negation sign and reducing $B^jy_t$,
+
+\begin{equation}
+x_t = y_t + \sum_{j=0}^D {n \choose j}(-1)^j y_{y-sj}
+\end{equation}
+
+So, for the i-th predicted value,
+
+\begin{equation}
+y_{t+i} = x_{t+i} - \sum_{j=0}^D {n \choose j}(-1)^j y_{y-sj}
+\end{equation}
+
+If we put s=1 and D=d   then we would get the first formula above.
 
 \section{State Space Models}
 
@@ -2898,7 +3138,7 @@ The vector $\beta$ is time-invariant:  $\beta_n=\beta_{n-1}=\dots=\beta_1=\beta_
 
 \subsection{An almost time-invariant model}
 
-When we have
+When we have slowly varying coefficients:
 
 \begin{equation}
 \beta_t \approx \beta_{t-1}
@@ -2941,11 +3181,17 @@ Replaces the random walk of $\beta_t$ with a \textbf{more general Markov chain}.
 \begin{equation}
 \begin{split}
 y_t =& x_t^T \beta_t + \eps_t \quad \hbox{observation model}\\
-\beta_t =& F\beta_{t-1}+ \zeta_t \quad \hbox{transition model}\\ 
+\beta_t =& F_t\beta_{t-1}+ \zeta_t \quad \hbox{transition model}\\ 
 \end{split}
 \end{equation}
 
-Where $\eps_t \sim N(0,\sigma^2)$
+$F_t$ is the transition matrix.
+
+$\epsilon_t\sim WN$ and $\zeta_s\sim WN$, and are independent for all s,t. 
+
+$\epsilon_t, \zeta_s, \beta_0$ are all normally distributed. 
+
+$\beta_t$ is a random variable, and $\eps_t \sim N(0,\sigma^2)$
 and
 $\zeta_t \sim N(0,Z)$.
 E.g., 
@@ -2968,6 +3214,8 @@ For now, assume $\sigma^2$ is time-invariant, and $Z_t$ is time-varying. Since $
 \begin{equation}
 \beta_{0} \sim N(\hat \beta_{0\mid 0}, P_{0\mid 0})
 \end{equation}
+
+Estimation is happening sequentially: $y_t$ corresponds to a state $\beta_t$. In filtering we want to estimate $\beta_1$ given data up to t: $t_{1:t}$.
 
 \subsection{Filtering: Kalman Filter (Theorem 5.1)}
 
@@ -3341,7 +3589,6 @@ $y_t = \sum_{i=0}^{N} y_{it}$, where $y_{0t}$ has a local level model defined fo
 
 First define N=T/2 if T is even, or N=(T-1)/2 if T is odd. 
 
-\begin{framed}
 For illustration, suppose T=2.
 
 Then $\omega=2\pi/2=\pi$.  This means that 
@@ -3398,7 +3645,7 @@ F_N =
 0s & 1\\
 \end{pmatrix}
 $
-\end{framed}
+
 Next we define N. Once defined, we can specify:
 
 \begin{equation}
