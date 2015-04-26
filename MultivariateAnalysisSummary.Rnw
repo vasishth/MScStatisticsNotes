@@ -142,6 +142,17 @@ options(continue=" ")
 
 \section{Preliminaries}
 
+\subsection{Some math needed in TS}
+
+Completing the square: $\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+
+Often, we have imaginary numbers involved. Recall that $i^2 = \sqrt{-1}$. So we will often have roots with a real and complex part:
+$4 + \sqrt{-25}= 4 + 5\sqrt{-1}=4 + 5i$. In the TS context, we need to know if the roots lie outside the unit circle; with imaginary components, we can determine this by simply computing the length of the vector:
+
+$\sqrt{4^2 + 5^2}=6.4$.
+
+\subsection{The model matrix}
+
 We will treat $X'$ as the data matrix:
 
 \begin{equation}
@@ -1972,7 +1983,6 @@ The root is $\phi(x)=0\Rightarrow x=\frac{1}{\mid a\mid}$. This implies that $\m
 
 to-do: Add Task 9 examples
 
-$\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
 
 \subsubsection{Deriving ACF for AR(p): The Yule-Walker (difference) equations}
 
@@ -2722,6 +2732,7 @@ Calculating PACF: to-do
 \subsection{Model selection}
 
 
+
 \section{Forecasting}
 
 Given data $y_{1:t}$, we want to forecast/predict $\hat y_{t+i}$. $t$ is called the \textbf{forecast origin} and $i$ is called \textbf{lead time}.
@@ -3176,6 +3187,8 @@ y_t = \beta_t + \eps_t \quad
 
 \subsection{The general state space model}
 
+
+
 Replaces the random walk of $\beta_t$ with a \textbf{more general Markov chain}. That is:
 
 \begin{equation}
@@ -3217,7 +3230,26 @@ For now, assume $\sigma^2$ is time-invariant, and $Z_t$ is time-varying. Since $
 
 Estimation is happening sequentially: $y_t$ corresponds to a state $\beta_t$. In filtering we want to estimate $\beta_1$ given data up to t: $t_{1:t}$.
 
+
+
+
 \subsection{Filtering: Kalman Filter (Theorem 5.1)}
+
+The objective will be to get posterior distribution of $\beta_t$ given $y_{1:t}$ for any t. Given new datum $y_t$ (one data-point) compute posterior using Bayes:
+
+\begin{equation}
+P(\beta_t \mid y_{1:t}) \approx P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
+\end{equation}
+
+May be easier to see if we single out the datum $y_t$ by writing it separately:
+
+\begin{equation}
+P(\beta_t \mid y_{1:t-1},y_t) \approx P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
+\end{equation}
+
+The Kalman filter is just an application of Bayes' Theorem for computing the posterior sequentially.
+
+\underline{\textbf{The Kalman Filter Theorem}}
 
 Given:
 
@@ -3233,7 +3265,7 @@ For each $t=1,\dots,n$, the following applies:
 
 \begin{enumerate}
 \item 
-The forecast distribution of $\beta_t$ at $t-1$ is 
+The \textbf{forecast distribution} of $\beta_t$ at $t-1$ is 
 
 \begin{equation}
 \beta_t \mid y_{1:t-1}\sim N(\hat \beta_{t\mid t-1}, P_{t\mid t-1})
@@ -3242,14 +3274,14 @@ The forecast distribution of $\beta_t$ at $t-1$ is
 where 
 \begin{enumerate}
 \item
-$\beta_{t\mid t-1} = F\hat \beta_{t-1\mid t-1}$
+$\hat \beta_{t\mid t-1} = F_t\hat \beta_{t-1\mid t-1}$
 \item
-$P_{t\mid t-1} = FP_{t-1\mid t-1} F^T + Z_t$
+$P_{t\mid t-1} = F_tP_{t-1\mid t-1} F_t^T + Z_t$
 \end{enumerate}
 
 (The transition matrix F gives the next value.)
 
-\item The posterior distribution of $\beta_t$ at time $t$ is 
+\item The \textbf{posterior distribution} of $\beta_t$ at time $t$ is 
 
 \begin{equation}
 \beta_t \mid y_{1:t}  \sim N(\hat \beta_{t\mid t}, P_{t\mid t})
@@ -3260,13 +3292,47 @@ where
 
 \begin{enumerate}
 \item
-$\hat \beta_{t\mid t} = \hat \beta_{t\mid t-1} + k_t \eps_t$
+$\hat \beta_{t\mid t} = \hat \beta_{t\mid t-1} + k_t \eps_t = \hat \beta_{t\mid t-1} + k_t (y_t - \hat{y_{t\mid t-1}})$
+
+[If the difference $(y_t - \hat{y_{t\mid t-1}})=\epsilon_t$ is 0, then posterior is identical to prior, else if the absolute value of the difference is greater than 0, then k$\times$ diff is the factor by which we adjust the prior to estimate posterior.]
+
 \item 
 $\hat y_{t\mid t-1} = x_t^T \hat \beta_{t\mid t-1}$
 \item 
 $e_t = y_t - \hat y_{t\mid t-1}$
-\item Forecast variance:
-$q_{t\mid t-1} = x_t^T P_{t\mid t-1} x_t + \sigma^2$
+\item Forecast variance: This will stabilize quickly to fixed values:
+
+\begin{equation}
+\begin{split}
+q_{t\mid t-1} =& V(y_t\mid y_{1:t-1})\\
+=&  x_t^T P_{t\mid t-1} x_t + \sigma^2\\
+\end{split}
+\end{equation}
+
+\textbf{Example}: Compute $q_{1\mid 0}$, given $x=1, F=1, P_{0\mid 0}=1000, Z=9, \sigma^2 = 1$.
+
+Recall (above) that 
+
+\begin{equation}
+P_{t\mid t-1} = FP_{t-1\mid t-1} F^T + Z_t
+\end{equation}
+
+It follows that
+
+$P_{1\mid 0}=1\times 1000 \times 1 + 9$.
+
+Plugging in the values into the formula for q:
+
+\begin{equation}
+\begin{split}
+q_{1\mid 0} =& V(y_1\mid y_{1:0})\\
+=&  x_1^T P_{1\mid 0} x_1 + \sigma^2\\
+=&  1 \times (1000+9) \times 1 + 1\\
+=& 1010
+\end{split}
+\end{equation}
+
+
 \item Kalman gain:
 $k_t = \frac{P_{t\mid t-1} x_t}{q_{t\mid t-1}}$
 \item 
@@ -3342,6 +3408,299 @@ The great thing about the Kalman filter is that to compute $\hat \beta_{2\mid 2}
 %\beta_1_{t-1}\\
 %\end{pmatrix}
 %\end{equation}
+
+\subsection{Step-by-step example using Kalman filter}
+
+We take a specific example. To be specific, assume that 
+$x_t=1, F_t=1, Z_t=9, \sigma^2 = 1$.  Let prior be $\hat \beta_{0\mid 0} = 0$, $P_{0\mid 0}=1000$.
+
+<<>>=
+xt<-Ft<-1
+Zt<-9
+sigma2<-1
+hatbeta00<-0
+P00 <- 1000
+@
+
+\begin{equation}
+\begin{split}
+y_t =& x_t^T \beta_t + \eps_t \quad \hbox{(observational model)}\\
+\beta_1 =& F\beta_{t-1} + \zeta_t \quad \hbox{(transition model)}\\
+\beta_{0} =& N(\hat \beta_{0\mid 0}, P_{0\mid 0})\\
+\end{split}
+\end{equation}
+
+At the outset, we have the prior distribution of $\beta_0$:
+
+\begin{equation}
+\beta_0 \sim N(\hat\beta_{0\mid 0},P_{0\mid 0})
+\end{equation}
+
+\begin{enumerate}
+\item Step 0: We have no data: $y_0$. 
+
+\item Step 1: Set t=1, and compute forecast distribution at t-1=0.
+
+Compute \textbf{forecast distribution}:
+
+\begin{equation}
+\begin{split}
+~& \beta_t \mid y_{1:t-1}\sim N(\hat \beta_{t\mid t-1}, P_{t\mid t-1})\\
+~& \beta_1 \mid y_{1:0}\sim N(\hat \beta_{1\mid 0}, P_{1\mid 0}) \\
+\end{split}
+\end{equation}
+
+where 
+\begin{enumerate}
+\item
+\begin{equation}
+\begin{split}
+\hat \beta_{t\mid t-1} =& F_t\hat \beta_{t-1\mid t-1}\\
+\hat \beta_{1\mid 0} =& 1 \hat \beta_{0\mid 0}\\
+=& \hat \beta_{0\mid 0} = 0\\
+\end{split}
+\end{equation}
+
+\item
+
+\begin{equation}
+\begin{split}
+P_{t\mid t-1} =& F_tP_{t-1\mid t-1} F_t^T + Z_t\\
+P_{1\mid 0} =& 1 P_{0\mid 0} 1 + 9\\
+=& P_{0\mid 0}  + 9 = 1009\\
+\end{split}
+\end{equation}
+\end{enumerate}
+
+So, we have computed $\hat\beta_{1\mid 0} \sim N(\hat \beta_{0\mid 0}, P_{0\mid 0}+9) = N(0, 1009)$.
+
+<<>>=
+(hatbeta10<-Ft*hatbeta00)
+(P10<-Ft*P00*Ft + Zt)
+@
+
+\item A single data point comes in: $y_1$. Suppose it has value 10.
+
+<<>>=
+y1<-10
+@
+
+The next steps are:
+
+\begin{enumerate}
+\item Compute $q_{t\mid t-1}=q_{1\mid 0}$. 
+
+[This is needed to compute $k_1$, which is needed for computing $\beta_{1\mid 1}$.]
+
+\begin{equation}
+\begin{split}
+q_{t\mid t-1} =& V(y_t\mid y_{1:t-1})\\
+q_{1\mid 0} =& V(y_1\mid y_{1:0})\\
+=&  x_t^T P_{t\mid t-1} x_t + \sigma^2\\
+=&  x_1^T P_{1\mid 0} x_1 + 1\\
+=&  1 (P_{0\mid 0} + 9)1 + 1\\
+=&  P_{0\mid 0} + 9 + 1\\
+=&  P_{0\mid 0} + 10\\
+=&  1000 + 10 = 1010\\
+\end{split}
+\end{equation}
+
+<<>>=
+(q10<-xt*P10*xt + sigma2)
+@
+
+\item Compute $k_t = k_1$
+
+\begin{equation}
+\begin{split}
+k_t =& \frac{P_{t\mid t-1} x_t}{q_{t\mid t-1}}\\
+k_1 =& \frac{P_{1\mid 0} x_t}{q_{1\mid 0}} =  \frac{(P_{0\mid 0} + 9) 1}{(P_{0\mid 0} + 10)}\\
+k_1 =& \frac{(1000 + 9) 1}{(1000 + 10)}= \frac{1009 1}{1010}\\ 
+=& 0.9990099\\
+\end{split}
+\end{equation}
+
+<<>>=
+(k1 <- (P10*xt)/q10)
+@
+
+\item Compute (this is the goal) the \textbf{posterior distribution}:
+$\beta_t \mid y_{t:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$, 
+
+that is 
+
+$\beta_1 \mid y_{1:1} \sim N(\hat \beta_{1\mid 1}, P_{1\mid 1})$.
+
+Sub-steps:
+\begin{enumerate}
+\item Compute 
+
+\begin{equation}
+\begin{split}
+\hat y_{1\mid 0} =& x_t^T \hat \beta_{1\mid 0}\\
+=& 1 \times  \hat \beta_{1\mid 0} \quad \hbox{computed above}\\
+=& 1\times 0 = 0
+\end{split}
+\end{equation}
+
+<<>>=
+(haty10<-xt*hatbeta10)
+@
+
+\item 
+Compute $\epsilon_1=y_1 - \hat y_{1\mid 0}$ (needed in next step)
+\begin{equation}
+\epsilon_1= y_1 - \hat y_{1\mid 0} = y_1 - 0 = y_1
+\end{equation}
+
+<<>>=
+(eps1<-y1-haty10)
+@
+
+\item Compute $\hat \beta_{1\mid 1}$
+
+\begin{equation}
+\begin{split}
+\hat \beta_{1\mid 1} =& \hat\beta_{1\mid 0} + k_1 \epsilon_1 \\
+=& 0 + 0.99 \times y_1 \\
+=& 0.99 y_1 \\
+\end{split}
+\end{equation}
+
+<<>>=
+(hatbeta11<-hatbeta10+k1*eps1)
+@
+
+[Note that the Kalman gain is causing the shrinkage of the forecast]
+
+\item Compute $P_{1\mid 1}$
+
+\begin{equation}
+\begin{split}
+P_{t\mid t} =& P_{t\mid t-1} - q_{t\mid t-1} k_t k_t^T\\
+P_{1\mid 1} =& P_{1\mid 0} - q_{1\mid 0} k_1 k_1^T\\
+P_{1\mid 1} =& 1009 - 1010 \times k1 \times k1\\
+=& 1009 - 1008.001\\ 
+=&  0.999\\ 
+\end{split}
+\end{equation}
+
+<<>>=
+(P11 <- P10-(q10*k1*k1))
+@
+
+\end{enumerate}
+
+
+\end{enumerate}
+So now we know that 
+$\beta_t \mid y_{t:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$, or rather 
+$\beta_1 \mid y_{1:1} \sim N(\hat \beta_{1\mid 1}, P_{1\mid 1})$ is
+
+\begin{equation}
+\begin{split}
+\beta_1 \mid y_{1:1} \sim & N(\hat \beta_{1\mid 1}, P_{1\mid 1})\\
+\beta_1 \mid y_{1:1} \sim & N(0.99 y_1 , 20.099)\\
+\beta_1 \mid y_{1:1} \sim & N(9.9 , 0.9990099)\\
+\end{split}
+\end{equation}
+
+The above is now our posterior distribution, and the prior distribution for the next step.
+
+\item Step 3: Data $y_2$ comes in. Repeat Step 2, setting t=2, to compute $\hat \beta_{t\mid t}, P_{t\mid t}$. And so on.
+\end{enumerate}
+
+\subsection{R example: Sheffield historical temperatures}
+
+This example also shows how to estimate $\sigma^2$ and Z using MLE, and the effect that has on the prediction intervals when forecasting.
+
+Sheffield historical temperatures example:
+
+<<>>=
+dir<-"/Users/shravanvasishth/Dropbox/MScStatistics/2014-2015/MAS6011/Semester2/Data/"
+
+temp<-read.table(paste(dir,"temp.txt",
+                        sep=""))
+temp<-ts(temp[,2],start=1659,
+         frequency=1)
+## local level model:
+x<-matrix(1)
+F<-matrix(1)
+sigma2<-1
+Z<-10
+beta0<-9
+P0<-1000
+
+mod<-dlm(temp,
+         FF=x,
+         GG=F,
+         V=sigma2,
+         W=Z,
+         m0=beta0,
+         C0=P0)
+
+fit<-dlmFilter(temp,mod)  
+## this is the *negative* of log lik:
+(modLL<-dlmLL(y=temp,mod=mod))
+## so loglik
+-modLL
+@
+
+Next, we estimate $\sigma^2$ and $Z$ using MLE:
+
+<<>>=
+build<-function(parm){
+  sigma2<-parm[1]
+  Z<-parm[2]
+  return(list(FF=x,GG=F,V=sigma2,W=Z,
+              m0=beta0,C0=P0))
+}
+
+maxlikest<-dlmMLE(y=temp,
+                  parm=c(3,2),
+                  build=build,
+                  lower=c(1e-6,0))
+(sigma2<-maxlikest$par[1])
+(Z<-maxlikest$par[2])
+@
+
+Refit model with MLEs for sigma2 and Z:
+
+<<>>=
+## refit model with MLEs for sigma2 and Z:
+mod2<-dlm(temp,
+         FF=x,
+         GG=F,
+         V=sigma2,
+         W=Z,
+         m0=beta0,
+         C0=P0)
+fit2<-dlmFilter(temp,mod2)
+(mod2LL<-dlmLL(y=temp,mod=mod2))
+## higher than -modLL
+-mod2LL
+@
+
+Compare the original forecasts and MLE-based forecasts:
+<<>>=
+plot(1:length(fit$f),fit$f,type="l",
+     main="Comparing MLE with non-MLE ests.",
+     ylim=c(6.5,11))
+lines(1:length(fit2$f),fit2$f,lty=1,col="red")
+points(1:length(temp),temp)
+@
+
+<<>>=
+modforecast<-dlmForecast(mod=mod,nAhead=3)
+unlist(modforecast$Q)
+
+mod2forecast<-dlmForecast(mod=mod2,nAhead=3)
+## a bit smaller variance:
+unlist(mod2forecast$Q)
+@
+
+
+
 
 \subsection{Forecasting}
 
@@ -3446,9 +3805,9 @@ $z=z_{1-\alpha/2}$\%th quantile of the standard Gaussian distribution N(0,1).
 \begin{equation}
 \begin{split}
 ~& \hat \beta_{t+i\mid t}\\
-~& P_{t+i\mid t}
-~& \hat y_{t+i\mid t}
-~& q_{t+i\mid t}
+~& P_{t+i\mid t}\\
+~& \hat y_{t+i\mid t}\\
+~& q_{t+i\mid t}\\
 \end{split}
 \end{equation}
 \end{enumerate}
@@ -3642,7 +4001,7 @@ F_N =
 \end{pmatrix}\approx
 \begin{pmatrix}
 1 &  0\\
-0s & 1\\
+0 & 1\\
 \end{pmatrix}
 $
 
@@ -3670,7 +4029,7 @@ where $F_i =
 
 The above is the \textbf{full-effects Fourier form model}. When T is large (e.g., 365), we just take a smaller N than required by N=T/2, as that would entail a lot of parameters. The reduced-N model is called the \textbf{reduced-effects Fourier model}.
 
-\textbf{Example}: Let T=4. Then N=2, so we will have two transition sub-matrices $F_1$ and $F_2$.
+\textbf{Example (Sheffield temperature example)}: Let T=4. Then N=2, so we will have two transition sub-matrices $F_1$ and $F_2$.
 
 We let (not sure how this was determined, the last two elements seem arbitrary) 
 
@@ -3763,6 +4122,12 @@ Next, we define the \textbf{transition model}:
 0 & -1 & 0 & 0\\
 0 & 0 & 0 & -1\\
 \end{pmatrix}
+\begin{pmatrix}
+\beta_{1,t-1} \\
+\beta_{2,t-1} \\
+\beta_{3,t-1} \\
+\beta_{4,t-1}\\
+\end{pmatrix}
 + \zeta_{t}
 \end{split}
 \end{equation}
@@ -3780,7 +4145,7 @@ The above transition model gives four equations:
 [These transition models are for the seasonal components:]
 
 \begin{equation}
-\beta_{2,t} = \beta_{1,t-1} + \beta_{2,t-1} \zeta_{2,t}
+\beta_{2,t} = \beta_{1,t-1} + \beta_{3,t-1} +  \zeta_{2,t}
 \end{equation}
 
 \begin{equation}
