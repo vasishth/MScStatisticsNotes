@@ -1175,7 +1175,7 @@ So what we have is \textbf{first-order differencing}, which removes linear trend
 
 <<>>=
 ## removes linear trend:
-plot(diff(jj))
+#plot(diff(jj))
 @
 
 \subsubsection{Second-order differencing}
@@ -1206,11 +1206,11 @@ Second-order differening removes polynomial trend.
 
 \textbf{k-th order differencing}
 
-\begin{framed}
+%\begin{framed}
 \begin{equation}
 \nabla^k y_t = (1-B)^k y_t 
 \end{equation}
-\end{framed}
+%\end{framed}
 
 \noindent
 removes k-th degree polynomial trend. Ususally, k=1 or 
@@ -3228,7 +3228,7 @@ For now, assume $\sigma^2$ is time-invariant, and $Z_t$ is time-varying. Since $
 \beta_{0} \sim N(\hat \beta_{0\mid 0}, P_{0\mid 0})
 \end{equation}
 
-Estimation is happening sequentially: $y_t$ corresponds to a state $\beta_t$. In filtering we want to estimate $\beta_1$ given data up to t: $t_{1:t}$.
+Estimation is happening sequentially: $y_t$ corresponds to a state $\beta_t$. In filtering we want to estimate $\beta_1$ given data up to t: $y_{1:t}$.
 
 
 
@@ -3238,13 +3238,13 @@ Estimation is happening sequentially: $y_t$ corresponds to a state $\beta_t$. In
 The objective will be to get posterior distribution of $\beta_t$ given $y_{1:t}$ for any t. Given new datum $y_t$ (one data-point) compute posterior using Bayes:
 
 \begin{equation}
-P(\beta_t \mid y_{1:t}) \approx P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
+P(\beta_t \mid y_{1:t}) \propto P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
 \end{equation}
 
 May be easier to see if we single out the datum $y_t$ by writing it separately:
 
 \begin{equation}
-P(\beta_t \mid y_{1:t-1},y_t) \approx P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
+P(\beta_t \mid y_{1:t-1},y_t) \propto P(\beta_t\mid y_{1:t-1})P(y_t\mid \beta_t)
 \end{equation}
 
 The Kalman filter is just an application of Bayes' Theorem for computing the posterior sequentially.
@@ -3331,7 +3331,6 @@ q_{1\mid 0} =& V(y_1\mid y_{1:0})\\
 =& 1010
 \end{split}
 \end{equation}
-
 
 \item Kalman gain:
 $k_t = \frac{P_{t\mid t-1} x_t}{q_{t\mid t-1}}$
@@ -3616,9 +3615,12 @@ This example also shows how to estimate $\sigma^2$ and Z using MLE, and the effe
 
 Sheffield historical temperatures example:
 
-<<>>=
+<<echo=FALSE>>=
 dir<-"/Users/shravanvasishth/Dropbox/MScStatistics/2014-2015/MAS6011/Semester2/Data/"
+@
 
+<<>>=
+library(dlm)
 temp<-read.table(paste(dir,"temp.txt",
                         sep=""))
 temp<-ts(temp[,2],start=1659,
@@ -3744,7 +3746,7 @@ P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
 \item The i-step ahead forecast observation distribution is
 
 \begin{equation}
-y_{t+i}\mid y_{1:t} \sim N(\hat y_{t+i}\mid t,q_{t+i}\mid t)
+y_{t+i}\mid y_{1:t} \sim N(\hat y_{t+i\mid t},q_{t+i\mid t})
 \end{equation}
 
 where
@@ -3822,9 +3824,217 @@ So, the procedure is: compute
 
 \section{SSMs: Model specification}
 
+A local level model will have x=1, F=1.
+
+In dynamic regression, x will be predictors, and F=I, which defines a random walk evolution.
+
 \subsection{Trend SSMs}
 
+\paragraph{Linear growth/local linear SSM}
+
+\begin{equation}
+x^T = (1,0), 
+\quad 
+F=
+\begin{pmatrix}
+1 & 1 \\
+0 & 1 \\
+\end{pmatrix},
+\quad 
+\beta_t = 
+\begin{pmatrix}
+\beta_{1t}\\
+\beta_{2t}\\
+\end{pmatrix},
+\quad 
+\begin{pmatrix}
+\zeta_{1t}\\
+\zeta_{2t}\\
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+y_t = 
+\begin{pmatrix}
+1 & 0 \\
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{1t} \\
+\beta_{2t} \\
+\end{pmatrix}
++\epsilon_t = \beta_{1t}+\epsilon_t
+\end{equation}
+
+So $y_t$ fluctuates randomly about $\beta_{1t}$.
+
+The transition model:
+
+\begin{equation}
+\begin{pmatrix}
+\beta_{1t} \\
+\beta_{2t} \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 1 \\
+0 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{1t-1} \\
+\beta_{2t-1} \\
+\end{pmatrix}
++
+\begin{pmatrix}
+\zeta_{1t} \\
+\zeta_{2t} \\
+\end{pmatrix}
+\end{equation}
+
+This expands to:
+
+\begin{equation}
+\beta_{1t} = \beta_{1t-1} + \beta_{2t-1} + \zeta_{1t}
+\end{equation}
+
+\begin{equation}
+\beta_{2t} =  \beta_{2t-1} + \zeta_{2t}
+\end{equation}
+
+\textbf{Example}: aluminium data:
+
+<<>>=
+alum<-read.table(paste(dir,
+                       "alum.txt",
+                       sep=""))
+
+alum_ts<-ts(alum[,2],
+            start=1,end=210,
+            frequency=1)
+ts.plot(alum_ts,type="l")
+
+x<-matrix(c(1,0),1,2)
+F<-matrix(c(1,0,1,1),2,2)
+Z<-matrix(c(10,0,0,2),2,2)
+beta0<-c(1800,1)
+P0<-1000*diag(2)
+mod<-dlm(alum,FF=x,GG=F,V=1,
+         W=Z,m0=beta0,C0=P0)
+
+fit_alum<-dlmFilter(alum_ts,mod)
+
+ts.plot(fit_alum$f,lty=2)
+points(alum_ts,pch=2)
+points(fit_alum$f,pch=20)
+@
+
+Forecast function:
+<<>>=
+##posterior mean vector:
+fit_alum$m[211,]
+x<-1989.08+1:10*17.10
+## linear growth:
+plot(x)
+@
+
+\textbf{Forecast function of linear trend model}
+
+Recall that from Kalman filter $\beta_t\mid y_{t:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$.
+
+\begin{equation}
+\begin{split}
+\hat y_{t+i\mid t} =& x_{t+i}^T F^i \hat \beta_{t\mid t}\\
+=& 
+\begin{pmatrix}
+1 & 0 \\
+\end{pmatrix}
+\begin{pmatrix}
+1 & i \\
+0 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+\hat\beta_{1t\mid t} \\
+\hat\beta_{2t\mid t} \\
+\end{pmatrix}\\
+=& 
+\begin{pmatrix}
+1 & i \\
+\end{pmatrix}
+\begin{pmatrix}
+\hat\beta_{1t\mid t} \\
+\hat\beta_{2t\mid t} \\
+\end{pmatrix}\\
+=& \hat\beta_{1t\mid t} +
+\hat\beta_{2t\mid t}i \\
+\end{split}
+\end{equation}
+
+which is a straight line.
+
 \subsection{Superposition of SSMs}
+
+We define N independent SSMs.
+
+\begin{equation}
+y_{it} = x_{it}^T \beta_{it} + \epsilon_{it} \quad \epsilon_{it} \sim N(0,\sigma_i^2)
+\end{equation}
+
+\begin{equation}
+\beta_{it} = F_i \beta_{it-1}+\zeta_{it} \quad \zeta_{it} \sim N(0,Z_{it})
+\end{equation}
+
+We have $i=1,\dots,N$ independent models, $\epsilon_{it}$ and $\epsilon_{js}$ are independent for any i,j=1,\dots,N and any t,s=1,\dots. The same holds for $\zeta_{it}$ and $\zeta_{js}$.
+
+The superposed model is the sum of all the models:
+
+\begin{equation}
+y_t = \sum_{i=1}^N y_{it} = \sum_{i=1}^N (x_{it}^T \beta_{it} + \epsilon_{it})
+\end{equation}
+
+\begin{equation}
+\begin{pmatrix}
+\beta_{1t}\\
+\vdots\\
+\beta_{Nt}\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+F_1    & 0     & 0       & \dots & 0\\
+0      & F_2   & 0       & \dots & 0\\
+0      &  0    & \ddots  & 0     & 0\\
+\vdots & \dots & \dots   & F_{N-1} & 0 \\
+0      & 0     & \dots   &       & F_N \\
+\end{pmatrix}
+\end{equation}
+
+\paragraph{Forecast function}
+
+\begin{equation}
+\hat y_{t+k\mid t} = \sum_{i=1}^N \hat y_{i,t+k}
+\end{equation}
+
+\begin{equation}
+q_{t+k\mid t} = \sum_{i=1}^N q_{i,t+k\mid k}
+\end{equation}
+
+\begin{equation}
+y_{t+k}\mid y_{1:t} 
+\sim N(\hat y_{t+k\mid t}, q_{t+k\mid t}) 
+\quad k=1,2,\dots 
+\end{equation}
+
+\textbf{Example of superposing: Local level + Linear trend}
+
+$x^T = [1,\mid 1, 0]$ and 
+$F=
+\begin{pmatrix}
+\mathbf{1} & 0 & 0 \\
+0 & 1 & 1 \\
+0 & 0 & 1 \\
+\end{pmatrix}$
+
+The bold-face 1 is the local level part, and the 2x2  matrix at the bottom right is the linear growth part.
+
+
 
 \subsection{Fourier form seasonal models}
 
