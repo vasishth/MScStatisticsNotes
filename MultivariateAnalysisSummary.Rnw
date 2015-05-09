@@ -474,12 +474,14 @@ var1<-(1/(n-1))*t(X)%*%X
 var2<-var(X)
 @
 
-The total amount of dispersion on the data is the sum of the variances (the trace):
+The total amount of dispersion on the data is the sum of the variances (the trace, which is the sum of the eignenvalues of the vcov matrix):
 
 <<>>=
 ## sum of the variances=the total dispersion:
 sum(diag(var2))
 @
+
+Note that  \textbf{the eigenvalues of the covariance matrix encode the variability of the data in an orthogonal basis that captures as much of the data's variability as possible in the first few basis functions (i.e., the principle component basis)}.
 
 \begin{fact}
 Any symmetric matrix X is 
@@ -648,7 +650,7 @@ We want to choose A such that variance X'A is maximized; this is because ``maxim
 How to choose A such that variance of $X'A$ is maximized? If we just choose some A:
 <<>>=
 m<-matrix(rnorm(1000),byrow=TRUE,ncol=10)
-diag(var(m))
+diag(var(m))[1:3]
 a<-matrix(rnorm(100),byrow=TRUE,ncol=10)
 @
 You can increase variance arbitrarily
@@ -812,7 +814,7 @@ So, $t= e_1' x_1$ (\textbf{or}: $t= x_1' e_1$), so $x_1=t e_1$. I.e.,
 $t e_1$ is the point where 
 $x_1$ is mapped on to on the first PC. 
 
-<<echo=FALSE>>=
+<<>>=
 x1<-c(1,3,5,7,9)
 x2<-c(4,7,8,11,15)
 ## n=5, p=2:
@@ -822,10 +824,10 @@ x1<-scale(x1,scale=F)
 x2<-scale(x2,scale=F)
 X<-data.frame(x1,x2)
 
-X<-as.matrix(X)
-S<-var(X)
-lambda<-eigen(S)$values
-U<-eigen(S)$vectors
+(X<-as.matrix(X))
+(S<-var(X))
+(lambda<-eigen(S)$values)
+(U<-eigen(S)$vectors)
 @
 
 <<echo=FALSE>>=
@@ -833,12 +835,14 @@ plot(x1,x2,xlim=c(-6,6),ylim=c(-6,6),
      main="")
 abline(lm(x2~x1))
 ## First PC is always along the line
-## of best fit:
+## of largest variance:
 arrows(x0=0,y0=0,x1=5*U[1,1],y1=5*U[2,1],lwd=2)
 arrows(x0=0,y0=0,x1=5*U[1,2],y1=5*U[2,2],lty=2)
+## the first point (centered):
 arrows(x0=0,y0=0,x1=x1[1],y1=x2[1],lty=1,lwd=2)
 t<-t(U[,1])%*%X[1,]
 U1<-t*U[,1]
+## the mapping of the first point to the first PC:
 arrows(x0=0,y0=0,x1=U1[1],y1=U1[2],lty=1,lwd=3)
 @
 
@@ -946,7 +950,7 @@ H<-diag(5) - (1/5)*matrix(rep(1,25),ncol=5)
 
 B<- H%*% A %*% H
 eigen_B<-eigen(B)
-head(eigen_B$values)
+head(eigen_B$values,n=2)
 ## take first eigenvector:
 v1<-eigen_B$vectors[,1]
 f<-v1*sqrt(eigen_B$values[1])
@@ -977,7 +981,6 @@ where $D^2$:
 
 \begin{equation}
 D^2= (\bar{x}_1-\bar{x}_2)' S^{-1}(\bar{x}_1-\bar{x}_2)
-\quad S = \frac{(n_1 -1)S_1 + (n_2 -1)S_2}{n-2}
 \end{equation}
 
 To test the hypothesis
@@ -996,6 +999,35 @@ H_0:
 \end{equation}
 
 the procedure is identical, except that $\bar{x}_1$ are vectors, not single values. 
+
+
+\subsection{Pooled variance}
+
+If we have two samples, with sizes $n_1$ and $n_2$ , then the variance is pooled:
+
+\begin{equation}
+S = \frac{(n_1 -1)S_1 + (n_2 -1)S_2}{n-2}
+\end{equation}
+
+The rest is as above.
+
+\subsection{Example: Two correlated RVs means'}
+
+To compare two means: $H_0: \mu_1 = \mu_2$, given sample means $\bar{x}$ and variance-covariance matrix $S$.
+
+Let $C'=(-1, 1)$ be a qxp matrix, and compute
+
+\begin{equation}
+T^2 = n\bar{x}' C (C'SC)^{-1} C'\bar{x}
+\end{equation}
+
+against: $F(q,n-1)$.
+
+First compute $C'\bar{x}$ and then $C'SC$, computations are simpler then.
+
+\subsection{The role of the contrast matrix C}
+
+If testing 2\mu_1 = 3\mu_2$ the null hypothesis is $H_0: 2\mu_1 - 3\mu_2 = 0$, so use $C'=(2,-3)$.
 
 \subsection{Assessing normality}
 
@@ -1016,6 +1048,131 @@ m1<-with(shapedata,
 \end{verbatim}         
      
 
+\section{Statistical discrimination analysis}
+
+Setup: suppose we have k categories, and p measurements in each category.
+
+Example:
+<<>>=
+## p=2 measures, k=2 categories:
+data(iris)
+head(iris[,c(1,2,5)],n=2)
+@
+
+We need a discriminant rule f: X_$n\times p \rightarrow$  category.
+
+\subsection{The maximum likelihood discriminant rule}
+
+This rule allocates x to whichever category that gives greatest likelihood to x.
+
+I.e., we allocate to category 1 if $f_1(x)>f_2(x)$.
+
+\textbf{Example}
+
+Suppose we have p dimensions, k normal populations, and means $\mu_i$ and variance $\Sigma$.
+
+\begin{equation}
+f_i(x) = (2\pi)^{-p/2}\mid \Sigma \mid^{-1/2} \exp(-(x-\mu_i)'\Sigma^{-1} (x-\mu_i)/2)
+\end{equation}
+
+This is maximized when $(x-\mu_i)'\Sigma^{-1} (x-\mu_i)$ is minimized. I.e., we allocate x to the category that has the smallest Mahalnobis distance from x.
+
+\subsection{Mahalanobis distance between two populations}
+
+$\delta_{12} = \sqrt{(\mu_1 - \mu_2)' \Sigma^{-1} (\mu_1 - \mu_2)}$
+
+If the covariance matrix is the identity matrix, we get Euclidean distance. 
+
+\subsection{Sample ML Discrimination Rule}
+
+Let 
+
+\begin{equation}
+W = \frac{1}{n-2} \sum_{i=1}^2 (n_i - 1) S_i
+\end{equation}
+
+Rule: allocate to category 1 if:
+\begin{equation}
+(\bar{x}_1-\bar{x}_2)' W^{-1} (x-(\bar{x}_1 + \bar{x}_2)/2) > 0
+\end{equation}
+
+\textbf{Example}:
+
+<<>>=
+setosa<-subset(iris,Species=="setosa")[,c(1:2,5)]
+versi<-subset(iris,Species=="versicolor")[,c(1:2,5)]
+Setosa<-setosa[,1:2]
+Versi<-versi[,1:2]
+barx1<-colMeans(Setosa)
+barx2<-colMeans(Versi)
+varX1<-var(Setosa)
+varX2<-var(Versi)
+n1<-dim(Setosa)[1]
+n2<-dim(Versi)[1]
+n<-n1+n2
+W<-((n1-1)*varX1 +(n2-1)*varX2)/(n-2)
+discrim<-t(barx1-barx2)%*%solve(W)
+@
+
+So, classify as 1 if:
+$-11.43636x_1+    14.14303x+2 + 18.74>0$
+
+<<>>=
+Cat1<-discrim %*% t(Setosa) + 18.74>0
+Cat2<-discrim %*% t(Versi) + 18.74<=0
+SetVer<-subset(iris,Species%in%c("setosa","versicolor"))
+SetVer$Species<-factor(SetVer$Species)
+SetVer<-SetVer[,c(1,2,5)]
+head(SetVer)
+Cats<-ifelse(discrim%*%as.matrix(t(SetVer[,1:2]))+18.74>0,
+             "1","2")
+@
+
+The rule achieves 100\% discrimination.
+
+\subsection{Likelihood ratio discrimination rule}
+ 
+ Let $T= (n_1 -1)S_1 + (n_2 - 1)S_2$.
+ 
+ vector $x$ is allocated to 1 if
+ 
+ \begin{equation}
+ \frac{n_2}{n_2 + 1} (x-\bar{x}_2)'T^{-1}(x-\bar{x}_2) > \frac{n_1}{n_1+1}(x-\bar{x})_1)'T^{-1} (x-\bar{x}_1)
+ \end{equation}
+ 
+ If $n_1=n_2$, then this is the same as the Sample ML Discrimination Rule above.
+ 
+\subsection{Fisher linear discriminant function} 
+ 
+ k=2. Let $B=\frac{n_1n_2}{n}(\bar{x}_1 - \bar{x}_2)(\bar{x}_1 - \bar{x}_2)' = \frac{n_1n_2}{n}d d'$.
+ 
+ $W^{-1} B$ has only one non-zero eigenvalue: $\frac{n_1n_2}{n} d' W^{-1}d$, and has eigenvector $W^{-1}d$.
+ 
+ Rule: Allocate to category 1 if
+ 
+ \begin{equation}
+ (\bar{x}_1-\bar{x}_2)' W^{-1}(x-(\bar{x}_1+\bar{x}_2)/2) > 0
+ \end{equation}
+ 
+ where $W=\frac{1}{n-k} \sum_{i=1}^k (n_i -1) S_i$.
+  
+ 
+ Linear discriminant function:
+ 
+$ h(x) = a'x \quad a=W^{-1}d$
+ 
+\subsection{Probability of misclassification} 
+ 
+ \begin{equation}
+ \hat p_{12} = \Phi(-\frac{1}{2}\hat \Delta)
+\quad \hat \Delta = (\bar{x}_1 - \bar{x}_2)'S^{-1}(\bar{x}_1 - \bar{x}_2)
+ \end{equation}
+ 
+ Alternatively, for discrimination rule $R_i$ compute
+ 
+ $n_{ij}$ = \mid\{ x \hbox{ in population j and }x\in R_i \}\mid$
+ 
+ then compute $\hat p_{ij} = n_{ij}/\sum n_{ij}$.
 \section{Time Series}         
 
 \subsection{Smoothing: Moving averages (MAs)} \label{movavg}
@@ -2687,9 +2844,19 @@ So, a CI based test (could be done visually):
 r_h \in \pm 2\sqrt{\frac{1+2\sum_{j=1}^q\rho_j^2}{n}} \quad \hbox{ for } h>q (h=q+1,q+2,\dots)
 \end{equation}
 
-Example: to-do
+\begin{tabular}{cc}
+MA(1) & $r_2, r_3,\dots <$ critical value\\
+MA(2) & $r_3, r_4,\dots <$ critical value\\
+MA(3) & $r_4, r_5,\dots <$ critical value\\
+\end{tabular}
 
 \item Test for AR(p): Partial ACF.The ACF of an AR(p) model does not cut off sharply but decays geometrically to 0. However, the PACF does does cut off to zero sharply beyond p, just like the MA(q)'s ACF is 0 beyond q.
+
+\begin{tabular}{cc}
+AR(1) & $a_2, a_3,\dots <$ critical value\\
+AR(2) & $a_3, a_4,\dots <$ critical value\\
+AR(3) & $a_4, a_5,\dots <$ critical value\\
+\end{tabular}
 
 
 To construct PACF, we successively build AR(1), AR(2), AR(3), \dots models.
@@ -2699,7 +2866,7 @@ To construct PACF, we successively build AR(1), AR(2), AR(3), \dots models.
 p=1 =& y_t = a_1^{(1)}y_{t-1} + \eps_t\\
 p=2 =& y_t = a_1^{(2)}y_{t-1} + a_2^{(2)}y_{t-2} + \eps_t\\
 p=3 =& y_t = a_1^{(3)}y_{t-1} + a_2^{(3)}y_{t-2} +
-a_3^{(3)}y_{t-2} + \eps_t\\
+a_3^{(3)}y_{t-3} + \eps_t\\
  & \vdots \\
 \end{split}
 \end{equation}
@@ -2718,7 +2885,58 @@ a_h \sim N(0,1/n) \hbox{ independently for } h\geq 1
 
 Visual check using PACF (just like ACF based test): the lines $\pm 2\sqrt{\frac{1}{n}}$ are the rejection regions. If for a given p+1, $a_{p+1}$ lies inside the CI, then it is an AR(p) process.
 
-Calculating PACF: to-do
+\underline{Calculating PACF}: 
+
+The PACF at lag h is the coefficient $a_h$, in solution of the equations
+
+\begin{equation}
+\rho_j = a_1 \rho_{j-1} + \dots + a_h \rho_{j-h} \quad j=1,\dots,h
+\end{equation}
+
+Method: solve this equation for $r_1, r_2$ or $a_1$, $a_2$.
+
+\begin{equation}
+\begin{pmatrix}
+r_1 \\
+r_2\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & r_1 \\
+r_1 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+a_1 \\
+a_2\\
+\end{pmatrix}
+\end{equation}
+
+Steps for finding PACF: 
+\begin{enumerate}
+\item Get the two equations
+\item Then solve for $a_1$ in first
+\item Plug $a_1$ into second equation and solve for $a_2$.
+\end{enumerate}
+
+\textbf{Example from old exam}:
+
+\begin{enumerate}
+\item
+$a_1 = \rho_1$
+\item 
+$a_2 = \frac{\rho_1^2}{\rho_1^2 -1}$
+
+\begin{equation*}
+\rho_1 = a_1 + a_2 \rho_1
+\end{equation*}
+
+\begin{equation*}
+\rho_2 = a_1\rho_1 + a_2 
+\end{equation*}
+
+\item 
+$a_3 = \frac{\rho_1^3}{1-2\rho_1^2}$
+\end{enumerate}
 
 \item Principle of parsimony: If AR, MA are not plausible, seek ARMA(p,q), but starting with simplest, i.e., p=q=1.
 \end{enumerate}
@@ -2874,7 +3092,7 @@ E[\eps_{(t+1)}\mid y_{1:t}] =& E[\eps_{(t+1)}
 
 This gives us the:
 
-\subsubsection{One-step predictor}
+\subsubsection{One-step predictor} \label{onestepARMA}
 
 \begin{equation}
 \begin{split}
@@ -2956,7 +3174,7 @@ Express $\hat y_{n+i}$ as a function of the observed data $y_{1:n}$.
 y_{n+i} = & ay_{n+i -1} + \epsilon_{n+i}\\
 = & a(ay_{(n+i-1)-1} + \epsilon_{(n+i)-1}) + \epsilon_{n+i}\\
 = & a(ay_{n+i-2} + a\epsilon_{n+i-1} + \epsilon_{n+i}\\
-= & dots \\
+= & \dots \\
 = & a^i y_n + \sum_{j=0}^{i-1} a^j \epsilon_{n+i-j}\\
 \end{split}
 \end{equation}
@@ -3003,6 +3221,11 @@ x_t = (1-B)^d y_t \sim ARMA(p,q)
 \end{equation}
 
 Recall that $B^i y_t = y_{t-i}$.
+
+Also, recall that $\hat x_{t+i}$ can be computed as shown in 
+section~\ref{onestepARMA}.
+
+
 
 \subsubsection{Consider the case where d=1}
 
@@ -3080,27 +3303,26 @@ Therefore,
 
 $y_{t+1} = \hat x_{t+1} - \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+1-j}$
 
-\subsubsection{Consider the SARIMA case}
+\subsubsection{Prediction in SARIMA}
 
 If $y_t$ is seasonal, we would transform as follows:
 
 \begin{equation}
 \begin{split}
 x_t =& (1-B^s)^D y_t\\
-=& y_t + \sum_{j=0}^D {n \choose j}(-B)^j y_t \\
+=& \sum_{j=0}^D {n \choose j}(-1)^j B^{sj} y_t \\
 \end{split}
 \end{equation}
 
-Extracting the negation sign and reducing $B^jy_t$,
+For example, for $x_t = (1-B^4)^3 y_t$, the predicted values would be:
 
 \begin{equation}
-x_t = y_t + \sum_{j=0}^D {n \choose j}(-1)^j y_{y-sj}
-\end{equation}
-
-So, for the i-th predicted value,
-
-\begin{equation}
-y_{t+i} = x_{t+i} - \sum_{j=0}^D {n \choose j}(-1)^j y_{y-sj}
+\begin{split}
+x_t =& (1-B^4)^3 y_t\\
+=& \sum_{j=0}^3 {3 \choose j}(-1)^j B^{4j} y_t \\
+=& {3 \choose 0} y_t + {3 \choose 1} (-1) y_{t-4} + {3 \choose 2} (-1)^2 y_{t-8} + {3 \choose 3} (-1)^3 y_{t-12}\\
+=& y_t + 3 y_{t-4} - 3 y_{t-8}+ y_{t-12}\\ 
+\end{split}
 \end{equation}
 
 If we put s=1 and D=d   then we would get the first formula above.
@@ -3524,7 +3746,7 @@ k_1 =& \frac{(1000 + 9) 1}{(1000 + 10)}= \frac{1009 1}{1010}\\
 @
 
 \item Compute (this is the goal) the \textbf{posterior distribution}:
-$\beta_t \mid y_{t:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$, 
+$\beta_t \mid y_{1:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$, 
 
 that is 
 
@@ -3536,6 +3758,7 @@ Sub-steps:
 
 \begin{equation}
 \begin{split}
+\hat y_{t\mid t-1} =& x_t^T \hat \beta_{t\mid t-1}\\
 \hat y_{1\mid 0} =& x_t^T \hat \beta_{1\mid 0}\\
 =& 1 \times  \hat \beta_{1\mid 0} \quad \hbox{computed above}\\
 =& 1\times 0 = 0
@@ -3548,6 +3771,12 @@ Sub-steps:
 
 \item 
 Compute $\epsilon_1=y_1 - \hat y_{1\mid 0}$ (needed in next step)
+
+\begin{equation}
+\epsilon_t=y_t - \hat y_{t\mid t-1}=
+\epsilon_1=y_1 - \hat y_{1\mid 0}
+\end{equation}
+
 \begin{equation}
 \epsilon_1= y_1 - \hat y_{1\mid 0} = y_1 - 0 = y_1
 \end{equation}
@@ -3560,6 +3789,7 @@ Compute $\epsilon_1=y_1 - \hat y_{1\mid 0}$ (needed in next step)
 
 \begin{equation}
 \begin{split}
+\hat \beta_{t\mid t} =& \hat\beta_{t\mid t-1} + k_t \epsilon_t \\
 \hat \beta_{1\mid 1} =& \hat\beta_{1\mid 0} + k_1 \epsilon_1 \\
 =& 0 + 0.99 \times y_1 \\
 =& 0.99 y_1 \\
@@ -3717,6 +3947,8 @@ The variable $i$ is called \textbf{lead time}. and the maximum value $i$ takes i
 
 \subsubsection{Theorem 5.2}
 
+Note that this assumes that $\beta_{t\mid t}$ and $P_{t\mid t}$ have been computed using Kalman filter.
+
 Given $y_{1:t} = \{ y_1,\dots, y_t\}$, 
 
 \begin{enumerate}
@@ -3731,9 +3963,10 @@ where
 \begin{equation}
 \hat \beta_{t+i\mid t} = F^i \hat \beta_{t\mid t}
 \end{equation}
-($\beta_{t\mid t}$ is computed using Kalman filter)
 
 and 
+for the time-varying version of $Z_t$:
+
 \begin{equation}
 \begin{split}
 P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
@@ -3741,7 +3974,16 @@ P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
 \end{split}
 \end{equation}
 
-($P_{t\mid t}$ is computed using Kalman filter)
+
+If $Z_t =Z$, i.e., if Z is time-invariant, the covariance matrix 
+$P_{t+i\mid t}$ takes the simplified form:
+
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z (F^k)^T
+\end{split}
+\end{equation}
 
 \item The i-step ahead forecast observation distribution is
 
@@ -3768,25 +4010,6 @@ The forecast function:
 
 \begin{equation}
 \hat y_{t+i\mid t} = x_{t+1}^T F^i \hat \beta_{t\mid t}
-\end{equation}
-\item 
-If $Z_t =Z$, i.e., if Z is time-invariant, we covariance matrix 
-$P_{t+i\mid t}$ takes the simplified form:
-
-\begin{equation}
-\begin{split}
-P_{t+i\mid t} =& F^i P_{t} (F^i)^T \\
-+& \sum_{k=0}^{i-1} F^k Z (F^k)^T
-\end{split}
-\end{equation}
-
-Compare this with the time-varying version:
-
-\begin{equation}
-\begin{split}
-P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
-+& \sum_{k=0}^{i-1} F^k Z_{t+i-k} (F^k)^T
-\end{split}
 \end{equation}
 
 \item $\hat \beta_{t\mid t-1}$, \textbf{the mean vector of the one-step forecast state distrn.}, and $P_{t\mid t-1}$, \textbf{the covariance matrix of the one-step forecast state distribution of $\beta_t$ given $y_{1:t-1}$}, are needed to calculate the predictive distribution of $\beta_t$ at time $t-1$: $\beta_t\mid y_{1:t-1}$.
