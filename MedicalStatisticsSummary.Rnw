@@ -232,17 +232,279 @@ stratified (but may require small blocks)
 minimization (but lessens randomness)
 \end{enumerate}
 
-\section{Adjustment of p-value under repeated analyses as data comes in}
+\section{Multiple testing}
 
-Pocock 1983
+If we do k indep tests, and compute p-values at $\alpha=0.05$ then actual p-value is $k\times p$. 
+
+Corrections:
+\begin{enumerate}
+\item Bonferroni
+\item choose primary outcome measure \textbf{in advance}
+\item multivariate analysis
+\end{enumerate}
+
+Sequential testing: see p.\ 71.
+
+\section{Combining trials (meta-analysis)}
+
+\subsbsection{Mantel-Haenszel test}
+
+Assume a data format as follows:
+
+\begin{tabular}{c|ccc}
+        & \multicolumn{2}{c}{heart problems}                & \\
+        \hline
+glucose:        & yes  & no        & Total\\  
+elevated & $Y_1$ & $n_1 - Y_1$ & $n_1$ \\
+not elevated&  $Y_2$ & $n_2 - Y_2$ & $n_2$ \\
+\hline
+Total   & $t$      & $n-t$ & $n$\\ 
+\end{tabular}
+
+For each study we can compute the mean and variance using the formulas from the lecture notes:
+
+\begin{equation}
+E[Y]_1=\frac{n_1 t}{n} \quad Var(Y_1) = \frac{n_1 n_2 t(n-t)}{n^2(n-1)}
+\end{equation}
+
+Then 
+
+\begin{equation}
+T_{MH} = \frac{(Y_1 - E[Y_1])^2}{V(Y_1)}\sim \chi_1^2
+\end{equation}
+
+\textbf{Combining trials for meta-analysis}:
+
+For j studies, compute
+
+\begin{equation}
+W=\sum Y_{1j} \quad E[W] = \sum E[Y_{1j}] \quad V(W) = \sum V(Y_{1j})
+\end{equation}
+
+and test:
+
+\begin{equation}
+\frac{(W-E[W])^2}{V(W)} \sim \chi_1^2
+\end{equation}
+
+
+\section{Binary data: RR, OR, and logistic regression}
+
+\subsection{Prospective studies: Relative Risk}
+
+\begin{tabular}{cccc}
+        & postive  & negative & total\\
+Exposed & a  & b  & a+b\\
+Not Exp & c  & d  & c+d\\
+\end{tabular}
+
+Then, Relative Risk is
+
+\begin{equation}
+\begin{split}
+~& RR = \frac{a/(a+b)}{(c/(c+d))} \\
+~& \Rightarrow \hbox{ compute } log(RR) \\
+\end{split}
+\end{equation}
+
+The log-transform is for computing CIs using the normal approximation:
+
+\begin{equation}
+SE(log(RR)) = \sqrt{\frac{1}{a} - \frac{1}{a+b} + \frac{1}{c} - \frac{1}{c+d}} \Rightarrow log(RR) \pm 2 SE(log(RR))
+\end{equation}
+
+Then exponentiate the interval bounds to get intervals on odds.
+
+\subsection{Retrospective studies: Odds ratios}
+
+\begin{tabular}{ccc}
+        & Observed cases  & Obs.\ controls \\
+Exposed & a  & b\\
+Not Exp & c  & d\\
+\end{tabular}
+
+Then, the Odds Ratio is:
+
+\begin{equation}
+OR = \frac{a/c}{b/d}= \frac{ad}{bc} \Rightarrow log(OR)
+\end{equation}
+
+\begin{equation}
+SE(log(OR)) = 
+\sqrt{\frac{1}{a}+\frac{1}{b}+\frac{1}{c}+\frac{1}{a}}
+\end{equation}
+
+Compute CIs on log odds, and then exponentiate to get back to odds space.
+
+\subsection{Paired data: McNemar's test}
+
+x= no of mismatched pairs (pairs of 0,1 and 1,0 cases)
+
+n= total no of cases
+
+p-value is P(X$<$x or X$>$(n-x))
+
+For large n, $\frac{(n_{01}-n_{10})^2}{n_{01}+n_{10}} \sim \chi_1^2$.
+
+\subsection{Logistic regression}
+
+See GLM notes.
 
 \section{Crossover trials}
 
-carryover, treatment, period
+The response is $Y_{ijk}$ with group (reflecting order) i=1,2; period j=1,2; and patient k=1,2,\dots, 8 in group 1, and k=9,\dots,21 for group 2. Let between patient differences be $\alpha_k \sim N(0,\phi^2)$ and let $\epsilon_{ijk}\sim N(0,\sigma^2)$.
+
+\begin{tabular}{ccl}
+group 1 & per 1 & $Y_{11k}= \mu + \alpha_k + \tau_A + \pi_1 + \epsilon_{11k}$ \\
+ & per 2& $Y_{12k} = \mu + \alpha_k + \tau_B + \pi_2 + \lambda_A+ \epsilon_{12k}$ \\
+group 2 & per 1 & $Y_{21k} = \mu + \alpha_k + \tau_B +  \pi_1 + \epsilon_{21k}$ \\
+& per 2 & $Y_{22k} = \mu + \alpha_k + \tau_A + \pi_2 + \lambda_B+ \epsilon_{22k}$\\
+\end{tabular}
+
+\subsection{Testing for carryover effects}
+
+Define the average of group 1 and 2 measurements $T_{1k}$ and $T_{2k}$:
+
+\begin{equation}
+\begin{split}
+T_{1k}=& \frac{1}{2} (Y_{11k}+Y_{21k})\\
+      =& \frac{1}{2} (2\mu + \lambda_A + \tau_A+\tau_B + \pi_1 + \pi_2)
+\end{split}
+\end{equation}
+
+If we constrain $\tau_A+\tau_B=0$, and $\pi_1+\pi_2=0$, the expectation of the above becomes:
+
+\begin{equation}
+E[T_{1k}] = \mu+ \frac{1}{2}\lambda_A
+\end{equation}
+
+Similarly, 
+\begin{equation}
+E[T_{2k}] = \mu+ \frac{1}{2}\lambda_B
+\end{equation}
+
+The variances can be computed as follows:
+
+\begin{equation}
+\begin{split}
+Var(T_{1k})=& Var(\frac{1}{2} (Y_{11k}+Y_{21k}))\\
+=& \frac{1}{4} (Var(Y_{11k}) + Var(Y_{21k})) \\
++& 2\frac{1}{4}Cov(Y_{11k},Y_{21k})\\
+=& \frac{1}{4} (\phi^2 +  \sigma^2 + \phi^2 +  \sigma^2) + \frac{1}{2} \phi^2\\
+=& \phi^2 + \frac{1}{2}\sigma^2
+\end{split}
+\end{equation}
+
+[This comes from $Var(aX+bY)=a^2 Var(X)+b^2Var(Y)+2ab Cov(XY)$.]
+
+So, $T_1k \sim N(\mu+\frac{1}{2}\lambda_A,\phi + \frac{1}{2}\sigma^2)$, and similarly, $T_2k \sim N(\mu+\frac{1}{2}\lambda_B,\phi + \frac{1}{2}\sigma^2)$. 
+
+Doing a two-sample t-test comparing $\bar{T}_1, \bar{T}_2$ amounts to determining the carryover effect:
+
+\begin{equation}
+\frac{\bar{T}_1-\bar{T}_2}{\sqrt{s_{\bar{T}_1}^2/n_1 + s_{\bar{T}_2}^2/n_2}} \sim t_{min(n_1,n_2)}
+\end{equation}
+
+\subsection{Testing for treatment effects}
+
+This is a within patients comparison:
+\begin{equation}
+D_{ik} = Y_{i1k}-Y_{i2k} 
+\end{equation}
+
+For group i=1:
+
+\begin{equation}
+\begin{split}
+D_{1k} =& Y_{11k} -  Y_{12k}\\
+=& \tau_A-\tau_B + pi_1-\pi_2 
+\end{split}
+\end{equation}
+
+\begin{equation}
+D_{1k} \sim N(\tau_A-\tau_B+\pi_1-\pi_2,2\sigma^2)
+\end{equation}
+
+
+For group i=2:
+
+\begin{equation}
+\begin{split}
+D_{2k} =& Y_{21k} -  Y_{22k}\\
+=& \tau_B-\tau_A + pi_1-\pi_2 
+\end{split}
+\end{equation}
+
+So:
+
+\begin{equation}
+D_{2k} \sim N(\tau_B-\tau_A+\pi_1-\pi_2,2\sigma^2)
+\end{equation}
+
+
+If we do $D_{1k}-D{2k}$ we get 
+
+\begin{equation}
+\tau_A-\tau_B+\pi_1-\pi_2 - (\tau_B-\tau_A+\pi_1-\pi_2)=
+2 \tau_A -2\tau_B = \tau_A-\tau_B
+\end{equation}
+
+So the null hypothesis being tested is $\tau_A=\tau_B$.
+
+The test is:
+
+\begin{equation}
+\frac{\bar{D}_1 - \bar{D}_2}{\sqrt{s_{\bar{D}_1}^2}/n_1 + 
+s_{\bar{D}_2}^2/n_2} \sim t_r
+\end{equation}
+
+\subsection{Testing for period effects}
+
+If period effect is identical, then $\bar{D}_1$ (group 1 effect), and $-\bar{D}_2$ will have identical distribution.
+
+If we do $D_{1k}- (-D{2k})$ we get 
+
+\begin{equation}
+\begin{split}
+~& \tau_A-\tau_B+\pi_1-\pi_2 - (-(\tau_B-\tau_A+\pi_1-\pi_2))=\\
+~& \tau_A-\tau_B+\pi_1-\pi_2 + (\tau_B-\tau_A+\pi_1-\pi_2))\\
+=&  \pi_1-\pi_2 +\pi_1-\pi_2 \\
+=& 2\pi_1 - 2\pi_2\\
+=& \pi_1 - \pi_2\\
+\end{split}
+\end{equation}
+
+So the null hypothesis being tested is $\pi_1=\pi_2$. The test statistic is:
+
+\begin{equation}
+\frac{\bar{D}_1 - (-\bar{D}_2)}{\sqrt{
+s_{\bar{D}_1}^2/n_1 + 
+s_{\bar{D}_2}^2/n_2
+}} \sim t_r
+\end{equation}
+
+\textbf{Interpretation}
+
+\begin{enumerate}
+\item Check for treatment and period effects only if carrover effect not present.
+\item If carryover effect is present, then only analyze first period. Should have used a longer washout period.
+\end{enumerate}
+
+\subsection{Carryover effects binary responses}
+
+Mainland-Gart test: p.\ 90
+
+\begin{enumerate}
+\item Count how many cases in group 1 had better outcome in first period (for first period trtmt).
+\item Count how many cases in group 2 had better outcome in second period (for the same trmt as in group 1).
+\item Make contingency table and do chi-sq test.
+\end{enumerate}
 
 \section{Randomization}
 
 Historical/database controls: use previous data as control and assign all patients to treatment. As a compromise, one could have a small number of controls to compare with historical controls.
+
+
 
 \textbf{Unequal allocation} (4.3.2)
 
@@ -251,8 +513,6 @@ May decide we need most information on B to get more accurate estimates of the B
 \textbf{Stratified randomization}: Suppose we have patients in different age ranges and either M or F. Then find all possible combinations of each level, and then produce separate randomization lists for each level.
 
 Adaptive randomization/minimization:
-
-\section{Crossover trials}
 
 \section{Combining trials}
 
@@ -1754,9 +2014,9 @@ Such a BIBD has:
 \begin{equation}
 \begin{split}
 ~& t = k^2\\
-~& b = k(k+1)
-~& r = k+1
-~& \lambda =1   
+~& b = k(k+1)\\
+~& r = k+1\\
+~& \lambda =1\\   
 \end{split}
 \end{equation}
 
@@ -1817,14 +2077,411 @@ m factors require $2^m$ observations in a CFD. If we have $n< 2^m$, we can use a
 
 The approach is to define t Block generators. This gives $2^t$ blocks. For the FFD, we choose just one block.
 
-The number of observations needed now is $2^m/2^t=2^{m-t}$.
+The number of observations needed now is $n=2^m/2^t=2^{m-t}$. See Example 6.3.3 on p.\ 39 and project for a detailed example.
+
+The \textbf{resolution}
+
+\section{Sampling theory}
+
+\subsection{Finite population theory}
+
+Assume a finite population of N units. 
+
+\begin{enumerate}
+\item The true values (constants)
+$X_1, \dots, X_N$
+\item 
+Let the sample be of size n $x_1,\dots,x_n$
+\item
+Population characteristics (examples)
+\begin{enumerate}
+\item 
+Total $X_{tot}=\sum_{i=1}^N X_i$
+\item
+Mean $\bar{X} = X_{tot}/N$
+\item 
+Proportion with attribute C
+$P=\frac{1}{N}\sum \chi_i$ and $\chi_i = 1$ if -th unit has C, 0 if not.
+\item Ratio of two totals or means:
+
+$R=X_{tot}/Y_{tot}$
+
+$\bar{R}=\bar{X}/\bar{Y}$
+
+(e.g., $X_{tot}$ liquid assets in a company and $Y_{tot}$ all assets in a company)
+
+\item Population variance
+
+$S^2= \frac{1}{N-1} \sum (X_i - \bar{X})^2$
+\item Sampling fraction: $f = n/N$
+\end{enumerate}
+\end{enumerate}
+
+Note that we do not try to construct and validate models for $X_i$; these values are fixed. 
+
+\subsection{Simple random sampling: definitions and properties}
+
+To draw an SRS from a list using random numbers, label each X as $1,\dots, N$, and then draw a random sequence of $n$ numbers, ignoring repeats. There are ${n choose N}=\frac{N!}{n!(N-n)!}$ ways to choose the \textbf{samples}, and the probability of each sample being draw is $1/{n choose N}$. 
+
+\underline{Properties}:
+
+\begin{enumerate}
+\item
+$P(x_i = X_r) = 1/N$ for each i.
+
+Justification:
+
+Suppose that the finite population is $X_1, X_2, X_3, X_4, X_5, X_6, X_7$.
+
+The total no.\ of ordered samples: $7\times 6 \times 5$. 
+
+The total no.\ of ordered samples with $x_2 = X_6$: $6 \times 5$.
+
+\begin{verbatim}
+---------------------
+| x1      x2     x3 |
+---------------------
+|     |       |     |
+---------------------
+\end{verbatim}
+
+$P(x_2 = X_6) = \frac{6 \times 5}{7\times 6 \times 5}=\frac{1}{7}$.
+
+\item 
+$E[x_i] = \bar{X}$ for each i.
+
+Justification: Let $x_1, \dots, x_7$ be discrete values. Then
+
+\begin{equation}
+\begin{split}
+E[x_j] =& \sum_{j=1}^{N} x_i P(x_i = x_j)\\
+=& \sum_{j=1}^{N} x_i \frac{1}{N} \\
+=& \bar{x}\\
+ \end{split}
+\end{equation}
+
+
+\item  $Var(x_i) = (N-1)S^2/N$.
+
+Justification:
+
+Recall that $\sum (x_i - \bar{x})^2 = \sum x_i^2 - N \bar{x}^2$.
+
+\begin{framed}
+\begin{equation}
+\begin{split}
+\sum (x_i - \bar{x})^2 =& \sum (x_i^2 - 2 \bar{x}x_i + \bar{x}^2)\\
+=& N\bar{x}^2 + \sum x_i^2 - 2\bar{x} N \bar{x}\\
+=& \sum x_i^2 - N\bar{x}^2
+\end{split}
+\end{equation}
+\end{framed}
+
+\begin{equation}
+\begin{split}
+Var(x_i) =& E[x_i^2] - (E[x_i])^2\\
+=& \sum_{j=1}^N x_j^2 p(x_i = x_j) - \bar{x}^2\\
+=& \frac{1}{N} \sum_{j=1}^N(x_j^2 - N\bar{x}^2)\\
+=& \frac{1}{N} \sum_{j=1}^n(x_i - \bar{x})^2\\
+\end{split}
+\end{equation}
+
+Recall that $S^2 = \frac{1}{N-1} \sum (x_i - \bar{x})^2$.
+
+$Var(x_i) = \frac{1}{N} \sum_{j=1}^n(x_i - \bar{x})^2 = \frac{(N-1)}{N} S^2$.
+
+\item
+The joint probability $P(x_i = X_r, x_j = X_s) = \frac{1}{N(N-1)}$ for $i\neq j$ and $r\neq s$. 
+
+Justification: 
+
+Total no.\ of ordered samples:  $7 \times 6 \times 5$.
+
+Total no.\ of ordered samples $x_2 = X_5, x_5=
+X_6$: $5$.
+
+So, $P(x_i = X_r, x_j = X_s) = \frac{5}{7 \times 6 \times 5} = \frac{1}{N(N-1)}$.
+
+\item $Cov(x_i, x_j) = -S^2/N$, for $i\neq j$.
+
+Intuitively, the correlation is negative: if we have a finite population, drawing a high value means that the average of the others will go down---negative correlation. 
+
+Justification:
+
+\begin{framed}
+Notice that $\sum_{i=1}^N x_i \sum_{j=1}^N x_j$ can we written as
+
+$\sum_{i=1}^N x_i (x_1 + \dots + x_N)= \sum x_i^2 + \sum_{i=1}^N \sum_{j=1}^N x_i x_j$, where $j \neq i$.
+
+A trick: whenever we see $\sum_{i=1}^N \sum_{j=1}^N x_i x_j$, we can rewrite this as: $(N\bar{x})^2 - \sum_{i=1}^N x_i^2$, where $j \neq i$.
+\end{framed}
+
+We have to work out $Cov(x_i, x_j)$.
+
+\begin{equation}
+\begin{split}
+Cov(x_i,x_j) =& E[x_i x_j] - E[x_i]E[x_j]\\
+=& \sum_{r=1}^N \sum_{s=1}^N x_r x_s p(x_i = x_r, x_j = x_s) - \bar{x}^2 \\
+=& \frac{1}{N(N-1)} \sum_r \sum_s x_r x_s  - \bar{x}^2 \\
+\end{split}
+\end{equation}
+
+We have already established that 
+$p(x_i = x_r, x_j = x_s) = \frac{1}{N(N-1)}$.
+
+\begin{framed}
+We now use this trick: whenever we see $\sum_{i=1}^N \sum_{j=1}^N x_i x_j$, we can rewrite this as: $(N\bar{x})^2 - \sum_{i=1}^N x_i^2$, where $j \neq i$.
+\end{framed}
+
+
+\begin{equation}
+\begin{split}
+Cov(x_i,x_j) =& \frac{1}{N(N-1)} (\sum_r \sum_s x_r x_s  - \bar{x}^2) \\
+=& 
+\frac{1}{N(N-1)}
+[(N\bar{x})^2 - \sum_{i=1}^N x_i^2] 
+- \bar{x}^2]\\
+=& \frac{1}{N(N-1)}
+[(N\bar{x})^2 - \sum_{i=1}^N x_i^2 
+- N(N-1)\bar{x}^2]]\\
+=& \frac{1}{N(N-1)}
+[\cancel{(N\bar{x})^2} - \sum_{i=1}^N x_i^2 
+- \cancel{(N\bar{x})^2} + N\bar{x}^2]\\
+\end{split}
+\end{equation}
+
+Basically, what happened above is that the last term $\bar{x}^2$ is the same as $\frac{N(N-1)}{N(N-1)}\bar{x}^2$. This allows us to simplify. 
+
+Now we can write:
+
+\begin{equation}
+\begin{split}
+\frac{1}{N(N-1)} (-1) [\sum (x_i^2 - N\bar{x}^2)] =& \frac{1}{N} (-1) \frac{[\sum (x_i^2 - N\bar{x}^2)]}{N-1}\\
+=& - \frac{1}{N} S^2
+\end{split}
+\end{equation}
+
+\end{enumerate}
+
+\subsection{Best linear unbiased estimator (BLUE) of bar x}
+
+Under SRS, the BLUE of $\bar{X}$ is $\bar{x} =  \sum_{i=1}^n x_i/n$.
+
+Rewrite $\bar{x}=\sum_{i=1}^n x_i/n = \sum c_i x_i$, where $c_i = 1/n$. 
+Of all estimators $t = \sum c_i x_i$, for constants $c_i$, such that $E[t]=\bar{X}$, the estimator with $c_i = 1/n$ has smallest variance.
+
+Proof:
+
+To be unbiased, $E[t]=\bar{X}$. So, the constraint is $\sum c_i =1$.
+
+\begin{framed}
+Recall: if variables are correlated: 
+
+\begin{equation}
+\begin{split}
+~& Var(\sum X_i) =\\
+~& \sum_i \sum_j Cov(X_i, X_j) = \\
+~& \sum Var(X_i) + 2\sum \sum Cov(X_i, X_j)\\
+\end{split}
+\end{equation}
+
+So, if we have $\sum c_i X_i$, 
+
+\begin{equation}
+\begin{split}
+~& Var(\sum c_i X_i) =\\
+~& \sum_i \sum_j Cov(X_i, X_j) = \\
+~& \sum c_i^2 Var(X_i) + \sum \sum c_i c_j Cov(X_i, X_j)
+\end{split}
+\end{equation}
+\end{framed}
+
+\begin{framed}
+Recall that $Var(x_i) = \frac{N-1}{N} \sum (X_i-\bar{X})^2 =  \frac{N-1}{N} S^2$.
+
+Also recall two important identities we will use below:
+
+\begin{equation}
+\sum (x_i - \bar{x})^2 = \sum x_i^2 - N \bar{x}^2
+\end{equation}
+
+\begin{equation}
+(\sum a_i)^2 = \sum a_i \sum a_j = \sum a_i^2 + \sum_i \sum_j a_i a_j
+\end{equation}
+
+which means that:
+\begin{equation}
+\sum_i \sum_j a_i a_j = (\sum a_i)^2  - \sum a_i^2 
+\end{equation}
+\end{framed}
+
+Now we can compute Var(t):
+
+\begin{equation}
+\begin{split}
+Var(t) = & Var(\sum c_i x_i )\\
+= & \sum c_i^2 Var(x_i) + \sum_i \sum_j c_i c_j Cov(x_i x_j)\\
+= &  \frac{N-1}{N} S^2 \sum_i c_i^2 - \frac{S^2}{N}\sum_i \sum_j c_i c_j  \\
+\end{split}
+\end{equation}
+
+Now we use the second fact in the frame above to rewrite:
+
+$\frac{S^2}{N}\sum_i \sum_j c_i c_j = \frac{S^2}{N} (\sum (c_i)^2  - \sum c_i^2)$
+
+\begin{equation}
+\begin{split}
+~& \frac{N-1}{N} S^2 \sum_i c_i^2 - \frac{S^2}{N}\sum_i \sum_j c_i c_j  = \\
+~&  \frac{N-1}{N} S^2 \sum_i c_i^2 -  \frac{S^2}{N} ((\sum c_i)^2  - \sum c_i^2)=  \\
+~& \frac{N-1}{N} S^2 \sum_i c_i^2 -\frac{S^2}{N} (\sum c_i)^2 + \frac{S^2}{N}\sum c_i^2 =\\
+~& S^2 \sum_i c_i^2 - \frac{S^2}{N} \sum_i c_i^2 -\frac{S^2}{N} \sum (c_i)^2 + \frac{S^2}{N}\sum c_i^2\\
+~& S^2 \sum_i c_i^2  -\frac{S^2}{N} \\
+\end{split}
+\end{equation}
+
+The last line holds because two terms cancel out, and  $\frac{S^2}{N} (\sum c_i)^2=\frac{S^2}{N}$ because $\sum c_i=1$. 
+
+
+So $Var(t)= S^2 \sum_i c_i^2  -\frac{S^2}{N}$.
+
+What estimator can give us minimum variance?
+Notice that if we write:
+
+$S^2 (\sum_i (c_i-\frac{1}{n})^2)$, expanding this out we would get two extra terms: $-2\frac{\sum c_i}{n}  + n (\frac{1}{n})^2$. We can cancel these out by simply adding their negation, to get:
+
+\begin{equation}
+S^2 (\sum_i (c_i-\frac{1}{n})^2 + 2\frac{\sum c_i }{n}  - (\frac{1}{n})) 
+\end{equation}
+
+So we write:
+
+\begin{equation}
+Var(t)= S^2 (\sum_i (c_i-\frac{1}{n})^2 + 2\frac{\sum c_i}{n}  - \frac{1}{n})  -\frac{S^2}{N}
+\end{equation}
+
+It is immediately obvious that this term is minimized if $c_i = 1/n$. If we set $c_i = 1/n$, then $Var(t)=Var(\bar{x}) = (1-\frac{n}{N}) \frac{S^2}{n}$.
+
+So: $var(\bar{x})$ depends on (i) population variance $S^2$, (ii)  sample size n, (iii) sampling fraction $f=n/N$.
+
+1-f is the finite population correction (FPC), and for small n relative to N, gives 1, therefore the usual estimator for the sample means' sd (standard error).
+
+We can ignore the FPC when $f\leq 0.05$ and in many cases when $\leq 0.1$.
+
+\subsection{Estimation of population variance}
+
+When $S^2$ unknown, we estimate it from
+
+\begin{equation}
+s^2 = \frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2
+\end{equation}
+
+so that we can estimate the standard error:
+
+\begin{equation}
+Var(\bar{x}) =(1-\frac{n}{N}) \frac{s^2}{n}
+\end{equation}
+
+Under SRS, $E[s^2] = S^2$.
+
+Proof: 
+
+\begin{equation}
+\begin{split}
+E[(n-1)s^2] =& E[\sum (x_i - \bar{X})^2] \\
+=& E[\sum (x_i-\bar{X} + \bar{X} - \bar{x})^2]\\
+\end{split}
+\end{equation}
+
+Set $z_i = x_i-\bar{X}$, and $z=\bar{X} - \bar{x}$. Then we have
+
+\begin{equation}
+\begin{split}
+E[(n-1)s^2] =& E[\sum (z_i - z_2)^2] \\
+=& E[\sum (z_i - z)^2]\\
+=& E[\sum (z_i^2 - nz)^2]\\
+=& E[\sum (z_i^2 - nz)^2]\\
+=& E[\sum (x_i-\bar{X})^2 - n(\bar{X} - \bar{x})^2]\\
+\end{split}
+\end{equation}
+
+The first squared term is $Var(x_i)$ and the second one is $Var(\bar{x})$. So:
+
+\begin{equation}
+\begin{split}
+~& E[\sum (x_i-\bar{X})^2 - n(\bar{X} - \bar{x})^2] = \\
+~& \frac{n(N-1)}{N}S^2 - n (1- \frac{n}{N})\frac{S^2}{n} = \\
+~& (n-1) S^2\\
+\end{split}
+\end{equation}
+
+It follows that since $E[(n-1)s^2] = (n-1)S^2$, $E[s^2] = S^2$.
+
+\subsection{Confidence intervals for $\bar{X}$}
+
+Under SRS $\bar{x} \sim N(\bar{X}, (1-f)\frac{S^2}{n}$ (approximately).
+
+If the population's pdf has skewness, CLT guarantees that $\bar{x}$ is normally distributed if $n$ is large enough. The problem is, if there is skewness, how large should $n$ be? \textbf{Fisher's measure of skewness}
+ says: choose n such that $n>25 G_1^2$.
+ 
+ \begin{equation}
+ G_1 = \frac{1}{N\sigma^3} \sum_{i=1}^N (X_i - \bar{X})^3
+ \end{equation}
+ 
+This rule ensures that the 95\% CI will have the right coverage properties. 
+
+The usual stuff follows:
+
+\begin{equation}
+\frac{\bar{x}-\bar{X}}{\sqrt{(1-f)S^2/n}} \sim N(0,1) 
+\end{equation}
+ 
+If S is unknown,  
+ 
+\begin{equation}
+\frac{\bar{x}-\bar{X}}{\sqrt{(1-f)s^2/n}} \sim t_{n-1} 
+\end{equation}
+ 
+ So we have $\bar{x} \pm t_{n-1,0.975} \sqrt{(1-f)s^2/n}$.
+ 
+ If $n>60$, 
+
+\begin{equation}
+\frac{\bar{x}-\bar{X}}{\sqrt{(1-f)s^2/n}} \sim N(0,1) 
+\end{equation}
+
+ So we have $\bar{x} \pm z_{0.975} \sqrt{(1-f)s^2/n}$.
+
+\subsection{Choice of sample size n}
+
+Given: width $d$ of a $100(1-\alpha)$\% CI for $\bar{X}$. 
+Then,
+
+\begin{equation}
+d = 2z \sqrt{(1-\frac{n}{N})\frac{S^2}{n}}
+\end{equation}
+
+where $z=z_{1-\alpha/2}$
+
+solve for n:
+
+\begin{equation}
+n \geq \frac{N}{1+N(\frac{d}{2Sz})^2}
+\end{equation}
+
+$S^2$ comes from a pilot survey or from previous work.
+
+\subsection{Estimation of a proportion P}
+
+\begin{equation}
+\chi_i= 
+\begin{cases}
+1 & \hbox{ if unit i has characteristic C } \\
+0 & \hbox{ otherwise } \\
+\end{cases}
+\end{equation}
+
 
 \end{multicols}
-
-
-
-
-
 
 \end{document}
 
