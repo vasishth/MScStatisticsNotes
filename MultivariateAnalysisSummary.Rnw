@@ -142,7 +142,8 @@ options(continue=" ")
 
 \section{Preliminaries}
 
-\subsection{Some math needed in TS}
+
+\subsection{Completing the square: complex numbers}
 
 Completing the square: $\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
 
@@ -3248,7 +3249,10 @@ This gives us:
 
 \begin{framed}
 \begin{equation}
-\hat y_{t+i}= \hat x_{t+i} + \hat y_{t+i-1}  
+\begin{split}
+\hat y_{t+i}=& \hat x_{t+i} + \hat y_{t+i-1}\\
+ =& \hat x_{t+i} + y_{t+i-1}\\
+ \end{split}
 \end{equation}
 \end{framed}
 
@@ -3286,13 +3290,10 @@ If we have a trend TS $y_t$ and difference it d times to remove the trend, $x_t$
 x_t = (1-B)^d y_t 
 \end{equation}
 
-expanding the RHS using the binomial theorem: (to-dp: define here)
+expanding the RHS using the binomial theorem: (to-do: define here)
 
 \begin{equation}
-\begin{split}
-x_t  =& y_t+\sum_{j=0}^{d} {n \choose k} (-B) y_t  \\
-=&  y_t+ \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t-j}  \\
-\end{split}
+x_t  =  \sum_{j=0}^{d} {n \choose j} (-1)^j y_{t-j} 
 \end{equation}
 
 Now, 
@@ -3310,7 +3311,7 @@ If $y_t$ is seasonal, we would transform as follows:
 \begin{equation}
 \begin{split}
 x_t =& (1-B^s)^D y_t\\
-=& \sum_{j=0}^D {n \choose j}(-1)^j B^{sj} y_t \\
+=& \sum_{j=0}^D {n \choose j}(-1)^j  y_{t-sj} \\
 \end{split}
 \end{equation}
 
@@ -3980,7 +3981,7 @@ $P_{t+i\mid t}$ takes the simplified form:
 
 \begin{equation}
 \begin{split}
-P_{t+i\mid t} =& F^i P_{t} (F^i)^T \\
+P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
 +& \sum_{k=0}^{i-1} F^k Z (F^k)^T
 \end{split}
 \end{equation}
@@ -4655,9 +4656,163 @@ upper[i]<-modForecast$a[[i]]
                      upper=upper))
 @
 
-
-
 \end{multicols}
+
+\newpage
+
+\section{Frequently Used Formulas}
+
+\subsection{ACF/PACF calculations}
+
+solve this equation for $r_1, r_2$ or $a_1$, $a_2$.
+
+\begin{equation}
+\begin{pmatrix}
+r_1 \\
+r_2\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & r_1 \\
+r_1 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+a_1 \\
+a_2\\
+\end{pmatrix}
+\end{equation}
+
+Steps for finding PACF: 
+\begin{enumerate}
+\item Get the two equations
+\item Then solve for $a_1$ in first
+\item Plug $a_1$ into second equation and solve for $a_2$.
+\end{enumerate}
+
+\subsection{(S)ARIMA forecast equations}
+
+\begin{center}
+\begin{tabular}{| l | l | l |}
+\hline
+Model         & Forecast Mean & Forecast Var\\ 
+\hline
+AR(1)         & $\hat y_{n+i}= a^i y_n$ & $\sigma^2 \frac{1-a^{2i}}{(1-a^2)}$\\
+AR(p)         & * & *\\
+ARMA(p,q)     & $\hat y_{t+1\mid t} = 
+a_1 y_{t} + \dots + a_p y_{t+1-p} +
+b_1 \epsilon_{t} + \dots + b_q \epsilon_{t+1-q}$ & For k: $\sum_{i=0}^{k-1} (b_i) \epsilon_{t+k-1}$  \\
+& 
+$\hat y_{t+2} 
+= a_1 \hat y_{t+1}+ \dots + a_p y_{t+2-p}  +
+b_2 \epsilon_{t} + \dots + b_q \epsilon_{t+2-q}$ & as above\\ 
+MA(1)         & $\hat y_{t+i\mid t} = 0$ & $V_{t+1\mid t}=\sigma^2$\\
+& & $V_{t+k\mid t}=(1+b^2)\sigma^2$\\
+MA(q)         & $\hat y_{t+1\mid t} = \sum_{j=1}^q b_j \epsilon_{t+1-j}$ & $\sigma^2$\\
+& $\hat y_{t+k\mid t} = \sum_{j=k}^q b_j \epsilon_{t+k-j}$ if $k\leq q$ else 0 & $\sum_{j=0}^q b_j^2\sigma^2$\\
+ARIMA(p,d,q)  & If $d=1$: $\hat y_{t+i}= \hat x_{t+i} +  y_{t+i-1}$, $\hat x_{t+i}$ is ARMA(p,q)  & ?\\
+& If $d>1$: $x_t  =  \sum_{j=0}^{d} {n \choose j} (-1)^j y_{t-j}$   & ? \\
+SARIMA(P,D,Q) & $x_t = \sum_{j=0}^D {n \choose j}(-1)^j  y_{t-sj}$ & ? \\
+\hline
+\end{tabular}
+\end{center}
+
+* Translate to SSM and then compute forecasts.
+
+\subsection{State Space Models: Local level model forecast}
+
+\underline{Step 1}:  Compute i-step ahead forecast state distribution:
+
+\begin{equation}
+\beta_{t+i\mid y_{1:t}} \sim N(\hat \beta_{t+i\mid t}, P_{t+i\mid t})
+\end{equation}
+
+where
+
+\begin{equation}
+\hat \beta_{t+i\mid t} = F^i \hat \beta_{t\mid t}
+\end{equation}
+
+and   
+
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t\mit t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z (F^k)^T
+\end{split}
+\end{equation}
+
+Aside: If Z is time-varying version ($Z_t$):
+\begin{equation}
+\begin{split}
+P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
++& \sum_{k=0}^{i-1} F^k Z_{t+i-k} (F^k)^T
+\end{split}
+\end{equation}
+
+\underline{Step 2}: Compute the i-step ahead forecast observation distribution:
+
+\begin{equation}
+y_{t+i}\mid y_{1:t} \sim N(\hat y_{t+i\mid t},q_{t+i\mid t})
+\end{equation}
+
+where
+
+\begin{enumerate}
+\item $\hat y_{t+i\mid t} = x_{t+i}^T \hat \beta_{t+i\mid t}$
+\item $q_{t+i\mid t} = x_{t+i}^T P_{t+i\mid t} x_{t+i}+\sigma^2$
+\end{enumerate}
+
+\subsection{State Space Models: Linear trend model forecast}
+
+Recall that from Kalman filter $\beta_t\mid y_{t:t} \sim N(\hat \beta_{t\mid t}, P_{t\mid t})$.
+
+\begin{equation}
+\begin{split}
+\hat y_{t+i\mid t} =& x_{t+i}^T F^i \hat \beta_{t\mid t}\\
+=& 
+\begin{pmatrix}
+1 & 0 \\
+\end{pmatrix}
+\begin{pmatrix}
+1 & i \\
+0 & 1 \\
+\end{pmatrix}
+\begin{pmatrix}
+\hat\beta_{1t\mid t} \\
+\hat\beta_{2t\mid t} \\
+\end{pmatrix}\\
+=& 
+\begin{pmatrix}
+1 & i \\
+\end{pmatrix}
+\begin{pmatrix}
+\hat\beta_{1t\mid t} \\
+\hat\beta_{2t\mid t} \\
+\end{pmatrix}\\
+=& \hat\beta_{1t\mid t} +
+\hat\beta_{2t\mid t}i \\
+\end{split}
+\end{equation}
+
+which is a straight line.
+
+
+\subsection{State Space Models: Superposed model forecast}
+
+\begin{equation}
+\hat y_{t+k\mid t} = \sum_{i=1}^N \hat y_{i,t+k}
+\end{equation}
+
+\begin{equation}
+q_{t+k\mid t} = \sum_{i=1}^N q_{i,t+k\mid k}
+\end{equation}
+
+\begin{equation}
+y_{t+k}\mid y_{1:t} 
+\sim N(\hat y_{t+k\mid t}, q_{t+k\mid t}) 
+\quad k=1,2,\dots 
+\end{equation}
+
 
 \end{document}
 
