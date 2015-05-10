@@ -1298,7 +1298,9 @@ Poor model performance in one component (trend,
 seasonality) can be rectified in isolation.
 \end{enumerate}
 
-\subsection{Differencing (this detrends)}
+\subsection{Differencing}
+
+\subsubsection{First-order differerencing}
 
 This provides a simple method of removing trend, without explicitly estimating it.
 
@@ -1362,7 +1364,7 @@ The last line holds because
 
 Second-order differening removes polynomial trend.
 
-\textbf{k-th order differencing}
+\subsubsection{k-th order differencing}
 
 %\begin{framed}
 \begin{equation}
@@ -1371,11 +1373,13 @@ Second-order differening removes polynomial trend.
 %\end{framed}
 
 \noindent
-removes k-th degree polynomial trend. Ususally, k=1 or 
+removes k-th degree polynomial trend. Usually, k=1 or 
 k=2 is enough. Not really practical with k=2 or 3.
 
 ``First-, second-, \dots, k-th order differencing are 
 sometimes called \textbf{ordinary differencing}''.
+
+\subsubsection{Seasonal differencing}
 
 If there is \textbf{seasonal variation} with known 
 cyclicity k, the 
@@ -1401,6 +1405,8 @@ For k=12, we say \textbf{this is differencing with lag 12}, or seasonal differen
  =& \nabla^{13}y_t\\ 
 \end{split}
 \end{equation}
+
+\subsubsection{Summary}
 
 So, there is k-th order differencing and differencing with lag:
 
@@ -1552,6 +1558,37 @@ $Cov(y_t,y_{t+h}) = \gamma_h$
 whatever the value of t.
 
 Whenever we say stationarity, we mean weak stationarity.
+
+
+\subsubsection{Practical implication of weak stationarity}
+
+Stationarity helps us compute $E[y_t]$ and $Var(y_t)$. This also illustrates how to compute expectation and variance in a fairly complicated setting.
+
+If you have a model like $y_t = 19 - \frac{1}{3}B y_t -  \frac{1}{4}B^2 y_t + \epsilon_t-\frac{1}{2}\epsilon_{t-1}$, if you can prove causality, you have stationarity, and therefore you can compute $E[y_t]$ by solving for $\mu$ in 
+
+$E[y_t]=\mu = 19 - \frac{1}{3}\mu -  \frac{1}{4}\mu$
+
+Similarly, if $y_t$ is proved to be stationary, it's variance is 
+$Var(y_t) = V = Var(19 - \frac{1}{3}y_t - \frac{1}{4}y_{t-1} + \epsilon_t - \frac{1}{2}\epsilon_{t-1})$.
+
+This can be solved using the formula: 
+
+$Var(aX + bY + cZ) = a^2 Var(X) + b^2 Var(Y) + c^2 Var(Z) + 2abCov(X,Y)+2acCov(X,Z) + 2bc Cov(Y,Z)$.
+
+Notice that almost all covariances will be zero, except $Cov(y_{t-1},\epsilon_{t-1})=Cov(y_{t},\epsilon_{t})$ due to stationarity. Since the \textbf{random variables} $y_{t}=\epsilon_{t}$, 
+$Cov(y_{t},\epsilon_{t})=Var(\epsilon_{t})$.
+
+Another covariance that is non-zero is $Cov(y_t,y_{t-1})$. Just expand $y_t$, and multiply each term in the expansion with $y_{t-1}$:
+
+Since
+$y_t = 19 - \frac{1}{3}B y_t -  \frac{1}{4}B^2 y_t + \epsilon_t-\frac{1}{2}\epsilon_{t-1}$
+
+we get
+
+$Cov(19, y_{t-1}) + Cov(-\frac{1}{3}B y_t, y_{t-1}) + Cov(-  \frac{1}{4}B^2 y_t, y_{t-1}) + Cov(\epsilon_t, y_{t-1})+
+Cov(-\frac{1}{2}\epsilon_{t-1}, y_{t-1})$. 
+
+The second term,  $Cov(-\frac{1}{3}B y_t, y_{t-1})$ requires another expansion of $y_t$.
 
 \subsection{(Theoretical) ACF $\rho_h$}
 
