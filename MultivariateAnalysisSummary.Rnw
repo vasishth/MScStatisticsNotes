@@ -142,6 +142,24 @@ options(continue=" ")
 
 \section{Preliminaries}
 
+\subsection{Some basic results for computing covariance}
+
+Let $\bar{x}_i$ be vectors:
+
+\begin{equation}
+var(\bar{x}_1 - \bar{x}_2) = var(\bar{x}_1) + var(\bar{x}_2) - 2 Cov(\bar{x}_1,\bar{x}_2)
+\end{equation}
+
+Note that $Cov(\bar{x}_1,\bar{x}_2)$ would be the matrix
+
+$$
+\begin{pmatrix}
+Cov(x_1) & 0 \\
+0 & Cov(x_2)\\
+\end{pmatrix}
+$$
+
+where $Cov(x_1)$ is the covariance between the \textit{components} of $x_1$.
 
 \subsection{Completing the square: complex numbers}
 
@@ -226,7 +244,7 @@ S=L^{1/2} R L^{1/2}
 \item R is symmetric, $p\times p$
 \item $r_{ii}=1$ for all i
 \item $-1 \leq r_{ij} 1$.
-\item Geometrically, $r_ij$ is the cosine of the angle between the vectors of deviations of observations of the ith and jth variables from the mean.
+\item Geometrically, $r_{ij}$ is the cosine of the angle between the vectors of deviations of observations of the ith and jth variables from the mean.
 \begin{enumerate}
 \item If angle is 0 deg (0 rad), $\rho=1$.
 \item If angle is 90 deg ($\pi/2$ rad), $\rho=0$.
@@ -250,7 +268,7 @@ Let $A_{p\times p}$, and let eigenvalues be $\lambda_i$.
 \item $\sum \lambda_i = trace(A)$
 \item $\prod \lambda_i = det(A)$
 \item If $\lambda_i$ is an eigenvalue of A, then there is at least one vector $x_i$, called an eigenvector of A, such that $Ax_i = \lambda_i x_i$.
-\item If A is realand symmetric $p\times p$, then there are always p linearly independent eigenvectors.
+\item If A is real and symmetric $p\times p$, then there are always p linearly independent eigenvectors.
 \item If C is any non-singular square matrix, then A and $CAC^{-1}$ have the same eigenvalues. If $x_i$ is an eigenvector of A with eigenvalue $\lambda_i$, then $Cx_i$ is an  eigenvector of $CAC^{-1}$ with eigenvalue $\lambda_i$. [Prove it]
 \item If A is real symmetric, i.e., $A=A'$. Then the eigenvalues of A are real. [Prove it]
 \item If A is real symmetric, and $\lambda$ and $\mu$ are eigenvalues, and x and y are corresponding eigenvectors, then x and y are orthogonal. [Prove it]
@@ -378,7 +396,7 @@ Note that the MVN density is constant on surfaces of contours where
 
 $(x-\mu)' \Sigma^{-1} (x-\mu)=c^2$
 
-``The axes of each ellipsoid of constant density are in the direction of the eigen- vectors of $\Sigma^-1$ (recall that these are the same as the eigenvectors of $\Sigma$, but if $\Sigma x=\lambda x$, then
+``The axes of each ellipsoid of constant density are in the direction of the eigenvectors of $\Sigma^{-1}$ (recall that these are the same as the eigenvectors of $\Sigma$, but if $\Sigma x=\lambda x$, then
 $\Sigma^{-1} x=\lambda^{-1} x$), and their lengths are proportional to the reciprocals of the square roots of the eigenvalues of $\Sigma^{-1}$.'' (p.\ 95)
 
 \item 
@@ -393,13 +411,13 @@ The solid ellipsoid $\{x\mid (x-\mu)' \Sigma^{-1} (x-\mu) \leq \chi_p^2(\alpha)\
 \end{enumerate}
 
 This follows from the fact that if $x\sim N_p(\mu,\Sigma)$ then 
-$y=\Sigma^{1/2} (x-\mu)\sim N_p(0,I_p)$ and therefore:
+$y=\Sigma^{-1/2} (x-\mu)\sim N_p(0,I_p)$ and therefore:
 
 \begin{equation}
 y'y = (x-\mu)' \Sigma^{-1} (x-\mu) = \sum_{i=1}^2 Y_i^2 \sim \chi_p^2
 \end{equation}
 
-``One of the consequences of the properties is that the marginal distributions of the individual variables of a multivariate normal distribution is a univariate normal distribu- tion.'' (p.\ 96)
+``One of the consequences of the properties is that the marginal distributions of the individual variables of a multivariate normal distribution is a univariate normal distribution.'' (p.\ 96)
 
 \item
 If $X\sim N_p(\mu,\Sigma)$ and w is a p-vector, then the linear combination $w'X \sim N(w'\mu,w'\Sigma w)$.
@@ -493,6 +511,9 @@ where D is a diagonal matrix and E is a matrix of eigenvectors of X arranged as 
 
 
 \textbf{PCA using eigenvalue decomposition}:
+
+\textit{Eigenvalues of covariance matrices can be interpreted as variances of particular linear combinations of the component random variables. In particular, $\lambda_1$ is the largest variance obtainable by taking linear combinations of X with weights having unit length.} Thisted, p.\ 120.
+
 
 The goal is to find some orthonormal matrix P in $Y = PX$ such that the covariance matrix $C_Y = \frac{1}{n} Y Y^T$ is a diagonal matrix. The rows of P are the \textit{principal components} of X.
 
@@ -640,13 +661,21 @@ The reasoning is that if variance is small, then all the observations have simil
 
 Basically, the PCA method just rotates the data so that the ellipsoid's axes are the principal components.
 
+\subsection{Using unbiased or MLE variance formula}
+
+The variance matrix using prcomp is $c = \frac{n}{n-1}$ times the variance matrix
+using princomp. 
+Scaling a matrix S by a factor c to a matrix cS scales the eigenvalues
+by a factor of c also; the eigenvectors remain unchanged, however. Since the eigenvalues are all scaled equally, the scree graph would be simply scaled in the vertical direction by a factor of c; the relative contributions of the eigenvalues will be unchanged.
+
+
 \subsection{Presentation from lecture notes}
 
 \textbf{Goal}: reduce $X_{n\times p}$ to $Y_{n\times q}$
 
 ``A linear transformation $X' \rightarrow Y'$ is given by $Y'=X'A$ where A is a $p\times p$-matrix; it makes statistical sense to restrict attention to non-singular matrices A. If A happens to be an orthogonal matrix, i.e., $A'A=I_p$,then the transformation $X'\rightarrow Y'$  is an orthogonal transformation (i.e., just a rotation and/or a reflection of the n points in p-dimensional space)''.
 
-We want to choose A such that variance X'A is maximized; this is because ``maximizing the variance corresponds to finding the appropriate rotation of the naive basis'' (Shlens tutorial). 
+We want to choose A such that variance $X'A$ is maximized; this is because ``maximizing the variance corresponds to finding the appropriate rotation of the naive basis'' (Shlens tutorial). 
 
 How to choose A such that variance of $X'A$ is maximized? If we just choose some A:
 <<>>=
@@ -682,7 +711,7 @@ The first principal component is the vector $a_1$ such that the projection of th
 
 \subsection{PCA example by hand}
 
-To find first PC, we maximize $w_1 S w_1$ subject to $w_1' w_1=1$, where $S=X'X$. $w_1$ will be the eigenvector representing the direction of the maximum variance.
+To find first PC, we maximize $w_1' S w_1$ subject to $w_1' w_1=1$, where $S=X'X$. $w_1$ will be the eigenvector representing the direction of the maximum variance.
 
 \begin{equation}
 w_1' S w_1 - \lambda_1 (w_1' w_1 -1)
@@ -727,7 +756,7 @@ Pre-multiplying by $w_2'$:
 Because $\lambda_2 w_1'w_2=0$, we can see from equation~\ref{e1} that
 
 \begin{equation}
-\mu = 2w_1'S w_2 = 2(Sw_a)' w_2 = 2(\lambda_1 w_1)' w_2 = 2\lambda_2 w_1' w_2=0
+\mu = 2w_1'S w_2 = 2(Sw_1)' w_2 = 2(\lambda_1 w_1)' w_2 = 2\lambda_1 w_1' w_2=0
 \end{equation}
 
 From equation~\ref{e0}, we can then conclude that
@@ -919,7 +948,7 @@ To see whether the data naturally divides into groups (clustering)
 PCA = classical MDS
 
 \begin{theorem}
-D is a matrix of Euclidean distances iff B is  positive semidefinite (iff all eigenvalues of B are semidefinite).\hfill
+D is a matrix of Euclidean distances iff B is  positive semidefinite (iff all eigenvalues of B are semidefinite, i.e., eigenvalues are positive).\hfill
 [Theorem 4.2, p.\ 52]
 \end{theorem}
 
@@ -927,7 +956,7 @@ Given a distance matrix $D=(\delta_{ij})$, we find the configuration of points:
 
 \begin{enumerate}
 \item 
-Find B=HAH, where $A=-\frac{1}{2} \delta_{ij}^2$, and $H=I_n - \frac{1}{n} J_n$.
+Find B=HAH, where $A=-\frac{1}{2} \delta_{ij}^2$, and $H=I_n - \frac{1}{n} J_n$. $J_n$ has all entries = 1.
 \item Find eigenanalysis of B.
 \item Transpose matrix of eigenvectors.
 \item The columns of this transposed matrix are the principal coordinates of the points.
@@ -964,6 +993,29 @@ for(i in 1:5){
   }
 }
 @
+
+\subsection{Stress}
+
+Let $\delta_{ij}$ distance matrix, $d_{ij}$ guess. Stress is then defined as:
+
+\begin{equation}
+S=\sqrt{\frac{(d_{ij}-\delta_{ij})^2}{\sum_{i<j} d_{ij}^2}}
+\end{equation}
+
+Stress = 0 is a good guess, so the goal is to minimize stress.
+
+\subsection{Ordinal MDS (non-metrical methods)}
+
+The goal here is to find points with same relative ordering.
+
+Method: minimize stress subject to ordering constraints. See  p.\ 59 for procedure.
+
+If two points are close together they may or may not be similar. Further dimensions might be needed to separate them.
+
+MSTs: give direct impression of nearest neighbors. If two points are near each other in scaling plot but not not in MSTs, then they are not similar.
+
+
+
 
 \section{Cluster analysis}
 
@@ -1068,7 +1120,25 @@ This rule allocates x to whichever category that gives greatest likelihood to x.
 
 I.e., we allocate to category 1 if $f_1(x)>f_2(x)$.
 
-\textbf{Example}
+\textbf{Example 1}
+
+Given two univariate normal populations. p=1, k=2, $x\sim N(\mu_i, \sigma_i^2)$, if x is in category i. Allocate x to category i if $f_1(x)>f_2(x)$, i.e., if:
+
+\begin{equation}
+\frac{\sigma_2}{\sigma_1} \exp(-\frac{1}{2}(\frac{x-\mu_1}{\sigma_1})^2 + \frac{1}{2}(\frac{x-\mu_2}{\sigma_2})^2) > 1
+\end{equation}
+
+i.e., if 
+
+\begin{equation}
+Q(x) = x^2 (\frac{1}{\sigma_1^2} - \frac{1}{\sigma_2^2}) - 2x (\frac{\mu_1}{\sigma_1^2}-\frac{\mu_2}{\sigma_2^2}) + ((\frac{\mu_1}{\sigma_1^2}-\frac{\mu_2}{\sigma_2^2})-2 \log (\frac{\sigma_2}{\sigma_1}))>0
+\end{equation}
+
+If $\sigma_1 > \sigma_2$, so that the coefficient of $x^2$ is negative. Then $Q(x)<0$ if x is sufficiently small or sufficiently big.
+
+If $\sigma_1 = \sigma_2$, then $\log(\sigma_2/\sigma_1)$ is 0. In this case, allocate to category 1 if $\mid x-\mu_1\mid < \mid x - \mu_2 \mid$.
+
+\textbf{Example 2}
 
 Suppose we have p dimensions, k normal populations, and means $\mu_i$ and variance $\Sigma$.
 
@@ -1077,6 +1147,13 @@ f_i(x) = (2\pi)^{-p/2}\mid \Sigma \mid^{-1/2} \exp(-(x-\mu_i)'\Sigma^{-1} (x-\mu
 \end{equation}
 
 This is maximized when $(x-\mu_i)'\Sigma^{-1} (x-\mu_i)$ is minimized. I.e., we allocate x to the category that has the smallest Mahalnobis distance from x.
+
+When k=2, this rule reduces to the rule that we allocate x to category 1 if 
+
+\begin{equation}
+(\mu_1 - \mu_2)'\Sigma^{-1}(x-\mu) > 0 \quad \mu = (\mu_1+\mu_2)/2
+\end{equation}
+
 
 \subsection{Mahalanobis distance between two populations}
 
@@ -1097,9 +1174,9 @@ Rule: allocate to category 1 if:
 (\bar{x}_1-\bar{x}_2)' W^{-1} (x-(\bar{x}_1 + \bar{x}_2)/2) > 0
 \end{equation}
 
-\textbf{Example}:
+\textbf{Example}: R example suppressed in this file.
 
-<<>>=
+<<echo=FALSE>>=
 setosa<-subset(iris,Species=="setosa")[,c(1:2,5)]
 versi<-subset(iris,Species=="versicolor")[,c(1:2,5)]
 Setosa<-setosa[,1:2]
@@ -1115,16 +1192,16 @@ W<-((n1-1)*varX1 +(n2-1)*varX2)/(n-2)
 discrim<-t(barx1-barx2)%*%solve(W)
 @
 
-So, classify as 1 if:
+For example, classify as 1 if:
 $-11.43636x_1+    14.14303x+2 + 18.74>0$
 
-<<>>=
+<<echo=FALSE>>=
 Cat1<-discrim %*% t(Setosa) + 18.74>0
 Cat2<-discrim %*% t(Versi) + 18.74<=0
 SetVer<-subset(iris,Species%in%c("setosa","versicolor"))
 SetVer$Species<-factor(SetVer$Species)
 SetVer<-SetVer[,c(1,2,5)]
-head(SetVer)
+#head(SetVer)
 Cats<-ifelse(discrim%*%as.matrix(t(SetVer[,1:2]))+18.74>0,
              "1","2")
 @
@@ -1166,7 +1243,7 @@ $ h(x) = a'x \quad a=W^{-1}d$
  
  \begin{equation}
  \hat p_{12} = \Phi(-\frac{1}{2}\hat \Delta)
-\quad \hat \Delta = (\bar{x}_1 - \bar{x}_2)'S^{-1}(\bar{x}_1 - \bar{x}_2)
+\quad \hat \Delta^2 = (\bar{x}_1 - \bar{x}_2)'S^{-1}(\bar{x}_1 - \bar{x}_2)
  \end{equation}
  
  Alternatively, for discrimination rule $R_i$ compute
@@ -1174,6 +1251,23 @@ $ h(x) = a'x \quad a=W^{-1}d$
  $n_{ij}$ = \mid\{ x \hbox{ in population j and }x\in R_i \}\mid$
  
  then compute $\hat p_{ij} = n_{ij}/\sum n_{ij}$.
+ 
+ \section{FAQs}
+
+\subsection{UITs}
+
+ ``What linear combination of the two treatments shows the greatest mean change?''
+ 
+Ans: In direction $S_{ch}^{-1} (\bar{x}_A-\bar{x}_B)$.
+
+\subsection{Mahalanobis distance}
+
+``Show that the ML rule classifies a new observation x into that population whose Maha.\ distance from x is the smallest.''
+
+$f_i(x) = (2\pi)^{-(p/2)} \mid \Sigma \mid^{-1/2 \exp(-(x-\mu_i)'\Sigma^{-1})(x-\mu_i)/2} $
+
+which is maximized when the $\Delta^2$ term is minimized, i.e., allocate x to the category whose mean has the smallest M distance from x.
+
 \section{Time Series}         
 
 \subsection{Smoothing: Moving averages (MAs)} \label{movavg}
@@ -1874,7 +1968,7 @@ The covariance: (Recall: Cov(X,Y)=E[XY] - E[X]E[Y])
 
 \begin{equation}
 \begin{split}
-~& Cov(y_t, y_{t+h}) \\
+~& Cov(y_t, y_{t+h})= \\
 \gamma_h = 
 ~& E[y_t y_{t+h}]-\explain{E[y_t]}{=0}\explain{E[y_{t+h}]}{=0} =
 E[y_ty_{t+h}] \\
@@ -2852,7 +2946,7 @@ $r_h \sim N(0,1/n)$, for h=1,2,\dots
 
 More generally, for ARMA processes, under $H_0$:
 
-$(r_1, \dots, r_h)' ~ N((\rho_1, \dots,\rho_h)', \frac{1}{n} W)$ 
+$(r_1, \dots, r_h)' \sim N((\rho_1, \dots,\rho_h)', \frac{1}{n} W)$ 
 
 where
 
@@ -3077,8 +3171,14 @@ y_t = E[y_{t+1}\mid y_{1:t}]
 \end{equation}
 
 Replacing $t+1$ for $t$ in equation \ref{armaequation}:
-$y_{t+1} = 
-a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} + \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q}$.
+
+\begin{equation}
+\begin{split}
+~& y_{t+1} = 
+a_1 y_{(t+1)-1} + \dots + a_p y_{(t+1)-p} \\
++~ \eps_{(t+1)} + b_1 \eps_{(t+1)-1} + \dots + b_q \eps_{(t+1)-q}\\
+\end{split}
+\end{equation}
 
 
 \begin{equation}
@@ -3340,6 +3440,10 @@ $\hat x_{t+1}=y_{t+1}+ \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+1-j}$.
 Therefore,
 
 $y_{t+1} = \hat x_{t+1} - \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+1-j}$
+
+More generally, for i:
+
+$y_{t+i} = \hat x_{t+i} - \sum_{j=0}^{d} {n \choose k} (-1)^j y_{t+i-j}$
 
 \subsubsection{Prediction in SARIMA}
 
