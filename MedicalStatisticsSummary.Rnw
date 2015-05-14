@@ -137,7 +137,9 @@ options(continue=" ")
 
 \section{Types of expt designs}
 
-\subsection{Parallel Group Designs}: To compare k treatments,
+\subsection{Parallel Group Designs}
+
+To compare k treatments,
 divide patients, at random, into k groups,
 the $n_i$ patients in group $i$ receive treatment $i$. Each patient receives just one treatment. Comparisons are between patients. 
 $n_i$ not necessarily the same across groups.
@@ -153,7 +155,7 @@ Reverse occurs for a progressive disease, i.e. problems occur if underlying dise
 Advantages
 \begin{enumerate}
 \item Need fewer patients than parallel designs
-\item Patients can state ?preferences? between treatments
+\item Patients can state `preferences' between treatments
 \item  Might be able to allocate treatments simultaneously e.g. skin cream on left and right hands
 \end{enumerate}
 
@@ -185,7 +187,14 @@ Period and Carryover effects are nuisance variables, the main interest is in Tre
 
 \subsection{Factorial designs}
 
+\textbf{Interactions}:
+
+(a) quantitative interaction: what we call additive.
+(b) qualitative interaction: what we call cross-over interaction.
+
 \subsection{Sequential designs}
+
+to-do: need to look this up.
 
  Advantages
  
@@ -310,7 +319,10 @@ Then, Relative Risk is
 The log-transform is for computing CIs using the normal approximation:
 
 \begin{equation}
-SE(log(RR)) = \sqrt{\frac{1}{a} - \frac{1}{a+b} + \frac{1}{c} - \frac{1}{c+d}} \Rightarrow log(RR) \pm 2 SE(log(RR))
+\begin{split}
+SE(log(RR)) =& \sqrt{\frac{1}{a} - \frac{1}{a+b} + \frac{1}{c} - \frac{1}{c+d}} \\
+\Rightarrow& log(RR) \pm 2 SE(log(RR))
+\end{split}
 \end{equation}
 
 Then exponentiate the interval bounds to get intervals on odds.
