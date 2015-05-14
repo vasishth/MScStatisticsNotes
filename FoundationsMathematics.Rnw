@@ -2169,7 +2169,7 @@ The coefficient matrix is:
 Its determinant is -2 (i.e., not 0). The only solution is $x=y=z=0$. Therefore the vectors are linearly independent, and can form a basis.
 
 \begin{leftbar}
-For a square matrix A, if det A = 0, there is an infinite number of non-trivial solutions. If $det A \neq = 0$, the only solution is x = 0.
+For a square matrix A, if det A = 0, there is an infinite number of non-trivial solutions. If $det A \neq 0$, the only solution is x = 0.
 \end{leftbar}
 
 \subsection{Diagonalization of a matrix}
@@ -2184,7 +2184,7 @@ eigen_values_m<-eigen(m)$values
 eigen_vectors_m<-eigen(m)$vectors
 @
 
-Note that the eigenvectors are linearly independent, and do the matrix is non-singular:
+Note that the eigenvectors are linearly independent, and so the matrix is non-singular:
 
 <<>>=
 det(eigen_vectors_m)
