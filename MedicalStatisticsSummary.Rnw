@@ -1193,9 +1193,55 @@ $.
 Here we test the null hypothesis
 $H_0: S_1(t) = S_2(t)$.
 
-\paragraph{(Non-parametric) Log-rank test}
+\subsection{Non-parametric Log-rank test}
 
 See p.\ 32, 33 for description of how to do the test by hand.
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+time i & $t_i$ & $r_{Ai}$ & $r_{Bi}$ & $r_i$ & $d_{Ai}$ & $d_{Bi}$ & $d_i$ & $e_{Ai}$ & $e_{Bi}$\\
+\hline
+ & & & & & & & & & \\
+\hline
+Total & & & & & O$_A$ & O$_B$ & & $E_A$ & $E_B$ \\
+\hline
+\end{tabular}
+
+The procedure is
+
+\begin{enumerate}
+\item Order times i (mark censored times). In column `times i' we put in only uncensored times.
+\item Fill out death columns by each group, for each time period i, $d_{Ai}$ and $d_{Bi}$; also compute total dead for each time: $d_{Ai}+d_{Bi}= d_i$.
+\item Fill out at risk column for each time: $r_{Ai}$ and $r_{Bi}$.
+
+\underline{Definition of at-risk at time i}:
+
+Remaining live cases - Already censored cases
+\item Compute total number at risk at time i: $r_{Ai} + r_{Bi} = r_i$
+\item Compute expected number of deaths:
+
+\begin{equation}
+e_{Ai} = d_i \frac{r_{Ai}}{r_i}
+\end{equation}
+
+\begin{equation}
+e_{Bi} = d_i \frac{r_{Bi}}{r_i}
+\end{equation}
+
+\item
+Compute $O_A = \sum d_{Ai}$, and 
+$O_B = \sum d_{Bi}$.
+
+\item
+Compute $E_A= \sum e_{Ai}$ and $E_B= \sum e_{Bi}$.
+\end{enumerate}
+
+The log-rank test is:
+
+
+\begin{equation}
+LR = \frac{(O_1-E_1)^2}{E_1} + \frac{(O_2-E_2)^2}{E_2} \sim \chi_1^2
+\end{equation}
 
 \underline{Example: Brain tumour data}
 
