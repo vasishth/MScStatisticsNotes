@@ -112,7 +112,7 @@
 
 \newpage
 
-\begin{multicols}{3}
+\begin{multicols}{2}
 
 
 % multicol parameters
@@ -241,6 +241,47 @@ stratified (but may require small blocks)
 minimization (but lessens randomness)
 \end{enumerate}
 
+\section{Sample size calculations}
+
+\subsection{Two sample}
+
+\paragraph{Binomial}
+
+\textbf{Note: n is each arm}
+
+\begin{equation}
+n \approx \frac{\theta_1(1-\theta_1) + \theta_2(1-\theta_2)}{(\theta_2-\theta_1)^2}[\Phi^{-1}(\beta) +  \Phi(\alpha/2)]^2
+\end{equation}
+
+\paragraph{Continuous}
+
+\textbf{Note: n is each arm}
+
+\begin{equation}
+n \approx \frac{2\sigma^2}{(\mu_1-\mu_2)^2}[\Phi^{-1}(\beta) +  \Phi(\alpha/2)]^2
+\end{equation}
+
+\subsection{One sample}
+
+\paragraph{Binomial}
+
+\begin{equation}
+n \approx 
+\frac{[\Phi^{-1}(\beta)
+\sqrt{\theta(1-\theta)} +
+\Phi^{-1}(\alpha/2)
+\sqrt{\theta_0(1-\theta_0)} 
+]^2}{(\theta-\theta_0)^2}
+\end{equation}
+
+
+\paragraph{Continuous}
+
+\begin{equation}
+n \approx \frac{\sigma^2}{(\mu-\mu_0)^2}
+[\Phi^{-1}(\beta)+\Phi^{-1}(\alpha/2)]^2
+\end{equation}
+
 \section{Multiple testing}
 
 If we do k indep tests, and compute p-values at $\alpha=0.05$ then actual p-value is $k\times p$. 
@@ -256,7 +297,7 @@ Sequential testing: see p.\ 71.
 
 \section{Combining trials (meta-analysis)}
 
-\subsbsection{Mantel-Haenszel test}
+\subsection{Mantel-Haenszel test}
 
 Assume a data format as follows:
 
@@ -295,6 +336,23 @@ and test:
 \begin{equation}
 \frac{(W-E[W])^2}{V(W)} \sim \chi_1^2
 \end{equation}
+
+\textbf{When is this appropriate?}
+
+This summing up procedure avoids Simpson's paradox (combining studies can give different results than separate analyses, due (inter alia) to sample size differences), but not sure why. 
+
+Some notes on MH test:
+
+\begin{enumerate}
+\item This test is appropriate when treatment differences are consistent across tables.
+\item Logistic regression gives you the same results.
+\item ``The Mantel-Haenszel test is simpler if one has just two qualitative prognos- tic factors to adjust for and wishes only to assess significance, not magnitude, of a treatment difference.'' (p.\ 97)
+\item
+``The logistic approach is more general and can include other covariates, further, it can test whether treatment differ- ences are consistent across tables.'' (p.\ 97)
+\item If treatments across trials is inconsistent or if success rates differ markedly.
+\item Logistic regression can solve Simpson's paradox because we can include trial effect.
+\end{enumerate}
+
 
 
 \section{Binary data: RR, OR, and logistic regression}
@@ -417,6 +475,14 @@ Doing a two-sample t-test comparing $\bar{T}_1, \bar{T}_2$ amounts to determinin
 \frac{\bar{T}_1-\bar{T}_2}{\sqrt{s_{\bar{T}_1}^2/n_1 + s_{\bar{T}_2}^2/n_2}} \sim t_{min(n_1,n_2)}
 \end{equation}
 
+\underline{Using sums}:
+alternatively: let sum of each group be $S_1$ and $S_2$, and the sd of the respective sum be sd1, sd2.
+
+\begin{equation}
+\frac{S_1 - S_2}{\sqrt{sd1^2/n_1 + sd2^2/n_2}}
+\end{equation}
+
+
 \subsection{Testing for treatment effects}
 
 This is a within patients comparison:
@@ -466,8 +532,9 @@ So the null hypothesis being tested is $\tau_A=\tau_B$.
 The test is:
 
 \begin{equation}
-\frac{\bar{D}_1 - \bar{D}_2}{\sqrt{s_{\bar{D}_1}^2}/n_1 + 
-s_{\bar{D}_2}^2/n_2} \sim t_r
+\frac{\bar{D}_1 - \bar{D}_2}{
+\sqrt{s_{\bar{D}_1}^2/n_1 + 
+s_{\bar{D}_2}^2/n_2}} \sim t_r
 \end{equation}
 
 \subsection{Testing for period effects}
@@ -525,61 +592,26 @@ May decide we need most information on B to get more accurate estimates of the B
 \textbf{Stratified randomization}: Suppose we have patients in different age ranges and either M or F. Then find all possible combinations of each level, and then produce separate randomization lists for each level.
 
 Adaptive randomization/minimization:
+to-do
 
-\section{Combining trials}
-
-\subsection{Manten-Haenszel Test}
-
-Here, we assume a data format as follows:
-
-\begin{table}[htdp]
-\caption{The format assumed for the Manten-Haenszel Test.}
-\begin{center}
-\begin{tabular}{c|ccc}
-        & \multicolumn{2}{c}{heart problems}                & \\
-        \hline
-glucose:        & yes  & no        & Total\\  
-elevated & $Y_1$ & $n_1 - Y_1$ & $n_1$ \\
-not elevated&  $Y_2$ & $n_2 - Y_2$ & $n_2$ \\
-\hline
-Total   & $t$      & $n-t$ & $n$\\ 
-\end{tabular}
-\end{center}
-\label{default}
-\end{table}%
-
-For each study we can compute the mean and variance using the formulas from the lecture notes:
+\section{Kappa statistic}
 
 \begin{equation}
-E[Y_1]=\frac{n_1 t}{n} \quad Var(Y_1) = \frac{n_1 n_2 t(n-t)}{n^2(n-1)}
+\kappa = \frac{A_{obs}-A_{exp}}{1-A_{exp}}
 \end{equation}
 
-Then, the statistic is 
-
-\begin{equation}
-T_{MH}=(Y_i - E[Y_i])^2/Var(Y_i) \sim \chi^2_1
-\end{equation}
-
-
-If we have multiple studies $i$, we use the above procedure to get all the $E[Y_i]$, and $Var(Y_i)$, and compute $W=\sum Y_i, E[W]=\sum E[Y_i], Var(W)=\sum Var(Y_i)$, and then use the above test again on the W's.
-
-\begin{equation}
-T_{MH}=(W - E[W])^2/Var(W) \sim \chi^2_1
-\end{equation}
-
-This summing up procedure avoids Simpson's paradox (combining studies can give different results than separate analyses, due (inter alia) to sample size differences), but not sure why. 
-
-Some notes on MH test:
+Conventional scale:
 
 \begin{enumerate}
-\item This test is appropriate when treatment differences are consistent across tables.
-\item Logistic regression gives you the same results.
-\item ``The Mantel-Haenszel test is simpler if one has just two qualitative prognos- tic factors to adjust for and wishes only to assess significance, not magnitude, of a treatment difference.'' (p.\ 97)
-\item
-``The logistic approach is more general and can include other covariates, further, it can test whether treatment differ- ences are consistent across tables.'' (p.\ 97)
-\item If treatments across trials is inconsistent or if success rates differ markedly.
-\item Logistic regression can solve Simpson's paradox because we can include trial effect.
+\item $\kappa > 0.75$ excellent agrmt
+\item $0.4 < \kappa <0.75$ fair to good agrmt
+\item $<0.4$ moderate to poor agrmt
 \end{enumerate}
+
+The $A_{obs}$ is the sum of the diagonals.
+
+The $A_{exp}$ is the (row sums*col sums)/(grand total), calculated only for the diagonals.
+
 
 \section{Survival analysis}
 
@@ -738,6 +770,8 @@ In Weibull, if $\gamma>1$ hazard is increasing, and if $\gamma<1$ hazard is decr
 
 \subsection{Kaplan-Meier product estimates of S(t)}
 
+
+
 Here, we estimate the survival distribution without making any assumptions. The estimator is a \textbf{non-parametric MLE}.
 
 \begin{enumerate}
@@ -823,6 +857,16 @@ j & $t_i$ & $I_j$ &  $r_i$ & $d_i$ & $(r_i - d_i)/r_i$ & S(t) & interval \\
 \end{tabular}
 \end{center}
 
+\underline{Variance calculation example}:
+
+For time j=1:  $0.85^2 (1/(7\times 6))=0.132^2$.
+
+95\% CI: 
+
+For time j=2:  $0.57^2 (1/(7\times 6) + 2/(6*4))=0.187^2$.
+
+
+
 In R:
 
 <<>>=
@@ -862,6 +906,22 @@ summary(tumour_fit)
 @
 
 to-do? (not sure if needed): Computing CIs by hand. See Harrell.
+
+\subsection{Computing median survival using Kaplan-Meier interpolation}
+
+Given survival probabilities and times, for example:
+
+\begin{verbatim}
+Time  Survival_Prob
+t1         s1
+t2         s2
+\end{verbatim}
+
+Then the median survival time x can be computed for solving for x (using linear interpolation):
+
+\begin{equation}
+\frac{x-t1}{s1-0.5}=\frac{t2-t1}{s2-s1}
+\end{equation}
 
 \subsection{R code: Representative examples}
 
@@ -955,7 +1015,12 @@ Taking the derivative:
 
 \begin{equation}
 \frac{d\ell }{d\lambda} = \frac{\sum \delta_i}{\lambda} - \sum (t_i \delta_i + (1-\delta_i)c_i)
-\Rightarrow \hat \lambda = \frac{\sum \delta_i}{\sum (t_i \delta_i + (1-\delta_i)c_i)}
+\end{equation}
+
+This gives us
+
+\begin{equation}
+\hat \lambda = \frac{\sum \delta_i}{\sum (t_i \delta_i + (1-\delta_i)c_i)}
 \end{equation}
 
 Note that $\frac{d^2\ell}{d\lambda^2} =  - \frac{1}{\lambda^2} \sum \delta_i$, and therefore 
@@ -985,6 +1050,13 @@ Therefore:
 Var(\hat \lambda) = I^{-1} = \frac{1}{E[-\frac{\delta^2 \ell}{\delta \lambda^2}]} =  \frac{\hat\lambda^2}{\sum (1- \exp(-\hat{\lambda}c_i))}
 \end{equation}
 
+Alternatively, we use the simpler formula:
+
+\begin{equation}
+Var(\hat \lambda) =\frac{\hat \lambda^2}{\sum \delta_i} \quad
+Var(\hat \mu)= var(\frac{1}{\hat \lambda}) = \frac{\hat \mu^2}{\sum_{i=1}^n \delta_i}
+\end{equation}
+
 \textbf{Estimating the mean}
 
 For the exponential, $\hat \mu = \frac{1}{\hat \lambda}$. 
@@ -993,10 +1065,11 @@ Next, we compute the variance.
 Recall: $Var(g(\hat \lambda)) = [g'(\lambda)^2 var(\lambda)]_{\lambda=\hat \lambda}$.
 
 \begin{equation}
-Var(\hat \mu)= var(\frac{1}{\hat \lambda}) = \frac{\hat \mu^2}{\sum (1-\exp(-\hat \lambda c_i))}
+Var(\hat \mu)= var(\frac{1}{\hat \lambda}) = \frac{\hat \mu^2}{\sum (1-\exp(-\hat \lambda c_i))} \hbox{ or }
+\frac{\hat \mu^2}{\sum_{i=1}^n \delta_i}
 \end{equation}
 
-[Is the above a mistake? Need to check this.]
+%[Is the above a mistake? Need to check this.]
 
 \textbf{Estimating the median}
 
@@ -1010,8 +1083,9 @@ It follows that
 \therefore & S_{\alpha} = - \frac{\log \alpha}{\lambda}
 \end{split}
 \end{equation}
+ 
 
-So, 
+
 
 \begin{equation}
 \begin{split}
@@ -1030,7 +1104,225 @@ it follows that $g''(\lambda) = 1/\lambda^3$.
 So, $Var(g(\lambda))= g''(\lambda) var(\lambda) = (1/\lambda^3) (\lambda^2/\sum \delta_i ) =  (1/\lambda^3) (1/\sum \delta_i )= \mu/\sum \delta_i$ and not  $\mu^2/\sum \delta_i$.
 \end{leftbar}
 
-\textbf{Example}: Lung cancer data.
+\textbf{Example}: Lung cancer data. See p.\ 24 for how to lay out data for hand-calculations.
+
+\underline{Step 1}: Estimate $\hat \lambda$. Since: 
+
+<<>>=
+load("data/lcancer.Rdata")
+head(lcancer)
+@
+
+First, compute estimate of $\lambda$:
+
+\begin{equation}
+\hat \lambda = \frac{\sum \delta_i}{\sum (t_i \delta_i + (1-\delta_i)c_i)}
+\end{equation}
+
+
+$\sum \delta_i=7$: number dead.
+
+$\sum \delta_it_i=155$: 
+
+<<>>=
+ sum(subset(lcancer,censor==1)$time)
+@
+
+$(1-\delta_i)c_i = 153$ is the total maximum survival time of the censored people.
+
+<<>>=
+sum(subset(lcancer,censor==0)$time)
+@
+
+So, $\hat \lambda= \frac{7}{155+153}=0.022$.
+
+\underline{Estimate variance}:
+
+\begin{equation}
+Var(\hat \lambda) =\frac{\hat \lambda^2}{\sum \delta_i}
+\end{equation}
+
+<<>>=
+var<-0.022^2/7
+@
+
+So the CIs are:
+
+<<>>=
+0.022-1.96*sqrt(var)
+0.022+1.96*sqrt(var)
+@
+
+\underline{Alternative approach}:
+
+<<>>=
+attach(lcancer)
+lcancersv<-Surv(time,censor,type="right")
+detach(lcancer)  
+
+lcancerSurv<-survfit(lcancersv~1,data=lcancer)
+plot(lcancerSurv)
+
+@
+
+The plot shows evidence for exponential decay, so we fit an exponential model:
+
+<<>>=
+lcancerreg<-survreg(lcancersv~1,
+                    dist="exponential")
+#summary(lcancerreg)
+@
+
+\begin{verbatim}
+survreg(formula = lcancersv ~ 1, dist = "exponential")
+            Value Std. Error  z        p
+(Intercept)  3.78      0.378 10 1.35e-23
+\end{verbatim}
+
+Note that the intercept is $\log(\hat \mu)$, log mean survival time.
+
+So, we can get $\hat \lambda=\frac{1}{\exp(\hat \mu)}$, and we can get CIs:
+
+$\frac{1}{\exp(\hat\mu \pm 1.96 SE)}=
+\frac{1}{\exp(3.78 \pm 1.96 \times 0.378)}
+$.
+
+
+\subsection{Two-sample data}
+
+Here we test the null hypothesis
+$H_0: S_1(t) = S_2(t)$.
+
+\paragraph{(Non-parametric) Log-rank test}
+
+See p.\ 32, 33 for description of how to do the test by hand.
+
+\underline{Example: Brain tumour data}
+
+
+<<eval=FALSE>>=
+load("data/braintu.Rdata")
+library(survival)
+attach(braintu)
+brainsv<-Surv(time,censor,type="right")
+survdiff(brainsv~as.factor(group),data=braintu)
+plot(survfit(brainsv~group,data=braintu))
+detach(braintu)
+@
+
+\subsection{Parametric tests}
+
+\paragraph{MLE tests}
+
+Assuming exponential, we test
+
+\begin{equation}
+W = \frac{\hat \lambda_1 - \hat \lambda_2}{\sqrt{\frac{\hat \lambda_1^2}{\sum d_{1i}}+\frac{\hat \lambda_1^2}{\sum d_{2i}}}}
+\sim N(0,1)
+\end{equation}
+
+In brain tumour data:
+<<>>=
+load("data/braintu.Rdata")
+n1<-6
+n2<-6
+gp1<-subset(braintu,group==1)
+gp2<-subset(braintu,group==2)
+## total times in gp1:
+sumt1<-sum(gp1$time)
+sumt2<-sum(gp2$time)
+deaths1<-sum(gp1$censor)
+deaths2<-sum(gp2$censor)
+
+(lambda1<-deaths1/sumt1)
+
+(lambda2<-deaths2/sumt2)
+
+## n.s.
+(W<-(lambda1-lambda2)/
+  sqrt((lambda1^2/deaths1)+(lambda2^2/deaths2)))
+@
+
+Compare with N(0,1).
+
+\textbf{Likelihood ratio test}
+
+This is asymptotically equivalent to MLE, but better for small samples.
+
+Let $\sum d_{1i} = \Delta_1$ and $\sum d_{2i}=\Delta_2$. And let $\sum t_i = T_1$ and $\sum t_i = T_2$.
+
+\begin{equation}
+2\left\{ \Delta_1 \log \frac{\Delta_1}{T_1} +
+\Delta_2 \log \frac{\Delta_2}{T_2} - (\Delta_1 + \Delta_2) \log \frac{\Delta_1+\Delta_2}{T_1+T_2}  
+\right\}\sim \chi_1^2
+\end{equation}
+
+\subsection{Regression models}
+
+\textbf{Accelerated failure time}
+
+<<>>=
+load("data/wbcleuk.Rdata")
+head(wbcleuk)
+attach(wbcleuk)
+wbcleuksv<-Surv(survival)
+wbcleukregexp<-survreg(wbcleuksv~log.wbc.,
+                       dist="exponential")
+detach(wbcleuk)
+summary(wbcleukregexp)
+@
+
+Interpretation:
+
+$\hat \lambda(x) = \frac{1}{\exp((\hat\beta_0 + \hat\beta_1 x_1\dots) )}= \exp( - (\hat\beta_0 + \hat\beta_1 x_1\dots) )$
+
+and $\frac{1}{\hat \lambda(x)}=$ mean survival time in days.
+
+CIs: as usual (need to look this up):
+
+$\frac{1}{\exp(\hat\mu \pm 1.96 SE)}$.
+
+
+
+
+\textbf{Proportional hazards}
+
+For example, let the baseline hazard function be $h_0(t)$. Then, the form of the model is:
+
+\begin{equation}
+h(t;\mathbf{x})=\exp(\beta_1 x_1 + \beta_2 x_2+\beta_3 x_3) h_0(t)
+\end{equation}
+
+with $x_1, x_2, x_3$ as given. 
+
+To get hazard ratio and CIs, just exponentiate for different levels using the various contrast coding values: e.g.,
+$\exp(\beta_1 x_1 pm 2\times SE)$.
+
+Example using wbcleukemia data:
+
+<<>>=
+wbccoxph<-coxph(wbcleuksv~log.wbc.,wbcleuk)
+summary(wbccoxph)
+plot(survfit(wbccoxph))
+@
+
+Example using lymphoma data:
+
+<<eval=FALSE>>=
+load("data/lymphoma.Rdata")
+attach(lymphoma)
+lymphomaSurv<-Surv(time,censor)
+stage<-factor(stage)
+lymphomacoxph<-coxph(lymphomaSurv~strata(stage))
+detach(lymphoma)
+
+summary(lymphomacoxph)
+plot(survfit(lymphomacoxph))
+plot(survfit(lymphomacoxph),
+     fun="cloglog")
+@
+
+
 
 \section{Sampling Theory and Design of Experiments}
 
@@ -1877,7 +2169,7 @@ The design matrix will be set up as follows.  We have 9 rows and 7 parameters. W
 \item Then code $\alpha_2$ column:
 
 \begin{equation}
-\alpha_1= 
+\alpha_2= 
 \begin{cases}
 0 & \hbox{ if row 1 } \\
 1 & \hbox{ if row 2 } \\
