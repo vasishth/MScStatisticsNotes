@@ -96,7 +96,7 @@
 
 \SweaveOpts{cache=TRUE}
 
-\title{Multivariate Analysis Summary Sheet}
+\title{Multivariate Analysis Summary Sheet (Part 2)}
 \author{Shravan Vasishth (vasishth@uni-potsdam.de)}
 \date{\today}                                           % Activate to display a given date or no date
 
@@ -118,6 +118,122 @@
 \newpage
 
 \begin{multicols}{2}
+
+\section{Preliminaries}
+
+\subsection{Arithmetic series}
+
+General form: 
+
+\begin{equation}
+a+(a+d)+(a+2d)+\dots
+\end{equation}
+
+$k$-th partial sum for \textbf{arithmetic series}:
+
+\begin{equation}
+S_k = \underset{n=1}{\overset{k}{\sum}} (a+(n-1)d)
+\end{equation}
+
+The sum can be found by:
+\begin{equation}
+S_k = \frac{k}{2} (2a+(k-1)d)
+\end{equation}
+
+\subsection{Geometric series}
+
+General form:
+
+\begin{equation}
+a+ar+ar^2\dots
+\end{equation}
+
+In summation notation:
+
+\begin{equation}
+\underset{n=1}{\overset{\infty}{\sum}} ar^{n-1}
+\end{equation}
+
+$k$-th partial sum:
+
+\begin{equation}
+S_k=\frac{a-(1-r^k)}{1-r}
+\end{equation}
+
+$S_\infty$ exists just in case $\mid r \mid < 1$.
+
+\begin{equation}
+S_\infty = \frac{a}{1-r}
+\end{equation}
+
+\subsection{Some basic results for computing covariance}
+
+\begin{enumerate}
+\item
+Let $\bar{x}_i$ be vectors:
+
+\begin{equation}
+Var(\bar{x}_1 - \bar{x}_2) = var(\bar{x}_1) + var(\bar{x}_2) - 2 Cov(\bar{x}_1,\bar{x}_2)
+\end{equation}
+
+Note that $Cov(\bar{x}_1,\bar{x}_2)$ would be the matrix
+
+$$
+\begin{pmatrix}
+Cov(x_1) & 0 \\
+0 & Cov(x_2)\\
+\end{pmatrix}
+$$
+
+where $Cov(x_1)$ is the covariance between the \textit{components} of $x_1$.
+
+\item The sum of two RVs:
+
+\begin{equation}
+Var(X_1 + X_2) = var(X_1) + var(X_2) + 2 Cov(X_1,X_2)
+\end{equation}
+
+More generally:
+
+\begin{equation}
+Var(aX_1 + bX_2) = a^2 var(X_1) + b^2 var(X_2) + 2ab Cov(X_1,X_2)
+\end{equation}
+
+This generalizes to arbitrary numbers of terms:
+
+\begin{equation}
+Var(aX_1 + bX_2+cX_3) = a^2 var(X_1) + b^2 var(X_2) + 2ab Cov(X_1,X_2) +
+2ac Cov(X_1,X_3) + 2bc Cov(X_2,X_3)
+\end{equation}
+
+\item Covariance of X and Y:
+
+\begin{equation}
+Cov(X,Y)=E[XY]-E[X]E[Y]
+\end{equation}
+
+\begin{equation}
+Cov(aX+b,Y)= aCov(X,Y)
+\end{equation}
+
+\begin{equation}
+Cov(aX+bY+cZ,W)= Cov(aX,W)+Cov(bY,W)+Cov(cZ,W)
+\end{equation}
+
+\end{enumerate}
+
+
+
+
+\subsection{Completing the square: complex numbers}
+
+Completing the square: $\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+
+Often, we have imaginary numbers involved. Recall that $i^2 = \sqrt{-1}$. So we will often have roots with a real and complex part:
+$4 + \sqrt{-25}= 4 + 5\sqrt{-1}=4 + 5i$. In the TS context, we need to know if the roots lie outside the unit circle; with imaginary components, we can determine this by simply computing the length of the vector:
+
+$\sqrt{4^2 + 5^2}=6.4$.
+
 
 \section{Time Series}         
 
@@ -338,6 +454,8 @@ For k=12, we say \textbf{this is differencing with lag 12}, or seasonal differen
 
 \paragraph{Exercise (Task 3)}: Show $\nabla \nabla_{12} =  \nabla_{12}\nabla$, and interpret.
 
+This first removes linear trend, then seasonal trend.
+
 \begin{equation}
 \begin{split}
 \nabla \nabla_{12} y_t =&  \nabla (y_t - y_{12})\\
@@ -347,7 +465,8 @@ For k=12, we say \textbf{this is differencing with lag 12}, or seasonal differen
 =& \nabla_{12} y_t - \nabla_{12} y_{t-1} \\
 =& \nabla_{12} (y_t - y_{t-1})\\
 =& \nabla_{12} \nabla y_t \\
- =& \nabla^{13}y_t\\ 
+ =& \nabla_{12}(1-B)y_t=(1-B)\nabla_{12}y_t\\ 
+ =& (1-B)(1-B^{12})y_t\\
 \end{split}
 \end{equation}
 
@@ -534,6 +653,28 @@ $Cov(19, y_{t-1}) + Cov(-\frac{1}{3}B y_t, y_{t-1}) + Cov(-  \frac{1}{4}B^2 y_t,
 Cov(-\frac{1}{2}\epsilon_{t-1}, y_{t-1})$. 
 
 The second term,  $Cov(-\frac{1}{3}B y_t, y_{t-1})$ requires another expansion of $y_t$.
+
+\underline{Important insight with stationary processes}
+
+Note that
+
+\begin{equation}
+Cov(y_{t-1},y_{t-2})=Cov(y_{t},y_{t-1}) 
+\end{equation}
+
+A further trick: to compute such covariances, assume that $Var(y_t)=Var(y_{t-1})=V$, and then expand only the first term. For example:
+
+\begin{equation}
+y_t = \frac{1}{3}y_{t-1} - \frac{1}{4}y_{t-2} + \epsilon_t
+\end{equation}
+
+Then:
+
+\begin{equation}
+Cov(y_{t-1},y_{t-2})=Cov(y_{t-},y_{t-1})
+\end{equation}
+
+See review questions 2.
 
 \subsection{(Theoretical) ACF $\rho_h$}
 
@@ -830,7 +971,7 @@ Since $y_t = \sum_{i=0}^{\infty} \alpha^i \eps_{t-i}$ and
 $y_{t+h} = \sum_{j=0}^{\infty} \alpha^j \eps_{t+h-j}$,
 
 \begin{equation}
-\gamma_h = E[y_ty_{t+h}]-\explain{E[y_t]}{=0}\explain{E[y_{t+h}]}{=0}
+\gamma_h = E[y_ty_{t+h}]
 \end{equation}
 
 \begin{equation}
@@ -1065,7 +1206,7 @@ The $MA(\infty)$ representation is
 y_t = \sum_{i=1}^{\infty} \psi_i \eps_t \quad \hbox{ where } \psi_i \hbox{ are appropriate constants }
 \end{equation}
 
-The polynomial $\phi(B) y_t = \eps_t$ is extremely important, because it determines whether we have a stationary process or not.
+The polynomial $\phi(B)$ is extremely important, because it determines whether we have a stationary process or not.
 
 \subsubsection{The Autoregressive Polynomial}\label{arpolynomial}
 
@@ -1121,8 +1262,7 @@ $\phi(x)= 1- ax$
 
 The root is $\phi(x)=0\Rightarrow x=\frac{1}{\mid a\mid}$. This implies that $\mid a\mid<1$. See discussion above on $\mid a\mid <1$ (section~\ref{basicpropertiesAR1}).
 
-to-do: Add Task 9 examples
-
+For examples: See Problem 9.
 
 \subsubsection{Deriving ACF for AR(p): The Yule-Walker (difference) equations}
 
@@ -1220,7 +1360,7 @@ In other words:
 
 The above is the \textbf{Yule-Walker (difference) equation}.
 
-to-do add Problem 14 here (also 10 or 11?)
+For examples: See Problems 11, 14.
 
 For example, an AR(2) process:
 $y_t = 0.5 y_t + 0.25 y_{t-2} + \eps_t$.
@@ -1657,11 +1797,11 @@ $\Phi,\phi, H, h$  are polynomials:
 \begin{framed}
 Recall that
 
-$\Phi_s(B^s)= 1-a_1 B^1 -\dots-a_PB^P$
+$\Phi_s(B^s)= 1-a_1 (B^s)^1 -\dots-a_P(B^s)^P$
 
 $\phi(B)= 1-a_1 B^1 -\dots-a_p B^p$
 
-$H_s(B^s)= 1+b_1 B^1 +\dots+b_Q B^Q$
+$H_s(B^s)= 1+b_1 (B^s)^1 +\dots+b_Q (B^s)^Q$
 
 $h(B)= 1+b_1 B^1 +\dots+b_q B^q$
 \end{framed}
@@ -1677,7 +1817,7 @@ BTW, note how the Backward shift operator simplifies the notation.
 The application of this formula will be: Given a model SARIMA(p,d,q)$\times$
 (P,D,Q)$_s$ with some instantiated values, write down the form of the model in the form $y_t=\dots$. Or vice versa. 
 
-to-do add Exercise 2 examples
+See Exercise 2.
 
 \textbf{Example}:
 Write down the model SARIMA(1,1,0)$\times$ (0,1,1)$_4$ as $y_t=\dots$.
@@ -1703,7 +1843,7 @@ These variables will determine what the polynomials should be.
 
 \begin{equation} \label{sarimaformula2}
 \begin{split}
-~& \underbrace{\Phi_s(B^4)}_\text{P=0 so 1}\underbrace{\phi(B)}_\text{p=1 so $1-aB$}\underbrace{(1-B^4)^1 y_t}_\text{stationary} ] \\
+~& \underbrace{\Phi_s(B^4)}_\text{P=0 so 1}\underbrace{\phi(B)}_\text{p=1 so $1-aB$}(1-B)\underbrace{(1-B^4)^1 y_t}_\text{stationary} ] \\
 ~& = \underbrace{H_s (B^4)}_\text{Q=1 so $1+bB^4$} \underbrace{h(B)}_\text{q=0 so 1}\eps_t 
 \end{split}
 \end{equation}
@@ -1793,7 +1933,7 @@ acf(shef_ts)
 \underline{Details}: Under null hyp.\ $H_0: 
 \rho_h = 0$ for $h\geq 1$. So, 
 
-$r_h \sim N(0,1/n)$, for h=1,2,\dots
+$r_h \sim N(0,1/n)$, for h=1,2,\dots $\Rightarrow$ CI: $\pm 2\sqrt{1\n}$
 
 More generally, for ARMA processes, under $H_0$:
 
@@ -1828,17 +1968,17 @@ r_h \in \pm 2\sqrt{\frac{1+2\sum_{j=1}^q\rho_j^2}{n}} \quad \hbox{ for } h>q (h=
 \end{equation}
 
 \begin{tabular}{cc}
-MA(1) & $r_2, r_3,\dots <$ critical value\\
-MA(2) & $r_3, r_4,\dots <$ critical value\\
-MA(3) & $r_4, r_5,\dots <$ critical value\\
+MA(1) & $r_2, r_3,\dots < \pm 2\sqrt{\frac{1+2 (r_1^2)}{n}}$\\
+MA(2) & $r_3, r_4,\dots < \pm 2\sqrt{\frac{1+2 (r_1^2 + r_2^2)}{n}}$ \\
+MA(3) & $r_4, r_5,\dots < \pm 2\sqrt{\frac{1+2 (r_1^2 + r_2^2 + r_3^2)}{n}}$ \\
 \end{tabular}
 
 \item Test for AR(p): Partial ACF.The ACF of an AR(p) model does not cut off sharply but decays geometrically to 0. However, the PACF does does cut off to zero sharply beyond p, just like the MA(q)'s ACF is 0 beyond q.
 
 \begin{tabular}{cc}
-AR(1) & $a_2, a_3,\dots <$ critical value\\
-AR(2) & $a_3, a_4,\dots <$ critical value\\
-AR(3) & $a_4, a_5,\dots <$ critical value\\
+AR(1) & $a_2, a_3,\dots <\pm 2\sqrt{1\n}$ \\
+AR(2) & $a_3, a_4,\dots <\pm 2\sqrt{1\n}$ \\
+AR(3) & $a_4, a_5,\dots <\pm 2\sqrt{1\n}$ \\
 \end{tabular}
 
 
@@ -1860,7 +2000,7 @@ $\hat a_h^{(h)}$).
 So the statistical test is that 
 $a_h \approx 0$ for $h>p$, i.e., that the PACF cuts off sharply after p.
 
-If $y_t$ is a WN process (i.e., if it is not AR(p)), then 
+\underline{If $y_t$ is a WN process} (i.e., if it is not AR(p)), then 
 
 \begin{equation}
 a_h \sim N(0,1/n) \hbox{ independently for } h\geq 1
@@ -1901,25 +2041,6 @@ Steps for finding PACF:
 \item Plug $a_1$ into second equation and solve for $a_2$.
 \end{enumerate}
 
-\textbf{Example from old exam}:
-
-\begin{enumerate}
-\item
-$a_1 = \rho_1$
-\item 
-$a_2 = \frac{\rho_1^2}{\rho_1^2 -1}$
-
-\begin{equation*}
-\rho_1 = a_1 + a_2 \rho_1
-\end{equation*}
-
-\begin{equation*}
-\rho_2 = a_1\rho_1 + a_2 
-\end{equation*}
-
-\item 
-$a_3 = \frac{\rho_1^3}{1-2\rho_1^2}$
-\end{enumerate}
 
 \item Principle of parsimony: If AR, MA are not plausible, seek ARMA(p,q), but starting with simplest, i.e., p=q=1.
 \end{enumerate}
@@ -2278,7 +2399,7 @@ If we have a trend TS $y_t$ and difference it d times to remove the trend, $x_t$
 x_t = (1-B)^d y_t 
 \end{equation}
 
-expanding the RHS using the binomial theorem: (to-do: define here)
+expanding the RHS using the binomial theorem:
 
 \begin{equation}
 x_t  =  \sum_{j=0}^{d} {n \choose j} (-1)^j y_{t-j} 
@@ -3681,22 +3802,23 @@ Steps for finding PACF:
 \item Plug $a_1$ into second equation and solve for $a_2$.
 \end{enumerate}
 
-\subsection{(S)ARIMA forecast equations}
+\subsection{Forecast equations (AR, MA, ARMA, ARIMA)}
 
 \begin{center}
 \begin{tabular}{| l | l | l |}
 \hline
 Model         & Forecast Mean & Forecast Var\\ 
 \hline
-AR(1)         & $\hat y_{n+i}= a^i y_n$ & $\sigma^2 \frac{1-a^{2i}}{(1-a^2)}$\\
-AR(p)         & * & *\\
+AR(1)         & $\hat y_{n+i\mid n}= a^i y_n$ & $\sigma^2 \frac{1-a^{2i}}{(1-a^2)}$\\
+AR(p)         & y_{t+i\mid t} = 
+\sum_{i=1}^p a_i y_{t+i-1}& *\\
 ARMA(p,q)     & $\hat y_{t+1\mid t} = 
 a_1 y_{t} + \dots + a_p y_{t+1-p} +
-b_1 \epsilon_{t} + \dots + b_q \epsilon_{t+1-q}$ & For k: $\sum_{i=0}^{k-1} (b_i) \epsilon_{t+k-1}$  \\
+b_1 \epsilon_{t} + \dots + b_q \epsilon_{t+1-q}$ & \\%For k: $\sum_{i=0}^{k-1} (b_i) \epsilon_{t+k-1}$  \\
 & 
-$\hat y_{t+2} 
+$\hat y_{t+2\mid t} 
 = a_1 \hat y_{t+1}+ \dots + a_p y_{t+2-p}  +
-b_2 \epsilon_{t} + \dots + b_q \epsilon_{t+2-q}$ & as above\\ 
+b_2 \epsilon_{t} + \dots + b_q \epsilon_{t+2-q}$ & \\%as above\\ 
 MA(1)         & $\hat y_{t+i\mid t} = 0$ & $V_{t+1\mid t}=\sigma^2$\\
 & & $V_{t+k\mid t}=(1+b^2)\sigma^2$\\
 MA(q)         & $\hat y_{t+1\mid t} = \sum_{j=1}^q b_j \epsilon_{t+1-j}$ & $\sigma^2$\\
@@ -3708,7 +3830,7 @@ SARIMA(P,D,Q) & $x_t = \sum_{j=0}^D {n \choose j}(-1)^j  y_{t-sj}$ & ? \\
 \end{tabular}
 \end{center}
 
-* Translate to SSM and then compute forecasts.
+* Translate to SSM (see Exercise 3) and then compute forecasts.
 
 \subsection{State Space Models: Local level model forecast}
 
@@ -3728,7 +3850,7 @@ and
 
 \begin{equation}
 \begin{split}
-P_{t+i\mid t} =& F^i P_{t\mit t} (F^i)^T \\
+P_{t+i\mid t} =& F^i P_{t\mid t} (F^i)^T \\
 +& \sum_{k=0}^{i-1} F^k Z (F^k)^T
 \end{split}
 \end{equation}
@@ -3805,6 +3927,49 @@ y_{t+k}\mid y_{1:t}
 \quad k=1,2,\dots 
 \end{equation}
 
+\section{Interesting problems}
+
+\subsection{Problem 4}
+
+If $y_t$ is a k-th order polynomial in $t$,  then it has the form:
+
+\begin{equation}
+y_t = a_0 + a_1 t + \dots + a_k t^k 
+\end{equation}
+
+Similarly, $y_{t-1}$ has the form: 
+
+\begin{equation}
+y_{t-1} = a_0 + a_1 (t-1) + \dots + a_k (t-1)^k
+\end{equation}
+
+So, taking the difference, we get:
+
+\begin{equation}
+y_t - y_{t-1} = [a_0 + a_1 t + \dots + a_k t^k]-
+[a_0 + a_1 (t-1) + \dots + a_k (t-1)^k]
+\end{equation}
+
+Here, the two terms with the highest power, which contain the variable $t^{k}$, will cancel out. The highest remaining term is the next highest $t^{k-1}$. Hence the difference 
+$\nabla y_t= y_t - y_{t-1}$ has order k-1.
+
+Now, consider second-order differencing:
+
+\begin{equation}
+\nabla^2 y_t = (y_t - y_{t-1}) - (y_{t-1} - y_{t-2})
+\end{equation}
+
+The terms $(y_t - y_{t-1})$ will reduce the degree by 1, and the terms $(y_{t-1} - y_{t-2})$ will reduce 
+the degree by 1 again. So, the degree of $\nabla^2 y_t$ is k-2. 
+
+Continuing in this way all the way to k, 
+
+\begin{equation}
+\nabla^k y_t = (y_t - y_{t-1}) - (y_{t-1} - y_{t-2})-
+(y_{t-2} - y_{t-3}) -\dots -(y_{t-(k-1)} - y_{t-k})
+\end{equation}
+
+we now get remove the all powers of t, leaving only $t^0$, which is a constant.
 
 \end{document}
 
