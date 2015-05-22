@@ -243,7 +243,7 @@ S=L^{1/2} R L^{1/2}
 \begin{enumerate}
 \item R is symmetric, $p\times p$
 \item $r_{ii}=1$ for all i
-\item $-1 \leq r_{ij} 1$.
+\item $-1 \leq r_{ij} \leq 1$.
 \item Geometrically, $r_{ij}$ is the cosine of the angle between the vectors of deviations of observations of the ith and jth variables from the mean.
 \begin{enumerate}
 \item If angle is 0 deg (0 rad), $\rho=1$.
@@ -348,7 +348,7 @@ Replacing $a_i$ in the above with the RHS in equation~\ref{ai},
 \sum  -\frac{1}{2}\frac{\lambda}{\sigma_i^2} - 1 = 0
 \end{equation}
 
-Adding -1 to both sides:
+Adding +1 to both sides:
 
 \begin{equation}
 \sum  -\frac{1}{2}\frac{\lambda}{\sigma_i^2}  = 1
@@ -493,17 +493,19 @@ var1<-(1/(n-1))*t(X)%*%X
 var2<-var(X)
 @
 
-The total amount of dispersion on the data is the sum of the variances (the trace, which is the sum of the eignenvalues of the vcov matrix):
+The total amount of dispersion on the data is the sum of the variances (the trace, which is the sum of the eigenvalues of the vcov matrix):
 
 <<>>=
 ## sum of the variances=the total dispersion:
 sum(diag(var2))
+## sum of the eigenvalues:
+sum(eigen(var2)$values)
 @
 
 Note that  \textbf{the eigenvalues of the covariance matrix encode the variability of the data in an orthogonal basis that captures as much of the data's variability as possible in the first few basis functions (i.e., the principle component basis)}.
 
 \begin{fact}
-Any symmetric matrix X is 
+Any symmetric variance-covariance matrix X is 
 diagonalized by an orthogonal matrix of its eigenvectors (see Theorems 1 and 2 in MatrixAlgebraSummary.pdf). 
 For a symmetric matrix X, $X = EDE^T$, 
 where D is a diagonal matrix and E is a matrix of eigenvectors of X arranged as columns.
@@ -513,7 +515,6 @@ where D is a diagonal matrix and E is a matrix of eigenvectors of X arranged as 
 \textbf{PCA using eigenvalue decomposition}:
 
 \textit{Eigenvalues of covariance matrices can be interpreted as variances of particular linear combinations of the component random variables. In particular, $\lambda_1$ is the largest variance obtainable by taking linear combinations of X with weights having unit length.} Thisted, p.\ 120.
-
 
 The goal is to find some orthonormal matrix P in $Y = PX$ such that the covariance matrix $C_Y = \frac{1}{n} Y Y^T$ is a diagonal matrix. The rows of P are the \textit{principal components} of X.
 
@@ -555,10 +556,21 @@ $\lambda$ is a diagonal matrix containing the eigenvalues of var2
 \end{enumerate}
 
 <<>>=
-lambda<-diag(eigen(var2)$values)
+(lambda<-diag(eigen(var2)$values))
 U<-eigen(var2)$vectors
+## recovers original vcov matrix:
 U%*%lambda%*%t(U)
 @
+
+Aside: you could do another PCA on the lambda
+matrix. Note that (a) the eigenvalues would remain unchanged, and the 
+eigen vectors will be:
+
+<<>>=
+eigen(lambda)$values
+eigen(lambda)$vectors
+@
+
 
 We want to linearly transform the vectors 
 x1 and x2:
@@ -747,7 +759,7 @@ Pre-multiplying each side with $w_1'$:
 2w_1'S w_2 -\mu w_1'w_1 - 2\lambda_2 w_1'w_2=0
 \end{equation}
 
-Pre-multiplying by $w_2'$:
+Pre-multiplying equation~\ref{e0} by $w_2'$:
 
 \begin{equation}\label{e3}
 2w_2'S w_2 -\mu w_2'w_1 - 2\lambda_2 w_2'w_2=0
@@ -762,7 +774,7 @@ Because $\lambda_2 w_1'w_2=0$, we can see from equation~\ref{e1} that
 From equation~\ref{e0}, we can then conclude that
 
 \begin{equation}
-2S w_2 = \lambda_2 w_2
+S w_2 = \lambda_2 w_2
 \end{equation}
 
 Therefore, $w_2$ is an eigenvector of S, with eigenvalue $\lambda_2$.
@@ -770,17 +782,17 @@ Therefore, $w_2$ is an eigenvector of S, with eigenvalue $\lambda_2$.
 Recall that $var(X'w_2) = w_2'var(X')w_2 = w_2'Sw_2$. Equation~\ref{e3} is that:
 
 \begin{equation}
-2w_2'S w_2 -\mu w_2'w_1 - \lambda_2 w_2'w_2=0
+2w_2'S w_2 -\mu w_2'w_1 - 2\lambda_2 w_2'w_2=0
 \end{equation}
 
 Replacing $w_2'S w_2$ with $var(X'w_2)$, we get that:
 
 \begin{equation}
 2var(X'w_2) -\explain{\mu w_2'w_1}{=0} - 2\lambda_2 w_2'w_2=
-var(X'w_2) - 2\lambda_2 = 0
+var(X'w_2) - \lambda_2 = 0
 \end{equation}
 
-Therefore, $var(X'w_2) = 2\lambda_2$. This entails that $\lambda_2$ must be the second largest eigenvalue with eigenvector $w_2$. (Question: why is this entailed?)
+Therefore, $var(X'w_2) = \lambda_2$. This entails that $\lambda_2$ must be the second largest eigenvalue with eigenvector $w_2$. (Question: why is this entailed?)
 
 All Principal Components can be found using the diagonalization of S. The eigenvalue decomposition of S is also called the \textbf{spectral decomposition} of S. The set of eigenvalues is called the \textbf{spectrum} of S.
 
@@ -860,17 +872,25 @@ X<-data.frame(x1,x2)
 (U<-eigen(S)$vectors)
 @
 
-<<echo=FALSE>>=
+<<fig=FALSE>>=
+## plot centered values
 plot(x1,x2,xlim=c(-6,6),ylim=c(-6,6),
      main="")
+## fit lm line:
 abline(lm(x2~x1))
 ## First PC is always along the line
-## of largest variance:
+## of largest variance.
+## Use the eigenvectors to draw new axes:
+U
+## first axis, first PC:
 arrows(x0=0,y0=0,x1=5*U[1,1],y1=5*U[2,1],lwd=2)
+## second axis, second PC:
 arrows(x0=0,y0=0,x1=5*U[1,2],y1=5*U[2,2],lty=2)
-## the first point (centered):
+## the original first point (centered):
 arrows(x0=0,y0=0,x1=x1[1],y1=x2[1],lty=1,lwd=2)
+## multiply first PC with first point's coords:
 t<-t(U[,1])%*%X[1,]
+## the first point is mapped to U1:
 U1<-t*U[,1]
 ## the mapping of the first point to the first PC:
 arrows(x0=0,y0=0,x1=U1[1],y1=U1[2],lty=1,lwd=3)
@@ -1023,7 +1043,31 @@ MSTs: give direct impression of nearest neighbors. If two points are near each o
 
 \section{Multivariate analysis}
 
-To test the null hypothesis: $H_0: \mu_1=\mu_2$.
+\underline{$\mu=(c_1 c_2)'$ (multivariate normal)}
+
+\begin{equation}
+T^2 = (\bar{x}-\mu_0)' S^{-1}(\bar{x}-\mu_0) 
+\quad T^2(p,n-1) = \frac{(n-1)p}{n-p} F_{p,n-p}
+\end{equation}
+
+So, $T^2 \frac{n-p}{(n-1)p} \sim F_{p,n-p}$.
+
+
+Note: $t$ value in one sample t-test $t^2=F$. So, 
+
+\begin{equation}
+T^2 \frac{(n-p)}{(n-1)p} = t^2
+\end{equation}
+
+\underline{$\mu=(c_1 c_2)'$ (not normal)}
+
+\begin{equation}
+n(\bar{x}-\mu_0)' S^{-1}(\bar{x}-\mu_0) \sim \chi_{p}^2
+\end{equation}
+
+
+\underline{$H_0: \mu_1=\mu_2$}
+
 From the lecture notes (p.\ 102): obtain the sample Mahalanobis distance $D^2$ and reject $H_0$ if 
 
 \begin{equation}
@@ -1036,37 +1080,16 @@ where $D^2$:
 D^2= (\bar{x}_1-\bar{x}_2)' S^{-1}(\bar{x}_1-\bar{x}_2)
 \end{equation}
 
-To test the hypothesis
-
-\begin{equation}
-H_0:
-\begin{pmatrix}
-\mu_{1}\\
-\mu_{2}\\
-\end{pmatrix}
-=
-\begin{pmatrix}
-\mu_{3}\\
-\mu_{4}\\
-\end{pmatrix}
-\end{equation}
-
-the procedure is identical, except that $\bar{x}_1$ are vectors, not single values. 
-
-
-\subsection{Pooled variance}
-
-If we have two samples, with sizes $n_1$ and $n_2$ , then the variance is pooled:
+and the pooled variance S is:
 
 \begin{equation}
 S = \frac{(n_1 -1)S_1 + (n_2 -1)S_2}{n-2}
 \end{equation}
 
-The rest is as above.
 
-\subsection{Example: Two correlated RVs means'}
+\underline{ $H_0: \mu_1 = \mu_2$ using contrast coding}
 
-To compare two means: $H_0: \mu_1 = \mu_2$, given sample means $\bar{x}$ and variance-covariance matrix $S$.
+To compare two means (not vectors), given sample means $\bar{x}$ and variance-covariance matrix $S$.
 
 Let $C'=(-1, 1)$ be a qxp matrix, and compute
 
@@ -1078,9 +1101,42 @@ against: $F(q,n-1)$.
 
 First compute $C'\bar{x}$ and then $C'SC$, computations are simpler then.
 
-\subsection{The role of the contrast matrix C}
+Another example:
 
 If testing $2\mu_1 = 3\mu_2$ the null hypothesis is $H_0: 2\mu_1 - 3\mu_2 = 0$, so use $C'=(2,-3)$.
+
+\subsection{Exam examples}
+
+Placebo vs beta blocker example.
+
+<<>>=
+p<-2
+n<-22
+n1<-11
+n2<-11
+X1<-matrix(c(138.2,91.4))
+S1<-matrix(c(48.9,48.3,48.3,59.3),ncol=2)
+X2<-c(130.8,86.7)
+S2<-matrix(c(52.6,49.1,49.1,64.4),ncol=2)
+S<-((n1-1)*S1+(n2-1)*S2)/(n-2)
+invS<-solve(S)
+D2<-t(X1-X2)%*%invS%*%(X1-X2)
+T2 <- ((n1*n2)/n)*D2
+# t-value:
+sqrt(T2)
+## crit t:
+pt(2.876117,df=21,lower.tail=FALSE)
+## F-score:
+(T2*(n-p-1))/((n-2)*p)
+## F:
+pf(3.929223,df1=2,df2=19,lower.tail=FALSE)
+@
+
+If this were within subjects:
+
+<<>>=
+n<-11
+@
 
 \subsection{Assessing normality}
 
@@ -1112,7 +1168,7 @@ data(iris)
 head(iris[,c(1,2,5)],n=2)
 @
 
-We need a discriminant rule $f: X_n\times p \rightarrow$  category.
+We need a discriminant rule $f: X_{n\times p} \rightarrow$  category.
 
 \subsection{The maximum likelihood discriminant rule}
 
@@ -1136,7 +1192,9 @@ Q(x) = x^2 (\frac{1}{\sigma_1^2} - \frac{1}{\sigma_2^2}) - 2x (\frac{\mu_1}{\sig
 
 If $\sigma_1 > \sigma_2$, so that the coefficient of $x^2$ is negative. Then $Q(x)<0$ if x is sufficiently small or sufficiently big.
 
-If $\sigma_1 = \sigma_2$, then $\log(\sigma_2/\sigma_1)$ is 0. In this case, allocate to category 1 if $\mid x-\mu_1\mid < \mid x - \mu_2 \mid$.
+If $\sigma_1 = \sigma_2$, then $\log(\sigma_2/\sigma_1)$ is 0. In this case, allocate to category 1 if 
+
+$\mid x-\mu_1\mid < \mid x - \mu_2 \mid$.
 
 \textbf{Example 2}
 
@@ -1241,6 +1299,8 @@ $ h(x) = a'x \quad a=W^{-1}d$
  
 \subsection{Probability of misclassification} 
  
+ Let $p_{ij} = Prob (\hbox{a type j object is classified as type i})$.
+ 
  \begin{equation}
  \hat p_{12} = \Phi(-\frac{1}{2}\hat \Delta)
 \quad \hat \Delta^2 = (\bar{x}_1 - \bar{x}_2)'S^{-1}(\bar{x}_1 - \bar{x}_2)
@@ -1252,7 +1312,79 @@ $ h(x) = a'x \quad a=W^{-1}d$
  
  then compute $\hat p_{ij} = n_{ij}/\sum n_{ij}$.
  
- \section{FAQs}
+ \paragraph{Computing misclassification prob.\ given h(x)}
+ 
+ Having computed h(x), misclassification prob.\ of choosing cat 1 when the sample is cat 2 is computed as follows:
+ 
+ \begin{enumerate}
+ \item Compute $E(h(x_2))=\mu, Var(h(x_2))=\sigma^2$, the expectation and variance of the distribution of h(x) when using the Fisher rule to classify as cat 1, when it's actually cat 2. Note that $E[x_2]$ and $Var(x_2)$ and $Cov(x_1, x_2)$ are always given.
+ \item Find out $P(h(x)>0 \mid h(x)\sim N(\mu,\sigma^2))$; $z=\mid \mu \mid /\sigma$, and then $1-\Phi(z)$ is the misclassification probability.
+\end{enumerate} 
+ 
+ Similarly, the misclassification prob.\ of choosing cat 2 when the sample is cat 1 is computed by computing expectation and variance of $h(x_1)$.
+ 
+\paragraph{Common situation: Data from only one category can be used/is available}
+
+\textbf{See Task 11 for a worked example}.
+
+Given $\bar{x}_1 = (x_1 x_2)$, and $\bar{x}_2 = (x_3 x_4)$, we use a scalar version of the Fisher rule. Suppose only $x_1$ and $x_3$ (variable 1) can be used, and common variance of $x_1$ and $x_3$ has already been computed by pooling variance (the first cell in S, i.e., S[1,1]). Then: classify as cat 1 if
+
+\begin{equation}
+(x_1 - x_3) S[1,1]^{-1} (x_1 - (x_1+x_3)/2)>0
+\end{equation}
+
+This gives some rule like: classify as cat 1 if $x_1 > c$ or $x_1 < c$. However, if sample is from cat 2, we have to compute the probability of getting a c or something more extreme given that the sample comes from cat 2. Since cat 2 is known to come from some $N(\mu_0,\sigma_0^2)$, we compute the prob.\ as follows:
+
+If rule is $x_1 > c$, then compute $P(X>c \mid \mu_0, \sigma_0)$. We need to compute the quantile: $\frac{c-\mu_0}{\sigma_0}$.
+
+If rule is $x_1 < c$, then compute $P(X<c \mid \mu_0, \sigma_0)$. We need to compute the quantile: $\frac{c-\mu_0}{\sigma_0}$.
+
+\subsection{Some typical LDA examples}
+
+\underline{Isis lda prediction example}:
+
+<<>>=
+library(MASS)
+Iris <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
+                   Sp = rep(c("s","c","v"), rep(50,3)))
+train <- sample(1:150, 75)
+table(Iris$Sp[train])
+z <- lda(Sp ~ ., Iris, prior = c(1,1,1)/3, subset = train)
+predicted<-predict(z, Iris[-train, ])$class
+## 100% accuracy:
+table(predicted,Iris[-train, ]$Sp)
+## prop correct is (diagonal cell)/colsums 
+## Jacknife estimate of true prob. of correct classfn:
+z.CV <- lda(Sp ~ ., Iris, prior = c(1,1,1)/3, CV=TRUE)
+table(z.CV$class,Iris$Sp)
+@
+
+\underline{Claypots lda (Task 11)}
+
+<<>>=
+load("data/claypots.Rdata")
+
+two<-21
+five<-64:69
+dat<-claypots[-c(two,five,70:272),]
+clay134lda<-lda(Group~A+B+C+D+E+F+G+H+I,dat)
+#str(clay134lda)
+plot(clay134lda)
+heldout<-claypots[c(two,five),]
+predicted<-predict(clay134lda,heldout[,2:10])
+predictedvals<-data.frame(gp=factor(c(1,rep(5,6))),
+                          predicted$x)
+points(predictedvals[1,2:3],pch=19,cex=2)
+points(predictedvals[2:7,2:3],pch=2,cex=2)
+
+evaluation<-data.frame(heldout[,1],predicted$class,
+           round(predicted$posterior,digits=2))
+colnames(evaluation)<-c("heldout_group","pred_class",
+                        "gp1","gp3","gp4")
+evaluation
+@
+
+\section{FAQs}
 
 \subsection{UITs}
 
