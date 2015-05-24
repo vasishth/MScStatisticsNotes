@@ -1433,17 +1433,17 @@ X is of full rank, therefore $X^TX$ is positive definite symmetric $p\times p$ a
 \paragraph{Statistical properties of LSEs}
 
 \begin{equation}
-E[\hat\beta] = (XX^T)^{-1}X^T Y = (XX^T)^{-1}X^T X\beta = \beta
+E[\hat\beta] = (X^TX)^{-1}X^T Y = (X^TX)^{-1}X^T X\beta = \beta
 \end{equation}
 
 \begin{equation}
 \begin{split}
 Cov(\hat\beta) =& Var(\hat\beta) \\
-=& Var([(XX^T)^{-1}X^T] Y) \\
-=& [(XX^T)^{-1}X^T] \sigma^2 I  [(XX^T)^{-1}X^T]^{T}\\
-=& [(XX^T)^{-1}X^T] \sigma^2 I  X[(XX^T)^{-1}]^{T} \\
-=& \sigma^2 (XX^T)^{-1} X^T X [(XX^T)^{-1}]^{T}\\
-=& \sigma^2 (XX^T)^{-1} X^T X (XX^T)^{-1} \\
+=& Var([(X^TX)^{-1}X^T] Y) \\
+=& [(X^TX)^{-1}X^T] \sigma^2 I  [(X^TX)^{-1}X^T]^{T}\\
+=& [(X^TX)^{-1}X^T] \sigma^2 I  X[(X^TX)^{-1}]^{T} \\
+=& \sigma^2 (X^TX)^{-1} X^T X [(X^TX)^{-1}]^{T}\\
+=& \sigma^2 (X^TX)^{-1} X^T X (X^TX)^{-1} \\
 =& \sigma^2 (XX^T)^{-1}\\
 \end{split}
 \end{equation}
@@ -2124,7 +2124,13 @@ $\mu_i$ is unknown mean in i-th group.
 \hat\mu_i = Y_{i\cdot} \quad Var(\hat\mu_i) = \frac{\sigma^2}{n_i}
 \end{equation}
 
-Red Sum Sq is the usual one, with n-k degrees of freedom (n: total num.\ of obs.). This leads to the one way analysis of variance.
+The residual sum of squares is the usual one, with n-k degrees of freedom (n: total num.\ of obs.). This leads to the one way analysis of variance.
+
+Note that the variance of the diff.\ in means of the two effects (trtmt vs placebo, for example), $\mu_1-\mu_2$, is (assuming equal sample sizes b in each group)
+
+\begin{equation} \label{crdvar}
+Var(\mu_1 - \mu_2) = \frac{\sigma^2}{b}+\frac{\sigma^2}{b} = \frac{2\sigma^2}{b}
+\end{equation}
 
 \paragraph{Blocking}
 
@@ -2132,7 +2138,7 @@ One can group subjects into blocks, thereby reducing variance within group (whic
 
 \subsubsection{Randomized block design (RBD)}
 
-We have several block (say, male, female) and equal nos.\ of treatment within each block, with randomization being done independently within each block.
+We have several blocks (say, male, female) and equal nos.\ of treatment within each block, with randomization being done independently within each block.
 
 Let b be no. of blocks, t be no. of treatments. The model is a two-way analysis of variance:
 
@@ -2140,7 +2146,14 @@ Let b be no. of blocks, t be no. of treatments. The model is a two-way analysis 
 y_{ij}= \mu + \alpha_i + \tau_j + \epsilon_{ij} \quad i=1,\dots,b; j=1,\dots,t
 \end{equation}
 
-to-do
+The variance of the difference in treatment effect is
+
+\begin{equation}
+var(\tau_1-\tau_2) = var(\tau_1) + var(\tau_2) - 2Cov(\tau_1,\tau_2) =
+\frac{\sigma^2}{b}(1-\frac{1}{t})+\frac{\sigma^2}{b}(1-\frac{1}{t}) + 2 \frac{\sigma^2}{bt} = \frac{2\sigma^2}{b}
+\end{equation}
+
+which is the same as the completely randomized design's (CRD's) variance (see equation~\ref{crdvar}). One consequence of this equality in variance is that, if the block effect is negligible, the randomization in the RBD has been unnecessarily restricted and there are fewer degrees of freedom for estimating $\sigma^2$, so that RBD ends up being worse than the CRD.
 
 \subsection{Design for qualitative explanatory factors: multiple factors}
 
@@ -2183,7 +2196,7 @@ y_{ij} = \mu + \alpha_i + \beta_j + \tau_{kij} + \epsilon_{ij}
 \quad \epsilon_{ij} \sim N(0,\sigma^2)
 \end{equation}
 
-The contraints on the parameters:
+The constraints on the parameters:
 \begin{enumerate}
 \item Run:
 $\alpha_3 = -\alpha_1 - \alpha_2$
@@ -2301,9 +2314,15 @@ A finite field just has finite elements.
 Let F be a finite field that contains $n$ elements. Then there is a collection of $n-1$ mutually orthogonal Latin squares.
 \end{proposition}
 
+\begin{theorem}
+If k is of the form $p^r$, p a prime number, and r is a positive integer, then there exists a complete set of $k-1$ mutually orthogonal $k\times k$ Latin squares.
+\end{theorem}
+
+See exercise 1.
+
 \subsubsection{Balanced incomplete block designs}
 
-If there are too many trtmts to be accomodated in each block, each block contains only a subset of trtmts.
+If there are too many treatments to be accomodated in each block, each block contains only a subset of treatments.
 \begin{enumerate}
 \item  All blocks (rows) have same size
 \item No treatment occurs more than once in a block
@@ -2319,11 +2338,11 @@ bk= rt = total no. of observations
 
 $r(k-1) = \lambda (t-1)$ = total no. of block neighbors of a given trtmt
 
-We can determine the ratio b:r:t given these equations.  
+We can determine the ratio $b:r:t$ given these equations.  
 
 One question that can be asked is: does a BIBD exist for given values of the variables? Another is: what's the smallest BIBD that can be built given some values for the variables? 
 
-\subsubsection{Systematic ways of creating Latin Squares}
+\subsubsection{Systematic ways of creating BIBDs}
 
 \begin{enumerate}
 \item Unreduced designs:
@@ -2370,7 +2389,13 @@ Such a BIBD has:
 \end{split}
 \end{equation}
 
-Example: to-do (also see ex 1)
+\underline{Example}: See exercise 1, and see pp.\ 29-30 for how to do this.
+
+\underline{Example of adding k+1 additional treatments}: p.\ 30.
+
+\underline{Example of creating complementary design}: p.\ 30.
+
+
 
 
 \end{enumerate}
@@ -2393,7 +2418,7 @@ If we scale the factors to be -1 and +1, then we cannot include polynomial terms
 
 Specify a block generator; the price paid is that higher order interactions have to be excluded as they'd be identical to block coding.
 
-Example block generator: Blk1: $x_1 x2 x_3 x_4 x_5$, and Blk2: $x2 x_3 x_4 x_5$. One has to always consider $Blk1 \times Blk2$, which here is identical to $x_1$, i.e., it's identical to the main effect (bad).
+Example block generator: Blk1: $x_1 x_2 x_3 x_4 x_5$, and Blk2: $x_2 x_3 x_4 x_5$. One has to always consider $Blk1 \times Blk2$, which here is identical to $x_1$, i.e., it's identical to the main effect (bad).
 
 <<>>=
 X<-matrix(c(rep(1,8),
@@ -2429,7 +2454,248 @@ The approach is to define t Block generators. This gives $2^t$ blocks. For the F
 
 The number of observations needed now is $n=2^m/2^t=2^{m-t}$. See Example 6.3.3 on p.\ 39 and project for a detailed example.
 
-The \textbf{resolution}
+The \textbf{resolution} is the highest order of interaction that is possible to investigate.
+
+\subsection{Screening expts}
+
+Here, we set up FFDs, but we just aim to compute the estimates without getting error estimates, so saturated designs are allowed.
+
+Example on p.\ 40.
+
+\subsection{Plackett and Burman designs}
+
+I have skipped this, doesn't seem relevant to anything I do.
+
+\subsection{Composite designs}
+
+Factors are varied at three levels: -1, 0, 1.
+
+Consists of three sets of contrast specifications:
+
+\begin{enumerate}
+\item 2x2 complete factorial coding (4 rows); FFD can be used, alternatively.
+\item Four `star points' rows:
+\begin{verbatim}
+-1 0
+ 1 0
+ 0 -1
+ 0  1
+\end{verbatim}
+\item Two zero point rows:
+\begin{verbatim}
+0 0
+0 0
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Box-Behnken designs}
+
+page 43.
+
+\subsection{Continuous and exact designs: The General Equivalence Theorem}
+
+Considering continuous predictors, let $\Omega$ be the design region, consisting of the set of points $x_1, \dots, x_k$. Suppose we have $n_i$ for $x_i$, so that
+
+$\sum n_i = n$
+
+The design can be summarized as follows. This is an \textbf{exact design}:
+
+$\xi = 
+\begin{pmatrix}
+x_1 & x_2 & \dots & x_k\\
+\frac{n_1}{n} & \frac{n_2}{n} & 
+\dots & \frac{n_k}{n}\\
+\end{pmatrix}
+$
+
+More generally, we can define a continuous design by specifying the weights for each x:
+
+$\xi = 
+\begin{pmatrix}
+x_1 & x_2 & \dots & x_k\\
+w_1 & w_2 & 
+\dots & w_k\\
+\end{pmatrix}
+$
+
+The optimality of the design just depends on these weights.
+
+The information matrix of a continuous design:
+
+\begin{equation}
+M(\xi) = \sum_{i=1}^k w_i f(x_i) f(x_i)^T
+\end{equation}
+
+\textbf{Exampl}: Let the exact design be
+
+$\xi=\begin{pmatrix}
+x_1 & x_2 & x_3 \\
+\frac{1}{4} & \frac{1}{2} & \frac{1}{4}\\
+\end{pmatrix}$
+
+Then,
+
+\begin{equation}
+M(\xi) = 
+\frac{1}{4}
+\begin{pmatrix}
+1\\
+x_1\\
+\end{pmatrix}
+\begin{pmatrix}
+1 & x_1\\
+\end{pmatrix}
++
+\frac{1}{2}
+\begin{pmatrix}
+1\\
+x_2\\
+\end{pmatrix}
+\begin{pmatrix}
+1 & x_2\\
+\end{pmatrix}
++
+\frac{1}{4}
+\begin{pmatrix}
+1\\
+x_3\\
+\end{pmatrix}
+\begin{pmatrix}
+1 & x_3\\
+\end{pmatrix}
+\end{equation}
+
+This gives us
+
+\begin{equation}
+M(\xi) = 
+\frac{1}{4}
+\begin{pmatrix}
+1 & x_1\\
+x_1 & x_1^2 \\
+\end{pmatrix}
++
+\frac{1}{2}
+\begin{pmatrix}
+1 & x_2\\
+x_2 & x_2^2 \\
+\end{pmatrix}
++
+\frac{1}{4}
+\begin{pmatrix}
+1 & x_3\\
+x_3 & x_3^2 \\
+\end{pmatrix}
+\end{equation}
+
+The above is the weighted version. One can create a design matrix with a stacked version, with $x_2$ appearing twice:
+
+\begin{equation}
+X=
+\begin{pmatrix}
+1 & x_1 \\
+1 & x_2\\
+1 & x_2\\
+1 & x_3\\
+\end{pmatrix}
+\end{equation}
+
+We end up with $X^T X = M(\xi)$.
+
+The variance of prediction:
+
+\begin{equation}
+d(x, \xi) =  f(x)^T M(\xi)^{-1} f(x)
+\end{equation}
+
+\begin{theorem}
+\underline{The General Equivalence Theorem}:
+
+The following three statements are equivalent
+
+\begin{enumerate}
+\item
+The design $\xi*$ maximizes $\mid M(\xi*) \mid \Leftrightarrow$ D-optimality. 
+\item 
+The design $\xi*$ minimizes max$_{x\in \Omega} d(x,
+\xi)$ G-optimality.
+\item \textbf{Key point of GET}
+max$_{x\in \Omega}=p$ (number of parameters)
+\end{enumerate}
+\end{theorem}
+
+\textbf{Practical implication}: we can identify an optimal design (D- or G-optimal) by determining that the maximum variance of prediction is equal to the number of parameters. If the max variance of prediction is not equal to the number of parameters, then the design is not optimal.
+
+This is convenient because it is often difficult/tedious to prove D- or G-optimality.
+
+\textbf{Example (Task 11)}:
+
+Find an optimal design with two observations for the model:
+
+\begin{equation}
+E[Y] = \beta_1 x_1 + \beta_2 x_2
+\end{equation}
+
+Using any pair of points (-1,-1),  (1,-1), (-1,1), (1,1). Determine whether it satisfies the conditions of the GET.
+
+Solution: choose adjacent points (-1,-1),  (1,-1).
+This means that $f(x)^T = (x_1~x_2)$, and 
+
+$X=\begin{pmatrix}
+-1 & -1 \\
+1 & -1 \\
+\end{pmatrix}
+\Rightarrow
+X^T X = 
+\begin{pmatrix}
+-1 & 1 \\
+-1 & -1 \\
+\end{pmatrix}
+\begin{pmatrix}
+-1 & -1 \\
+1 & -1 \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+2 & 0 \\
+0 & 2 \\
+\end{pmatrix}
+$
+
+The inverse is:
+
+$(X^TX)^{-1}=
+\frac{1}{4}
+\begin{pmatrix}
+2 & 0 \\
+0 & 2 \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1/2 & 0 \\
+0 & 1/2 \\
+\end{pmatrix}
+$
+
+So,
+
+$d(x)= n \times f(x)^T (X^X)^{-1} f(x)
+= 2
+\begin{pmatrix}
+x_1 & x_2\\
+\end{pmatrix}
+\begin{pmatrix}
+1/2 & 0 \\
+0 & 1/2 \\
+\end{pmatrix}
+\begin{pmatrix}
+x_1\\
+x_2\\
+\end{pmatrix}
+= x_1^2 + x_1^2$
+
+This will be maximal when $x_1^2 = x_2^2 =1$ and then it equals 2, which is equal to the number of parameters, hence optimal.
+
 
 \section{Sampling theory}
 
@@ -2471,7 +2737,7 @@ Note that we do not try to construct and validate models for $X_i$; these values
 
 \subsection{Simple random sampling: definitions and properties}
 
-To draw an SRS from a list using random numbers, label each X as $1,\dots, N$, and then draw a random sequence of $n$ numbers, ignoring repeats. There are ${n choose N}=\frac{N!}{n!(N-n)!}$ ways to choose the \textbf{samples}, and the probability of each sample being draw is $1/{n choose N}$. 
+To draw an SRS from a list using random numbers, label each X as $1,\dots, N$, and then draw a random sequence of $n$ numbers, ignoring repeats. There are ${n choose N}=\frac{N!}{n!(N-n)!}$ ways to choose the \textbf{samples}, and the probability of each sample being draw is $1/{n \choose N}$. 
 
 \underline{Properties}:
 
