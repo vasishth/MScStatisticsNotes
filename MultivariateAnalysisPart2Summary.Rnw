@@ -1933,7 +1933,7 @@ acf(shef_ts)
 \underline{Details}: Under null hyp.\ $H_0: 
 \rho_h = 0$ for $h\geq 1$. So, 
 
-$r_h \sim N(0,1/n)$, for h=1,2,\dots $\Rightarrow$ CI: $\pm 2\sqrt{1\n}$
+$r_h \sim N(0,1/n)$, for h=1,2,\dots $\Rightarrow$ CI: $\pm 2\sqrt{1/n}$
 
 More generally, for ARMA processes, under $H_0$:
 
@@ -1976,9 +1976,9 @@ MA(3) & $r_4, r_5,\dots < \pm 2\sqrt{\frac{1+2 (r_1^2 + r_2^2 + r_3^2)}{n}}$ \\
 \item Test for AR(p): Partial ACF.The ACF of an AR(p) model does not cut off sharply but decays geometrically to 0. However, the PACF does does cut off to zero sharply beyond p, just like the MA(q)'s ACF is 0 beyond q.
 
 \begin{tabular}{cc}
-AR(1) & $a_2, a_3,\dots <\pm 2\sqrt{1\n}$ \\
-AR(2) & $a_3, a_4,\dots <\pm 2\sqrt{1\n}$ \\
-AR(3) & $a_4, a_5,\dots <\pm 2\sqrt{1\n}$ \\
+AR(1) & $a_2, a_3,\dots <\pm 2\sqrt{1/n}$ \\
+AR(2) & $a_3, a_4,\dots <\pm 2\sqrt{1/n}$ \\
+AR(3) & $a_4, a_5,\dots <\pm 2\sqrt{1/n}$ \\
 \end{tabular}
 
 
@@ -3810,10 +3810,10 @@ Steps for finding PACF:
 Model         & Forecast Mean & Forecast Var\\ 
 \hline
 AR(1)         & $\hat y_{n+i\mid n}= a^i y_n$ & $\sigma^2 \frac{1-a^{2i}}{(1-a^2)}$\\
-AR(p)         & y_{t+i\mid t} = 
-\sum_{i=1}^p a_i y_{t+i-1}& *\\
-ARMA(p,q)     & $\hat y_{t+1\mid t} = 
-a_1 y_{t} + \dots + a_p y_{t+1-p} +
+AR(p)         & $y_{t+i\mid t}$ = 
+$\sum_{i=1}^p a_i y_{t+i-1}$& *\\
+ARMA(p,q)     & $\hat y_{t+1\mid t}$ = 
+$a_1 y_{t} + \dots + a_p y_{t+1-p} +
 b_1 \epsilon_{t} + \dots + b_q \epsilon_{t+1-q}$ & \\%For k: $\sum_{i=0}^{k-1} (b_i) \epsilon_{t+k-1}$  \\
 & 
 $\hat y_{t+2\mid t} 
