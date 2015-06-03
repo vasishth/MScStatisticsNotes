@@ -282,6 +282,14 @@ n \approx \frac{\sigma^2}{(\mu-\mu_0)^2}
 [\Phi^{-1}(\beta)+\Phi^{-1}(\alpha/2)]^2
 \end{equation}
 
+\subsection{Computation for patients lost during testing}
+
+Let t be target, p be percent of loss, n the final recruitment number.
+
+\begin{equation}
+t - \frac{p}{100}t = n
+\end{equation}
+
 \section{Multiple testing}
 
 If we do k indep tests, and compute p-values at $\alpha=0.05$ then actual p-value is $k\times p$. 
@@ -360,7 +368,7 @@ Some notes on MH test:
 \subsection{Prospective studies: Relative Risk}
 
 \begin{tabular}{cccc}
-        & postive  & negative & total\\
+        & positive  & negative & total\\
 Exposed & a  & b  & a+b\\
 Not Exp & c  & d  & c+d\\
 \end{tabular}
@@ -495,7 +503,7 @@ For group i=1:
 \begin{equation}
 \begin{split}
 D_{1k} =& Y_{11k} -  Y_{12k}\\
-=& \tau_A-\tau_B + pi_1-\pi_2 
+=& \tau_A-\tau_B + \pi_1-\pi_2 
 \end{split}
 \end{equation}
 
@@ -509,7 +517,7 @@ For group i=2:
 \begin{equation}
 \begin{split}
 D_{2k} =& Y_{21k} -  Y_{22k}\\
-=& \tau_B-\tau_A + pi_1-\pi_2 
+=& \tau_B-\tau_A + \pi_1-\pi_2 
 \end{split}
 \end{equation}
 
@@ -520,7 +528,7 @@ D_{2k} \sim N(\tau_B-\tau_A+\pi_1-\pi_2,2\sigma^2)
 \end{equation}
 
 
-If we do $D_{1k}-D{2k}$ we get 
+If we do $D_{1k}-D_{2k}$ we get 
 
 \begin{equation}
 \tau_A-\tau_B+\pi_1-\pi_2 - (\tau_B-\tau_A+\pi_1-\pi_2)=
@@ -539,9 +547,9 @@ s_{\bar{D}_2}^2/n_2}} \sim t_r
 
 \subsection{Testing for period effects}
 
-If period effect is identical, then $\bar{D}_1$ (group 1 effect), and $-\bar{D}_2$ will have identical distribution.
+If period effect is identical, then $\bar{D}_1$ (group 1 effect), and $-\bar{D}_2$ will have identical distributions.
 
-If we do $D_{1k}- (-D{2k})$ we get 
+If we do $D_{1k}- (-D_{2k})$ we get 
 
 \begin{equation}
 \begin{split}
@@ -801,7 +809,7 @@ $j$ is the time index: $j=1,\dots,k$, i.e.,  $t_1, \dots, t_k$.
 \item 
 $d_j$ is the failure at time index $j$.
 \item 
-$n$ is total number of observations $\sum d_j$
+$n$ is total number of observations 
 \item
 $I_j$: number of individuals censored during $t_{j-1} < t < t_j$.
 \item 
@@ -920,7 +928,7 @@ t2         s2
 Then the median survival time x can be computed for solving for x (using linear interpolation):
 
 \begin{equation}
-\frac{x-t1}{s1-0.5}=\frac{t2-t1}{s2-s1}
+\frac{s1-s2}{t2-t1} = \frac{0.5-s2}{t2-x}
 \end{equation}
 
 \subsection{R code: Representative examples}
@@ -980,7 +988,7 @@ Confidence intervals:
 Recall two facts: $Y = \sum T_i \sim Gamma(n,\lambda)$ and 
 $Z = 2 \lambda Y \sim \chi_{2n}^2$.
 
-$P(\chi_{2n, 0.025}^2 < 2\lambda \sum T_i < \chi_{2n, 0.975}^2=0.95$, and so a 95\% CI CI is 
+$P(\chi_{2n, 0.025}^2 < 2\lambda \sum T_i < \chi_{2n, 0.975}^2=0.95$, and so a 95\% CI is 
 
 $\left[\frac{\chi_{2n, 0.025}^2}{2\sum t}, 
 \frac{\chi_{2n, 0.975}^2}{2\sum t} \right]$
@@ -1075,7 +1083,7 @@ Var(\hat \mu)= var(\frac{1}{\hat \lambda}) = \frac{\hat \mu^2}{\sum (1-\exp(-\ha
 
 To estimate the median $S_{\alpha}$, note that there is some value $S_{\alpha}$ such that $\alpha = P(T\geq S_{\alpha}) = S(S_{\alpha}) = \exp(-\lambda S_{\alpha})$. 
 
-It follows that 
+It follows that  (\textbf{use $\log_e$})
 \begin{equation}
 \begin{split}
 ~& \alpha =  \exp(-\lambda S_{\alpha})\\
@@ -1193,6 +1201,186 @@ $.
 Here we test the null hypothesis
 $H_0: S_1(t) = S_2(t)$.
 
+\subsection{Parametric tests}
+
+\paragraph{MLE tests}
+
+Assuming exponential, we test
+
+\begin{equation}
+W = \frac{\hat \lambda_1 - \hat \lambda_2}{\sqrt{\frac{\hat \lambda_1^2}{\sum d_{1i}}+\frac{\hat \lambda_1^2}{\sum d_{2i}}}}
+\sim N(0,1)
+\end{equation}
+
+\underline{Brain tumour data MLE by hand}
+
+<<>>=
+load("data/braintu.Rdata")
+n1<-6
+n2<-6
+gp1<-subset(braintu,group==1)
+gp2<-subset(braintu,group==2)
+## total times in gp1:
+sumt1<-sum(gp1$time)
+sumt2<-sum(gp2$time)
+deaths1<-sum(gp1$censor)
+deaths2<-sum(gp2$censor)
+
+(lambda1<-deaths1/sumt1)
+
+(lambda2<-deaths2/sumt2)
+
+## n.s.
+(W<-(lambda1-lambda2)/
+  sqrt((lambda1^2/deaths1)+(lambda2^2/deaths2)))
+@
+
+Compare with N(0,1).
+
+\underline{Brain tumour MLE using R}
+
+<<>>=
+brain_sv<-Surv(braintu$time,braintu$censor)
+brain_exp<-survreg(brain_sv~as.factor(braintu$group), 
+                   dist="exponential")
+summary(brain_exp)
+@
+
+Group 1 $\hat \lambda=\frac{1}{\exp(3.381)}=0.034$.
+
+Group 2 $\hat \lambda=\frac{1}{\exp(3.381+ 0.783 )}=0.0155$.
+
+Note that the effect is not significant, as computed by hand above.
+
+\underline{Old exam question}:
+
+Survival times in days of 26 patients randomized to one of two chemo treatments for ovarian cancer.
+
+Kaplan-Meier:
+
+<<>>=
+time1<-c(59,115,156,268,329,431,448,477,638,803,855,1040,1106)
+censor1<-c(1,1,1,1,1,1,0,0,1,0,0,0,0)
+time2<-c(353,365,377,421,464,475,563,744,769,770,1129,
+         1206,1227)
+censor2<-c(1,1,0,0,1,1,1,0,0,0,0,0,0)
+time<-c(time1,time2)
+censor<-c(censor1,censor2)
+group<-c(rep(1,length(censor1)),
+                 rep(2,length(censor2)))
+group<-as.factor(group)
+ovarian_sv<-Surv(time,censor)
+(ovarian_fit<-survfit(ovarian_sv~group))
+plot(ovarian_fit)
+summary(ovarian_fit)
+@
+
+Checking goodness of fit:
+
+<<>>=
+ovarian_fit$time
+plot(-log(ovarian_fit$surv[1:13])~time1,ylim=c(0,1))
+plot(-log(ovarian_fit$surv[14:26])~time2,ylim=c(0,1))
+@
+
+MLE:
+
+<<>>=
+ovarian_exp<-survreg(ovarian_sv~as.factor(group), 
+                   dist="exponential")
+summary(ovarian_exp)
+@
+
+\begin{enumerate}
+\item Means and variances of $\hat\lambda$:
+
+Group 1 $\hat\lambda=1/\exp(6.868)= 0.00104$.
+
+Group 2 $\hat\lambda=1/\exp(6.868+0.613)= 0.000563$.
+
+The difference is not significant.
+
+Variances:
+
+Group 1: 
+<<>>=
+lambda1<-1/exp(6.868)
+(varlam1<-lambda1^2/7)
+sqrt(varlam1)
+
+## SE/exp(coef1)
+0.378/exp(6.868)
+@
+
+<<>>=
+lambda2<-1/exp(6.868+0.613)
+(varlam2<-lambda2^2/7)
+sqrt(varlam2)
+
+## *approximation* using SE and coefs:
+## sqrt(SE1^2+SE2^2)/exp(coef1+coef2)
+sqrt(0.378^2 + 0.586^2)/exp(6.868+0.613)
+@
+
+95\% CIs for lambda's:
+
+<<>>=
+lambda1-2*sqrt(varlam1);lambda1+2*sqrt(varlam1)
+lambda2-2*sqrt(varlam2);lambda1+2*sqrt(varlam2)
+@
+
+Alternatively, an \textbf{approximation} using survreg output:
+
+<<>>=
+1/exp(6.868-2*0.378); 1/exp(6.868+2*0.378)
+@
+
+\item 
+Mean survival and variance (sd) of mean:
+
+<<>>=
+(mu1<-1/lambda1); sqrt(mu1^2/7)
+(mu2<-1/lambda2); sqrt(mu2^2/5)
+@
+
+\item Median survival times and 95\% CI of median survival time estimates:
+
+Be sure to use natural logs:
+
+<<>>=
+## use natural logs:
+-log(0.5)/lambda1; sqrt((-log(0.5))^2 * mu1^2/7)
+-log(0.5)/lambda2; sqrt((-log(0.5))^2 * mu2^2/5)
+@
+
+MLE test by hand:
+
+<<>>=
+(lambda1-lambda2)/sqrt(lambda1^2/7 + lambda2^2/5)
+@
+
+Test against N(0,1) (not significant).
+\end{enumerate}
+
+\textbf{Likelihood ratio test}
+
+This is asymptotically equivalent to MLE, but better for small samples.
+
+Let $\sum d_{1i} = \Delta_1$ and $\sum d_{2i}=\Delta_2$. And let $\sum t_i = T_1$ and $\sum t_i = T_2$.
+
+\begin{equation}
+2\left\{ \Delta_1 \log \frac{\Delta_1}{T_1} +
+\Delta_2 \log \frac{\Delta_2}{T_2} - (\Delta_1 + \Delta_2) \log \frac{\Delta_1+\Delta_2}{T_1+T_2}  
+\right\}\sim \chi_1^2
+\end{equation}
+
+\subsection{Checking goodness-of-fit: Exponential, Weibull}
+
+\begin{enumerate}
+\item \textbf{Exponential}: $-\log(\hat S(y))$ against $y$ should be approximately linear.
+\item \textbf{Weibull}: The plot of the cumulative hazard function $\log(-\log \hat S(y))$ against $\log y$ should be linear.
+\end{enumerate}
+
 \subsection{Non-parametric Log-rank test}
 
 See p.\ 32, 33 for description of how to do the test by hand.
@@ -1256,52 +1444,6 @@ plot(survfit(brainsv~group,data=braintu))
 detach(braintu)
 @
 
-\subsection{Parametric tests}
-
-\paragraph{MLE tests}
-
-Assuming exponential, we test
-
-\begin{equation}
-W = \frac{\hat \lambda_1 - \hat \lambda_2}{\sqrt{\frac{\hat \lambda_1^2}{\sum d_{1i}}+\frac{\hat \lambda_1^2}{\sum d_{2i}}}}
-\sim N(0,1)
-\end{equation}
-
-In brain tumour data:
-<<>>=
-load("data/braintu.Rdata")
-n1<-6
-n2<-6
-gp1<-subset(braintu,group==1)
-gp2<-subset(braintu,group==2)
-## total times in gp1:
-sumt1<-sum(gp1$time)
-sumt2<-sum(gp2$time)
-deaths1<-sum(gp1$censor)
-deaths2<-sum(gp2$censor)
-
-(lambda1<-deaths1/sumt1)
-
-(lambda2<-deaths2/sumt2)
-
-## n.s.
-(W<-(lambda1-lambda2)/
-  sqrt((lambda1^2/deaths1)+(lambda2^2/deaths2)))
-@
-
-Compare with N(0,1).
-
-\textbf{Likelihood ratio test}
-
-This is asymptotically equivalent to MLE, but better for small samples.
-
-Let $\sum d_{1i} = \Delta_1$ and $\sum d_{2i}=\Delta_2$. And let $\sum t_i = T_1$ and $\sum t_i = T_2$.
-
-\begin{equation}
-2\left\{ \Delta_1 \log \frac{\Delta_1}{T_1} +
-\Delta_2 \log \frac{\Delta_2}{T_2} - (\Delta_1 + \Delta_2) \log \frac{\Delta_1+\Delta_2}{T_1+T_2}  
-\right\}\sim \chi_1^2
-\end{equation}
 
 \subsection{Regression models}
 
@@ -1318,9 +1460,9 @@ detach(wbcleuk)
 summary(wbcleukregexp)
 @
 
-Interpretation:
+\textbf{Interpretation}:
 
-$\hat \lambda(x) = \frac{1}{\exp((\hat\beta_0 + \hat\beta_1 x_1\dots) )}= \exp( - (\hat\beta_0 + \hat\beta_1 x_1\dots) )$
+$\hat \lambda(x) = \frac{1}{\exp(\hat\beta_0 + \hat\beta_1 x_1\dots )}= \exp( - (\hat\beta_0 + \hat\beta_1 x_1\dots) )$
 
 and $\frac{1}{\hat \lambda(x)}=$ mean survival time in days.
 
@@ -1342,7 +1484,7 @@ h(t;\mathbf{x})=\exp(\beta_1 x_1 + \beta_2 x_2+\beta_3 x_3) h_0(t)
 with $x_1, x_2, x_3$ as given. 
 
 To get hazard ratio and CIs, just exponentiate for different levels using the various contrast coding values: e.g.,
-$\exp(\beta_1 x_1 pm 2\times SE)$.
+$\exp(\beta_1 x_1 \pm 2\times SE)$.
 
 Example using wbcleukemia data:
 
@@ -1418,13 +1560,13 @@ Multiplying out the terms:
 \Leftrightarrow& Y^T X - \hat\beta^TX^T X = 0\\
 \Leftrightarrow& Y^T X = \hat\beta^TX^T X \\
 \Leftrightarrow& (Y^T X)^T = (\hat\beta^TX^T X)^T \\
-\Leftrightarrow& X^T Y = XX^T\hat\beta\\
+\Leftrightarrow& X^T Y = X^TX\hat\beta\\
 \end{split}
 \end{equation}
 
 \textbf{This gives us the important result}: 
 \begin{equation}
-\hat\beta = (XX^T)^{-1}X^T Y
+\hat\beta = (X^TX)^{-1}X^T Y
 \end{equation}
 X is of full rank, therefore $X^TX$ is positive definite symmetric $p\times p$ and invertible.
 
@@ -1444,7 +1586,7 @@ Cov(\hat\beta) =& Var(\hat\beta) \\
 =& [(X^TX)^{-1}X^T] \sigma^2 I  X[(X^TX)^{-1}]^{T} \\
 =& \sigma^2 (X^TX)^{-1} X^T X [(X^TX)^{-1}]^{T}\\
 =& \sigma^2 (X^TX)^{-1} X^T X (X^TX)^{-1} \\
-=& \sigma^2 (XX^T)^{-1}\\
+=& \sigma^2 (X^TX)^{-1}\\
 \end{split}
 \end{equation}
 
@@ -2140,7 +2282,15 @@ One can group subjects into blocks, thereby reducing variance within group (whic
 
 We have several blocks (say, male, female) and equal nos.\ of treatment within each block, with randomization being done independently within each block.
 
-Let b be no. of blocks, t be no. of treatments. The model is a two-way analysis of variance:
+Let 
+\begin{enumerate}
+\item
+b be the no.\ of blocks, 
+\item 
+t be the no.\ of treatments. 
+\end{enumerate}
+
+The model is a two-way analysis of variance:
 
 \begin{equation}
 y_{ij}= \mu + \alpha_i + \tau_j + \epsilon_{ij} \quad i=1,\dots,b; j=1,\dots,t
@@ -2330,15 +2480,30 @@ If there are too many treatments to be accomodated in each block, each block con
 \item Each pair of trmts appears in same no. of blocks
 \end{enumerate}
 
-Let b be blocks, t treatment, k no. of units in a block, r the no. of applications of each treatment, $\lambda$ the no. of times each pair of treatments appears together in a block.
+Let 
 
+\begin{enumerate}
+\item
+b be the number of blocks, 
+\item
+t the number of treatments, 
+\item 
+k the no.\ of units in a block, 
+\item
+r the no.\ of applications of each treatment, 
+\item
+$\lambda$ the no. of times each pair of treatments appears together in a block.
+\end{enumerate}
 Then: 
 
-bk= rt = total no. of observations
+\begin{equation}
+bk= rt  \hbox{ total no. of observations}
+\end{equation}
 
-$r(k-1) = \lambda (t-1)$ = total no. of block neighbors of a given trtmt
-
-We can determine the ratio $b:r:t$ given these equations.  
+\begin{equation}
+r(k-1) = \lambda (t-1)  \hbox{ total no. of block neighbors of a given trtmt}
+\end{equation}
+We can determine the ratio $b:r:\lambda$ given these equations.  
 
 One question that can be asked is: does a BIBD exist for given values of the variables? Another is: what's the smallest BIBD that can be built given some values for the variables? 
 
@@ -2526,7 +2691,7 @@ The information matrix of a continuous design:
 M(\xi) = \sum_{i=1}^k w_i f(x_i) f(x_i)^T
 \end{equation}
 
-\textbf{Exampl}: Let the exact design be
+\textbf{Example}: Let the exact design be
 
 $\xi=\begin{pmatrix}
 x_1 & x_2 & x_3 \\
@@ -2620,7 +2785,8 @@ The design $\xi*$ maximizes $\mid M(\xi*) \mid \Leftrightarrow$ D-optimality.
 The design $\xi*$ minimizes max$_{x\in \Omega} d(x,
 \xi)$ G-optimality.
 \item \textbf{Key point of GET}
-max$_{x\in \Omega}=p$ (number of parameters)
+max$_{x\in \Omega}d(x,
+\xi*)=p$ (number of parameters)
 \end{enumerate}
 \end{theorem}
 
@@ -2679,7 +2845,7 @@ $
 
 So,
 
-$d(x)= n \times f(x)^T (X^X)^{-1} f(x)
+$d(x)= n \times f(x)^T (X^TX)^{-1} f(x)
 = 2
 \begin{pmatrix}
 x_1 & x_2\\
@@ -2737,7 +2903,7 @@ Note that we do not try to construct and validate models for $X_i$; these values
 
 \subsection{Simple random sampling: definitions and properties}
 
-To draw an SRS from a list using random numbers, label each X as $1,\dots, N$, and then draw a random sequence of $n$ numbers, ignoring repeats. There are ${n choose N}=\frac{N!}{n!(N-n)!}$ ways to choose the \textbf{samples}, and the probability of each sample being draw is $1/{n \choose N}$. 
+To draw an SRS from a list using random numbers, label each X as $1,\dots, N$, and then draw a random sequence of $n$ numbers, ignoring repeats. There are ${n \choose N}=\frac{N!}{n!(N-n)!}$ ways to choose the \textbf{samples}, and the probability of each sample being draw is $1/{n \choose N}$. 
 
 \underline{Properties}:
 
@@ -2819,6 +2985,9 @@ X_6$: $5$.
 So, $P(x_i = X_r, x_j = X_s) = \frac{5}{7 \times 6 \times 5} = \frac{1}{N(N-1)}$.
 
 \item $Cov(x_i, x_j) = -S^2/N$, for $i\neq j$.
+
+Also, for two sequential samples, $Cov(\bar{x}_1, \bar{x}_2) = -S^2/N$
+
 
 Intuitively, the correlation is negative: if we have a finite population, drawing a high value means that the average of the others will go down---negative correlation. 
 
@@ -3096,6 +3265,287 @@ $S^2$ comes from a pilot survey or from previous work.
 \end{cases}
 \end{equation}
 
+\begin{equation}
+\bar{x} = \frac{r}{n} \quad E[p]=E[\bar{x}] = \bar{X} = \frac{R}{N}
+\end{equation}
+
+\begin{tabular}{|c|c|}
+ & Unbiased est.\\
+\hline 
+$Var(p)=(1-f)S^2/n$ & $Var(p) =(1-n/N)p(1-p)/(n-1) $\\
+$S^2 = NPQ/(N-1)$ & $s^2 = npq/(n-1)$\\
+\end{tabular}
+
+\textbf{Confidence intervals for P}
+
+$p\pm z \sqrt{(1-f)PQ/n} \quad PQ = npq/(n-1)$
+
+So: $p\pm z \sqrt{(1-f)pq/(n-1)}$
+
+\textbf{Sample size for p given CI width d}
+
+$d= 2 z \sqrt{(1-f) PQ/n}$, taking PQ=1/4 (the largest possible value).
+
+\section{Stratified sampling}
+
+Main advantage of stratification: when within strata variance is smaller than between strata variance. (i always ranges over strata)
+
+\begin{equation}
+\bar{x}_{st} = \frac{1}{N}\sum N_i \bar{x}_i
+\end{equation}
+
+
+\begin{equation}
+var(\bar{x}_{st})  = \sum (\frac{N_i}{N})^2 \frac{(1-n_i/N_i)}{n_i} S_i^2
+\end{equation}
+
+\subsection{Choice of sample size: Statified Sampling}
+
+\paragraph{Proportional allocation}
+
+Size of SRS within a stratum is proportional to stratum size.
+
+$N_i/N$
+
+\paragraph{Neyman allocation}
+
+Let n be entire sample size.
+
+\begin{equation}
+n_i = n \frac{N_i S_i}{\sum N_i S_i}
+\end{equation}
+
+\paragraph{Minimizing variance within fixed cost}
+
+The optimal size of $n_i$ from the i-th stratum is 
+
+\begin{equation}
+n_i \propto \frac{N_i S_i}{\sqrt{c_i}}
+\end{equation}
+
+For total cost C, the optimal \textbf{total} number of observations is
+
+\begin{equation}
+n = \frac{(C-c_0) \sum \frac{N_i S_i}{\sqrt{c_i}} }{\sum N_i S_i \sqrt{c_i}}
+\end{equation}
+
+If $c_i$ is fixed, $n_i$ is computed using Neyman allocation, and 
+
+\begin{equation}
+n = \frac{C-c_0}{c}
+\end{equation}
+
+The variance in this case is:
+
+\begin{equation}
+Var(\bar{x}_{st}) = \frac{1}{N^2} \frac{(\sum N_i S_i)^2}{n} - \frac{\sum N_i S_i^2}{N^2}
+\end{equation}
+
+Generally, we should take a larger sample from a stratum if (a) it is larger, (b) if a stratum is more variable internally, (c) it is cheaper to sample from.
+
+\subsection{Comparison of Proportional vs Optimal Allocation}
+
+If the variance between strata variances is large, then optimal (Neyman) allocation is better. See p.\ 78 for some derivations of this result.
+
+\subsection{Stratification after sampling}
+
+Example: if men and women are in 50-50 distribution in population, and we get two samples, one with 17 men and 87 women, the two means can be weighted by population proportions:
+
+\begin{equation}
+\bar{x}_w = \sum (\frac{N_i}{N}) \bar{x}_i
+\end{equation}
+
+\subsection{Taking SRSs in two stages}
+
+Suppose we have taken samples in two stages (sizes $n_1$ and $n_2$, so total sample size is $n_1 + n_2 = n$), and have obtained $\bar{x}_1$, $\bar{x}_2$, and $s_1^2$ and $s_2^2$.
+
+Goal: work out overall sample mean and variance.
+
+\underline{Mean}:
+Use the fact that $n_i \bar{x}_i = \sum x_i$.
+
+\begin{equation}
+\bar{x} = \frac{n_1 \bar{x}_1 + n_2 \bar{x}_2}{n}
+\end{equation}
+
+\underline{Variance}:
+
+\begin{equation}
+(n-1)s^2 =  \sum_{i=1}^n (x_i - \bar{x})^2 = -n\bar{x}^2 + \sum_{i=1}^n x_i^2
+\end{equation}
+
+So, to get the sample variance for all n observations, we need $\sum_{i=1}^{n}x_i^2$, and we can obtain $\sum_{i=1}^{n_1}x_i^2$ from $s_1^2$, and $\sum_{i=n_1+1}^{n}x_i^2$ from $s_2^2$.
+
+Let sample 1's mean and sample size be $\bar{x}_1$ and $n_1$, and the data points be $x_{1i}$, $i=1,\dots,n_1$. And for sample 2: 
+$\bar{x}_2$ and $n_2$, and the data points be $x_{2i}$, $i=1,\dots,n_2$.
+
+\begin{equation}
+(n_1 - 1)s_1^2 = \sum (x_{1i}-\bar{x}_1)^2 = -n_1\bar{x}_1^2+\sum x_{1i}^2
+\end{equation}
+
+So, $\sum x_{1i}^2= (n_1 - 1)s_1^2 + n_1\bar{x}_1^2$.
+
+Similarly, 
+
+\begin{equation}
+(n_2 - 1)s_2^2 = \sum (x_{2i}-\bar{x}_2)^2 = -n_2\bar{x}_2^2+\sum x_{2i}^2
+\end{equation}
+
+So, $\sum x_{2i}^2= (n_2 - 1)s_2^2 + n_2\bar{x}_2^2$.
+
+Since $\sum x_{1i}^2+\sum x_{2i}^2= \sum x_i^2$, we can write 
+
+\begin{equation}
+(n-1)s^2 = -n\bar{x}^2 + \sum_{i=1}^n x_i^2 = \sum x_{1i}^2+\sum x_{2i}^2 -n\bar{x}^2
+\end{equation}
+
+Expanding out the RHS and solving for $s^2$:
+
+\begin{equation}
+s^2 = \frac{(n_1 - 1)s_1^2 + n_1\bar{x}_1)^2 + (n_2 - 1)s_2^2 + n_2\bar{x}_2)^2 -n\bar{x}^2}{n-1}
+\end{equation}
+
+Pretty neat!
+
+\section{Capture-recapture sampling}
+
+\section{Sensitivity Analysis}
+
+\subsection{Some basic results for computing covariance}
+
+\begin{enumerate}
+\item
+Let $\bar{x}_i$ be vectors:
+
+\begin{equation}
+Var(\bar{x}_1 - \bar{x}_2) = var(\bar{x}_1) + var(\bar{x}_2) - 2 Cov(\bar{x}_1,\bar{x}_2)
+\end{equation}
+
+Note that $Cov(\bar{x}_1,\bar{x}_2)$ would be the matrix
+
+$$
+\begin{pmatrix}
+Cov(x_1) & 0 \\
+0 & Cov(x_2)\\
+\end{pmatrix}
+$$
+
+where $Cov(x_1)$ is the covariance between the \textit{components} of $x_1$.
+
+\item The sum of two RVs:
+
+\begin{equation}
+Var(X_1 + X_2) = var(X_1) + var(X_2) + 2 Cov(X_1,X_2)
+\end{equation}
+
+More generally:
+
+\begin{equation}
+Var(aX_1 + bX_2) = a^2 var(X_1) + b^2 var(X_2) + 2ab Cov(X_1,X_2)
+\end{equation}
+
+This generalizes to arbitrary numbers of terms:
+
+\begin{equation}
+\begin{split}
+~& Var(aX_1 + bX_2+cX_3) = a^2 var(X_1) + b^2 var(X_2)  \\
++& 2ab Cov(X_1,X_2) +
+2ac Cov(X_1,X_3) + 2bc Cov(X_2,X_3)
+\end{split}
+\end{equation}
+
+\item Covariance of X and Y:
+
+\begin{equation}
+Cov(X,Y)=E[XY]-E[X]E[Y]
+\end{equation}
+
+\begin{equation}
+Cov(aX+b,Y)= aCov(X,Y)
+\end{equation}
+
+\begin{equation}
+Cov(aX+bY+cZ,W)= Cov(aX,W)+Cov(bY,W)+Cov(cZ,W)
+\end{equation}
+\end{enumerate}
+
+\subsection{Expectation and variance: Some unfamiliar results}
+
+\begin{equation}
+E[X^2] = Var(X) + E[X]^2
+\end{equation}
+
+\begin{equation}
+E[XY] = E[X]E[Y] \hbox{ assuming independence}
+\end{equation}
+
+\begin{equation}
+Var(X^2) = E[X^4] - E[X^2]^2
+\end{equation}
+
+where $E[X^4] = \sigma^2 (\sigma^2)^2$ and $E[X^2]^2=(\sigma^2)^2$.
+
+\begin{equation}
+Var(XY) = E[X^2Y^2] - E[XY]^2 
+\quad E[X^2Y^2] = (\sigma_X^2 + \mu_X^2)(\sigma_Y^2 + \mu_Y^2)
+\end{equation}
+
+More generally (for indep.\ RVs):
+
+\begin{equation}
+\begin{split}
+Var(X_1\dots X_n) =& E[(X_1\dots X_n)^2] - (E[X_1\dots, X_n])^2\\
+=& E[X_1^2 \dots X_n^2] - (E[X_1]\dots E[X_n])^2\\
+=& E[X_1^2] \dots E[X_n^2] - (E[X_1]^2\dots E[X_n]^2)\\
+=& \prod_{i=1}^n (Var(X_1) + E[X_i]^2) - \prod_{i=1}^n (E[X_i])^2\\
+\end{split}
+\end{equation}
+
+
+
+The variance of a uniform distribution: $\frac{(\beta-\alpha)^2}{12}$.
+
+
+
+\subsection{Main effect index}
+
+The \textbf{main effect index} of input $X_i$ is defined as
+
+\begin{equation}
+\frac{Var_{X_i}(E[Y\mid X_i])}{Var(Y)}
+\end{equation}
+
+Application: given a function like
+
+\begin{equation}
+Y = 1.1 x_1 + x_2 + x_1 x_2 + x_3^3
+\end{equation}
+
+If we have \textbf{one} shot at learning about one of the inputs, which one should it be? 
+Method: find the main effect (ME) index of each RV, and then choose the one with the largest index. 
+
+If we want to learn which of \textbf{two} inputs we should try to learn about, compute the ME index conditioning Y on pairs of RVs ($X_1, X_2$ etc).
+
+Let $X_1 \sim N(0,4)$, $X_2 \sim U(-4,4)$ and $X_3 \sim N(0,3)$.
+
+If we have to choose one variable to measure, we should choose the one with the highest main effect index. So compute, for one input:
+
+\begin{enumerate}
+\item $Var([Y\mid X_1])$
+\item $Var([Y\mid X_2])$
+\item $Var([Y\mid X_3])$
+\end{enumerate}
+
+For two inputs, compute:
+
+\begin{enumerate}
+\item $Var([Y\mid X_1, X_2])$
+\item $Var([Y\mid X_1, X_3])$
+\item $Var([Y\mid X_2, X_3])$
+\end{enumerate}
+
+
+\textbf{See task 18 solution}.
 
 \end{multicols}
 
