@@ -416,11 +416,14 @@ Compute CIs on log odds, and then exponentiate to get back to odds space.
 
 \subsection{Paired data: McNemar's test}
 
-x= no of mismatched pairs (pairs of 0,1 and 1,0 cases)
+x= no of mismatched pairs (pairs of 0,1 or pairs of 1,0 cases)
 
-n= total no of cases
+n= total no of mismatched pairs
 
-p-value is P(X$<$x or X$>$(n-x))
+Suppose we have 15 mismatched pairs, of which 3 are 0,1. Then 
+the p-value is 
+$2\times P(X\leq 3)$ using binomial distribution:
+$2 \sum_{x=0}^3 {15 \choose x} (\frac{1}{2})^{15}$.
 
 For large n, $\frac{(n_{01}-n_{10})^2}{n_{01}+n_{10}} \sim \chi_1^2$.
 
@@ -577,7 +580,7 @@ s_{\bar{D}_2}^2/n_2
 \item If carryover effect is present, then only analyze first period. Should have used a longer washout period.
 \end{enumerate}
 
-\subsection{Carryover effects binary responses}
+\subsection{Carryover effects binary responses: Mainland-Gart test}
 
 Mainland-Gart test: p.\ 90
 
@@ -586,6 +589,53 @@ Mainland-Gart test: p.\ 90
 \item Count how many cases in group 2 had better outcome in second period (for the same trmt as in group 1).
 \item Make contingency table and do chi-sq test.
 \end{enumerate}
+
+
+Example:
+
+\underline{Observed}:
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+sequence & first period & second period & total\\
+\hline
+A$\rightarrow$ B & 9 & 0 & 9\\
+B$\rightarrow$ A & 1 & 6 & 7\\
+\hline
+total & 10 & 6 & 16\\
+\hline
+\end{tabular}
+
+Compute $X^2 = \frac{\sum (o-e)^2}{e}$, where 
+e = (row sum $\times$ col sums)/total.
+
+\underline{Expected}:
+
+\begin{tabular}{|c|c|c|}
+\hline
+sequence & first period & second period \\
+\hline
+A$\rightarrow$ B & $\frac{9\times 10}{16}$ &  $\frac{9\times 6}{16}$\\
+B$\rightarrow$ A & $\frac{7\times 10}{16}$ & $\frac{7\times 6}{16}$ \\
+\hline
+\end{tabular}
+
+
+
+\begin{equation}
+X^2 = \frac{(9 - \frac{9\times 10}{16})^2}{\frac{9\times 10}{16}} + 
+\frac{(0 - \frac{9\times 6}{16})^2}{\frac{9\times 6}{16}} + 
+\frac{(1-\frac{7\times 10}{16})^2}{\frac{7\times 10}{16}} + \frac{(6-\frac{7\times 6}{16})^2}{\frac{7\times 6}{16}}
+\end{equation}
+
+<<>>=
+(9-(9*10/16))^2/(9*10/16) + 
+  (0-(9*6/16))^2/(9*6/16) + 
+  (1-(7*10/16))^2/(7*10/16) + 
+  (6-(7*6/16))^2/(7*6/16)
+
+1-pchisq(12.34,df=1)
+@
 
 \section{Randomization}
 
@@ -1513,6 +1563,64 @@ plot(survfit(lymphomacoxph),
 
 
 \section{Sampling Theory and Design of Experiments}
+
+\subsection{Different ways to write a linear model}
+
+\begin{enumerate}
+\item j indexes observations: j=1,\dots, n.
+
+\begin{equation}
+Y_j= f(x_j)^T \beta + \epsilon_j
+\end{equation}
+
+E.g., $f(x_j)^T= (1~x_1)$. (p.\ 6)
+\item 
+
+\begin{equation}
+y_i = \beta_0 + \beta_1 x_1 + \epsilon_i
+\end{equation}
+
+i indexes observation.
+\item 
+
+\begin{equation}
+EY = x_1 + x_2 + x_3
+\end{equation}
+
+\item On p.\ 18
+
+\begin{equation}
+Y_{ij}= \mu_i + \epsilon_{ij}
+\end{equation}
+
+i indexes different treatment groups
+
+j indexes observed response
+
+\item On p.\ 21 
+
+\begin{equation}
+Y_{ij} = \mu + \alpha_i + \tau_j + \epsilon_{ij}
+\end{equation}
+
+i indexes block, and j indexes treatment.
+
+\item On p.\ 22, with replicates, k indexes the replicates:
+
+\begin{equation}
+Y_{ijk} = \mu + \alpha_i + \tau_j +
+(\alpha \tau)_{ij}
++
+\epsilon_{ijk}
+\end{equation}
+
+i indexes block, j indexes treatment
+
+\end{enumerate}
+
+
+
+
 
 \subsection{Review of General Linear Models}
 
@@ -2657,6 +2765,58 @@ Consists of three sets of contrast specifications:
 
 page 43.
 
+\subsection{Designs for mixture experiments (simplex lattice, simplex centroid)}
+
+\paragraph{Simplex lattice design}
+
+\underline{Example 1}: An SLD for a mixture with three constituents when a second order model is to be fitted (i.e., d=2).
+
+$\{0,1/2,1\}$
+
+
+Here, we need the following rows: 
+
+\begin{enumerate}
+\item
+(1,0,0), (0,1,0), (0,0,1)
+\item 
+All pairwise combinations of 1/2 and 1/2.
+\end{enumerate}
+
+\underline{Example 2 (old exam)}: An SLD for a mixture with three constituents when a third order model is to be fitted (i.e., d=3).
+
+$\{0,1/3,2/3,1\}$
+
+Here, we need the following rows: 
+
+\begin{enumerate}
+\item
+(1,0,0), (0,1,0), (0,0,1)
+\item 
+All pairwise combinations of 1/3 and 2/3.
+\item 
+One row of (1/3, 1/3, 1/3).
+\end{enumerate}
+
+\paragraph{Simplex centroid design}
+
+\underline{Example}: SCD for a mixture with three constituents.
+
+$\{0,1/3,1/2,1\}$
+
+Notice that we don't have 2/3 here. So, we get the rows:
+
+\begin{enumerate}
+\item
+(1,0,0) etc.
+\item
+All pairwise 1/2 and 1/2
+\item 
+One row of 1/3, 1/3, 1/3.
+\end{enumerate}
+
+Here, a third order polynomial can be fitted.
+
 \subsection{Continuous and exact designs: The General Equivalence Theorem}
 
 Considering continuous predictors, let $\Omega$ be the design region, consisting of the set of points $x_1, \dots, x_k$. Suppose we have $n_i$ for $x_i$, so that
@@ -3408,6 +3568,62 @@ s^2 = \frac{(n_1 - 1)s_1^2 + n_1\bar{x}_1)^2 + (n_2 - 1)s_2^2 + n_2\bar{x}_2)^2 
 Pretty neat!
 
 \section{Capture-recapture sampling}
+
+Goal is to estimate population size.
+
+Method:
+
+\begin{enumerate}
+\item Draw a random sample of size $n$ (without replacement) from the population. Each member of the sample is tagged.
+\item Release all members back to population.
+\item Draw a second random $m$ (without replacement), observe the number of tagged individuals $r$. 
+\end{enumerate}
+
+The Peterson estimator (or Lincoln index) of population size N:
+
+\begin{equation}
+\hat N_p = \frac{nm}{r} 
+\end{equation}
+
+This assumes that n/N is similar to r/m. 
+
+If N is large relative to m, we can assume that
+
+\begin{equation}
+r \sim Bin(m,n/N)
+\end{equation}
+
+Then, 
+
+\begin{equation}
+Var(\hat N_p) = \frac{mn^2(m-r)}{r^3}
+\end{equation}
+
+An alternative is the Chapman estimator, 
+which is unbiased for $n+m>N$:
+
+\begin{equation}
+\hat N_p = \frac{(n+1)(m+1)}{r+1}-1
+\quad
+Var(\hat N_p)=\frac{(n+1)(m+1)(n-r)(m-r)}{(r+1)^2(r+2)}
+\end{equation}
+
+This method assumes that
+
+\begin{enumerate}
+\item 
+The population size does not change between first and second samples.
+\item 
+All members of the population are equally likely to be captured, there are no trap shy or trap happy members.
+\end{enumerate}
+
+\section{Ordered populations}
+
+Suppose the population are numbered from 1 to N. We take a sample of size n, and observe the maximum number in our sample to be m. Goal: estimate N.
+
+\begin{equation}
+\hat N = M \frac{n+1}{n} - 1
+\end{equation}
 
 \section{Sensitivity Analysis}
 
