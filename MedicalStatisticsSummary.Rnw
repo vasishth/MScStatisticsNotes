@@ -3022,6 +3022,162 @@ x_2\\
 
 This will be maximal when $x_1^2 = x_2^2 =1$ and then it equals 2, which is equal to the number of parameters, hence optimal.
 
+\section{Old exam problem: Orthogonality, optimality}
+
+Suppose we have a model like
+
+\begin{equation}
+Y_i = \beta_0 + \beta_1 (x_i - \bar{x}) + \epsilon_i
+\end{equation}
+
+\begin{enumerate}
+\item
+Show that $\beta_0$ and $\beta_1$ are orthogonal.
+
+\begin{equation}
+X=
+\begin{pmatrix}
+1 & (x_1-\bar{x})\\
+1 & (x_1-\bar{x})\\
+\vdots & \vdots\\
+\end{pmatrix}
+\end{equation}
+
+So, 
+
+\begin{equation}
+\begin{split}
+X^T X=&
+\begin{pmatrix}
+1 & 1 & \dots \\
+(x_1-\bar{x}) & (x_2-\bar{x}) & \dots \\
+\end{pmatrix}
+\begin{pmatrix}
+1 & (x_1-\bar{x})\\
+1 & (x_2-\bar{x})\\
+\vdots & \vdots\\
+\end{pmatrix}\\
+= &
+\begin{pmatrix}
+n & \sum x_i -n \bar{x}\\
+\sum x_i -n \bar{x} & \sum (x_i -\bar{x})^2\\
+\end{pmatrix}\\
+\end{split}
+\end{equation}
+
+Now, $\sum x_i n\bar{x}=0$, so orthogonal.
+
+\item Compute estimates of $\beta$:
+Since 
+
+\begin{equation}
+X^T X=
+\begin{pmatrix}
+n & 0\\
+0 & \sum (x_i -\bar{x})^2\\
+\end{pmatrix}
+\end{equation}
+
+the inverse is
+
+\begin{equation}
+(X^T X)^{-1}=
+\frac{1}{n\sum (x_i -\bar{x})^2}
+\begin{pmatrix}
+\sum (x_i -\bar{x})^2 & 0\\
+0 & n\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\frac{1}{n} & 0 \\
+0 & \frac{1}{\sum(x_i - \bar{x})^2}\\
+\end{pmatrix}
+\end{equation}
+
+Since 
+
+\begin{equation}
+X^T Y =
+\begin{pmatrix}
+1 & 1 & \dots \\
+(x_1-\bar{x}) & (x_2-\bar{x}) & \dots \\
+\end{pmatrix}
+\begin{pmatrix}
+Y_1 \\
+Y_2\\
+\vdots\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sum y_i \\
+\sum(x_i-\bar{x})y_i \\
+\end{pmatrix}
+\end{equation}
+
+So, 
+
+\begin{equation}
+(X^TX)^{-1}X^T Y=
+\begin{pmatrix}
+\frac{1}{n} & 0 \\
+0 & \frac{1}{\sum(x_i - \bar{x})^2}\\
+\end{pmatrix}
+\begin{pmatrix}
+\sum y_i \\
+\sum(x_i-\bar{x})y_i \\
+\end{pmatrix}
+\end{equation}
+
+\item Give variances of $\beta$: just compute $\sigma^2 (X^TX)^{-1}$.
+
+\item Derive the standardized variance of prediction at doze $x_0$:
+
+\begin{equation}
+\begin{split}
+d(x_0) =& n 
+\begin{pmatrix}
+1 & (x_0 - \bar{x})
+\end{pmatrix}
+\begin{pmatrix}
+\frac{1}{n} & 0 \\
+0 & \frac{1}{\sum(x_i - \bar{x})^2}\\
+\end{pmatrix}
+\begin{pmatrix}
+1 \\
+(x_0 - \bar{x})\\
+\end{pmatrix}\\
+= & 
+n
+\begin{pmatrix}
+\frac{1}{n} \\
+\frac{(x_0 - \bar{x})^2}{\sum(x_i - \bar{x})^2}\\
+\end{pmatrix}\\
+= & 
+1 + \frac{(x_0 - \bar{x})^2}{\sum(x_i - \bar{x})^2/n}
+\end{split}
+\end{equation}
+
+\item Let n=4, and measurements be x=2,2.3,2.7,3. The design region is the interval [2,3].
+
+An alternative design that's superior:
+
+<<>>=
+X<-matrix(c(1,1,1,1,2,2.3,2.7,3)-
+            c(0,0,0,0,2.5,2.5,2.5,2.5),
+          ncol=2)
+
+## Determinant:
+det(t(X)%*%X)
+
+## alternative design:
+X1<-matrix(c(1,1,1,1,-2,-1,1,2),ncol=2)
+
+## D-optimality better:
+det(t(X1)%*%X1)
+@
+
+d(x) in old design would be maximally 1.72, but the new one is 2.6.
+\end{enumerate}
 
 \section{Sampling theory}
 
