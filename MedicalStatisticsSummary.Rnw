@@ -823,6 +823,81 @@ h(t) & \lambda  &  \lambda \gamma t^{\gamma-1}\\
 
 In Weibull, if $\gamma>1$ hazard is increasing, and if $\gamma<1$ hazard is decreasing. If $\gamma=1$, then the Weibull reduces to the exponential.
 
+\subsection{Important application of the survival equations (Task 5)}
+
+Reviewing the equations:
+
+\begin{enumerate}
+\item Survival function:
+
+\begin{equation}
+S(t) = 1- F(t) \Rightarrow F(t) = 1 - S(t)
+\end{equation}
+
+Also, since $F'(t)=f(t)$, it follows that $f(t)=-S'(t)$.
+
+\item Hazard function:
+
+\begin{equation}
+h(t) = \frac{f(t)}{S(t)} \Rightarrow h(t) = \frac{-S'(t)}{S(t)} 
+\end{equation}
+
+\item CDF of the Hazard function:
+
+\begin{equation}
+H(t) = \int_0^t h(u)\, du = - \log(S(t))
+\end{equation}
+
+\end{enumerate}
+
+Suppose that the survivor function for a individual with covariate x satisfies:
+
+\begin{equation}
+S(t;x) = S_0(t\exp(-\beta^T x))
+\end{equation}
+
+where $S_0$ is some baseline survivor function.
+
+Show that the corresponding hazard function satisfies:
+
+$$h(t;x)=\exp(-\beta^T x) h_0 (t\exp(-\beta^T x)$$
+
+\textbf{Solution}:
+
+\textbf{Step 1}:
+
+The hazard function is:
+
+\begin{equation}
+h(t) = \frac{f(t)}{S(t)} \Rightarrow h(t) = \frac{-S'(t)}{S(t)} 
+\end{equation}
+
+Find the derivative S'(t) and plug the derivative and the expansion of S(t) into this hazard function equation.
+
+$$S'(t) = \exp(-\beta^Tx S_0'(t \exp(-\beta^Tx)$$
+
+\begin{equation}
+h(t) = \frac{f(t)}{S(t)} \Rightarrow h(t) = \frac{-S'(t)}{S(t)} = -\frac{\exp(-\beta^Tx S_0'(t \exp(-\beta^Tx)}{S_0(t\exp(-\beta^T x))}
+\end{equation}
+
+
+\textbf{Step 2}:
+Notice that the baseline hazard $h_0(t)$  is:
+
+\begin{equation}
+h_0(t) = \frac{f(t)}{S_0(t)} \Rightarrow h(t) = \frac{-S_0'(t)}{S_0(t)} 
+\end{equation}
+
+which is what we have above.
+
+\textbf{Step 3}: Plug in $h_0(t)$:
+
+\begin{equation}
+h(t)= -\frac{\exp(-\beta^Tx S_0'(t \exp(-\beta^Tx)}{S_0(t\exp(-\beta^T x))} =
+\exp(-\beta^Tx h_0(t)
+\end{equation}
+
+
 \subsection{Life tables}: to-do
 
 
@@ -1302,7 +1377,7 @@ Group 2 $\hat \lambda=\frac{1}{\exp(3.381+ 0.783 )}=0.0155$.
 
 Note that the effect is not significant, as computed by hand above.
 
-\underline{Old exam question}:
+\textbf{Old exam question}:
 
 Survival times in days of 26 patients randomized to one of two chemo treatments for ovarian cancer.
 
@@ -1497,7 +1572,7 @@ detach(braintu)
 
 \subsection{Regression models}
 
-\textbf{Accelerated failure time}
+\subsubsection{Accelerated failure time}
 
 <<>>=
 load("data/wbcleuk.Rdata")
@@ -1523,7 +1598,9 @@ $\frac{1}{\exp(\hat\mu \pm 1.96 SE)}$.
 
 
 
-\textbf{Proportional hazards}
+\subsubsection{Proportional hazards}
+
+\textbf{Model assumption checked by plotting complementary log-log survival probability against time. The curves should be roughly parallel}.
 
 For example, let the baseline hazard function be $h_0(t)$. Then, the form of the model is:
 
@@ -1544,23 +1621,34 @@ summary(wbccoxph)
 plot(survfit(wbccoxph))
 @
 
-Example using lymphoma data:
+
+\subsection{Task 5: Review questions}
+
+Lymphoma data:
 
 <<eval=FALSE>>=
 load("data/lymphoma.Rdata")
-attach(lymphoma)
-lymphomaSurv<-Surv(time,censor)
-stage<-factor(stage)
-lymphomacoxph<-coxph(lymphomaSurv~strata(stage))
-detach(lymphoma)
+lymphomaSurv<-Surv(lymphoma$time,
+                   lymphoma$censor)
+stage<-factor(lymphoma$stage)
 
+## Kaplan-Meier: strata is used here
+KMlymphoma<-survfit(lymphomaSurv~stage)
+summary(KMlymphoma)
+
+plot(KMlymphoma)
+plot(KMlymphoma,fun="cloglog")
+
+##log rank test:
+LogRanklymphoma<-survdiff(lymphomaSurv~stage)
+LogRanklymphoma
+
+## cox ph:
+lymphomacoxph<-coxph(lymphomaSurv~stage)
+lymphomacoxph
 summary(lymphomacoxph)
 plot(survfit(lymphomacoxph))
-plot(survfit(lymphomacoxph),
-     fun="cloglog")
 @
-
-
 
 \section{Sampling Theory and Design of Experiments}
 
@@ -1830,11 +1918,20 @@ X=\begin{pmatrix}
 
 This matrix full rank (i.e., non-singular) iff there exists no linear relationship like: 
 
-\begin{equation}
+\begin{equation} \label{fullrank}
 \lambda_0 + \lambda_1 x_{1j} + \lambda_2 x_{2j} = 0 \quad \hbox{ for } j = 1,2,3
 \end{equation}
 
 $\lambda_i$ are not all zero. 
+
+\underline{Example of non-full rank}:
+
+<<>>=
+(m<-matrix(c(1,1,1,1,0,1/2,0,1,1/2),ncol=3))
+lambda<-matrix(c(1,-1,-1))
+m%*%lambda
+@
+
 
 If X has full rank, the three points are not collinear. Example of collinearity: each triple of rows is for each group $\alpha_i$.
 
@@ -1876,7 +1973,7 @@ This motivates the use of the corner-point constraint (dummy coding) or effects 
 
 The first two parameters as $\alpha_1$ and $\alpha_2$.
 
-\textbf{Example}: Let $y=\beta_0 + \beta_1 x$. How to make the design matrix orthogonal? Centering achieves that.  (to-do: discussion based on Draper and Smith)
+\textbf{Example}: Let $y=\beta_0 + \beta_1 x$. How to make the design matrix orthogonal? Centering achieves that; see section~\ref{centering}.
 
 \subsection{Orthogonality}
 
@@ -2171,6 +2268,50 @@ Using the product rule,
 $dy^2/d^2x = -4a \times (-4a) -4\times(2 - 2a^2)=16a^2-8 + 8a^2=-8 < 0$ when a=0. Hence maximum at a=0.
 
 
+\textbf{Old exam problem}:
+
+Given three design points: (1,0,0), (0,1,0), and (0,0,1). The model is
+
+\begin{equation}
+EY = \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_{12} x_{12} + \beta_{13} x_{13} + \beta_{23} x_{23}
+\end{equation}
+
+The model matrix is:
+
+<<>>=
+(m<-matrix(c(1,0,0,0,1,0,0,0,1),ncol=3))
+(x1x2<-m[,1]*m[,2])
+(x1x3<-m[,1]*m[,3])
+(x2x3<-m[,2]*m[,3])
+m2<-cbind(m,x1x2,x1x3,x2x3)
+## replicate:
+m3<-rbind(m2,m2)
+## X^TX
+XTX<-t(m3)%*%m3
+## singular:
+#solve(XTX)
+@
+
+Now, suppose we add the points (a,1-a,0), (a,0,1-a), (0,a,1-a). Then we have a matrix like this now for a=1/2:
+
+<<>>=
+a<-1/2
+m3<-matrix(c(a,(1-a),0,
+             (1-a),0,a,
+             0,a,(1-a)),ncol=3)
+m4<-rbind(m,m3)
+(x1x2<-m4[,1]*m4[,2])
+(x1x3<-m4[,1]*m4[,3])
+(x2x3<-m4[,2]*m4[,3])
+m5<-cbind(m4,x1x2,x1x3,x2x3)
+## det(XTX) largest for a=1/2:
+## a=0: det=0
+## a=1: det=0
+## a=1/2, det>0:
+det(t(m5)%*%m5)
+@
+
+The new design matrix is D-optimal when a=1/2, because the lower-right block matrix determines the determinant of the whole matrix, and is largest when a=1/2. 
 
 \subsubsection{G-optimality: Considers worst-case scenario}
 
@@ -2253,13 +2394,13 @@ We are going to replace the RHS above with the LHS in the equation below (see bo
 \begin{equation}
 \begin{split}
 =& \frac{1}{S_{xx}}
-(\sum x^2 - 2x \sum x + x^2n)\\
-=& \frac{1}{S_{xx}}
+(\sum x^2 - 2x \sum x + x^2n)
+= \frac{1}{S_{xx}}
 (\sum x^2 + x^2n - 2x \sum x)
 \\
 =& \frac{1}{S_{xx}}
-(\sum x^2 + x^2n - 2x \sum x)\\
-=& \frac{1}{S_{xx}}
+(\sum x^2 + x^2n - 2x \sum x)
+= \frac{1}{S_{xx}}
 (\sum x^2 + x^2n - 2nx \bar{x}) \quad (\because 2x \sum x = 2nx \bar{x})  \\
 =& \frac{1}{S_{xx}}
 (\sum x^2 + n(x-\bar{x})^2 - \mathbf{n\bar{x}^2})
@@ -2681,7 +2822,9 @@ Just replace each block by treatments that did not appear in that block.
 
 
 
-\subsection{Factorial designs}
+\subsection{Factorial designs} 
+
+See later.
 
 \subsection{Complete factorial design}
 
@@ -2727,7 +2870,69 @@ The approach is to define t Block generators. This gives $2^t$ blocks. For the F
 
 The number of observations needed now is $n=2^m/2^t=2^{m-t}$. See Example 6.3.3 on p.\ 39 and project for a detailed example.
 
-The \textbf{resolution} is the highest order of interaction that is possible to investigate.
+The \textbf{resolution} R of a FFD is defined as the order of the lowest order interaction which
+is confounded with $\beta_0$.
+
+\paragraph{Interesting exam problem}
+
+Show that in an FFD with six predictors $x_1,\dots,x_6$, adding a replicate by just reusing an existing row will be D-optimal.
+
+<<>>=
+library(planor)
+## define factor specifications:
+ex0Fac <- planor.factors(factors=c("A","B","C","D","E","F"),
+                         nlevels=rep(2,6))
+## define model and parameters to be estimated:
+ex0Mod <- planor.model(model=~1+A+B+C+D+E+F, 
+         estimate=~1+A+B+C+D+E+F)
+
+## generate design matrix:
+ex0Key <- planor.designkey(factors=ex0Fac, model=ex0Mod, nunits=8)
+## design matrix:
+ex0Des <- planor.design(ex0Key)
+
+designmat<-as.data.frame((getDesign(ex0Des)))
+## create design matrix:
+m<-matrix(rep(NA,8*6),ncol=6)
+for(i in 1:8){
+  for(j in 1:6){
+    m[i,j]<-ifelse(as.numeric(designmat[i,j])==1,-1,1)
+  }
+}
+
+## The FFD:
+m
+##Note that X^TX is orthogonal:
+t(m)%*%m
+round(solve(t(m)%*%m),digits=1)
+## compute determinant:
+det(t(m)%*%m)
+## add replicate by reusing last row:
+m2<-rbind(m,m[8,])
+
+## Note that orthogonality is lost
+## if we add a single replicate:
+t(m2)%*%m2
+
+## determinant increases: hence D-optimal:
+det(t(m2)%*%m2)
+
+## If the point added is 1's:
+m3<-rbind(m,rep(1,6))
+## This only makes off diagonals +1:
+##t(m3)%*%m3
+## Does not change determinant:
+det(t(m3)%*%m3)
+@
+
+So it would still be D-optimal to add a single data point by just repeating a row:
+
+<<>>=
+m4<-rbind(m3,m3[8,])
+#t(m4)%*%m4
+det(t(m4)%*%m4)
+@
+
 
 \subsection{Screening expts}
 
@@ -2766,6 +2971,15 @@ Consists of three sets of contrast specifications:
 page 43.
 
 \subsection{Designs for mixture experiments (simplex lattice, simplex centroid)}
+
+Notice that the intercept has to be removed in mixture designs because otherwise the matrix would not be full rank (see equation~\ref{fullrank}):
+
+<<>>=
+m<-matrix(c(1,1,1,1,0,1/2,0,1,1/2),ncol=3)
+lambda<-matrix(c(1,-1,-1))
+m%*%lambda
+@
+
 
 \paragraph{Simplex lattice design}
 
@@ -3022,7 +3236,7 @@ x_2\\
 
 This will be maximal when $x_1^2 = x_2^2 =1$ and then it equals 2, which is equal to the number of parameters, hence optimal.
 
-\section{Old exam problem: Orthogonality, optimality}
+\subsection{Old exam problem: Orthogonality, optimality, centering}\label{centering}
 
 Suppose we have a model like
 
@@ -3065,7 +3279,7 @@ n & \sum x_i -n \bar{x}\\
 \end{split}
 \end{equation}
 
-Now, $\sum x_i n\bar{x}=0$, so orthogonal.
+Now, $\sum x_i - n\bar{x}=0$, so orthogonal.
 
 \item Compute estimates of $\beta$:
 Since 
@@ -3279,8 +3493,7 @@ Recall that $\sum (x_i - \bar{x})^2 = \sum x_i^2 - N \bar{x}^2$.
 \begin{split}
 Var(x_i) =& E[x_i^2] - (E[x_i])^2\\
 =& \sum_{j=1}^N x_j^2 p(x_i = x_j) - \bar{x}^2\\
-=& \frac{1}{N} \sum_{j=1}^N(x_j^2 - N\bar{x}^2)\\
-=& \frac{1}{N} \sum_{j=1}^n(x_i - \bar{x})^2\\
+=& \frac{1}{N} \sum_{j=1}^N(x_j^2 - N\bar{x}^2) =  \frac{1}{N} \sum_{j=1}^n(x_i - \bar{x})^2\\
 \end{split}
 \end{equation}
 
@@ -3586,10 +3799,12 @@ $S^2$ comes from a pilot survey or from previous work.
 \end{equation}
 
 \begin{tabular}{|c|c|}
+\hline
  & Unbiased est.\\
 \hline 
 $Var(p)=(1-f)S^2/n$ & $Var(p) =(1-n/N)p(1-p)/(n-1) $\\
 $S^2 = NPQ/(N-1)$ & $s^2 = npq/(n-1)$\\
+\hline
 \end{tabular}
 
 \textbf{Confidence intervals for P}
@@ -3615,21 +3830,39 @@ Main advantage of stratification: when within strata variance is smaller than be
 var(\bar{x}_{st})  = \sum (\frac{N_i}{N})^2 \frac{(1-n_i/N_i)}{n_i} S_i^2
 \end{equation}
 
-\subsection{Choice of sample size: Statified Sampling}
+\subsection{Choice of sample size: Stratified Sampling}
 
-\paragraph{Proportional allocation}
+\subsubsection{Proportional allocation}
 
 Size of SRS within a stratum is proportional to stratum size.
 
 $N_i/N$
 
-\paragraph{Neyman allocation}
+Variance (p.\ 76):
+
+$$
+Var(\bar{x}_{st(p)}) = 
+\frac{(1-f)}{nN}\sum_{i=1}^l N_i S_i^2
+\quad f=n/N
+$$
+
+
+
+\subsubsection{Neyman allocation}
 
 Let n be entire sample size.
 
 \begin{equation}
 n_i = n \frac{N_i S_i}{\sum N_i S_i}
 \end{equation}
+
+Variance:
+
+$$
+Var(\bar{x}_{st})=\frac{1}{N^2}\frac{(\sum N_i S_i)^2}{n} - \frac{\sum N_i S_i^2}{N^2}
+$$
+
+\textbf{Neyman allocation is better if there is greater variability in stratum variances}. 
 
 \paragraph{Minimizing variance within fixed cost}
 
@@ -3722,6 +3955,44 @@ s^2 = \frac{(n_1 - 1)s_1^2 + n_1\bar{x}_1)^2 + (n_2 - 1)s_2^2 + n_2\bar{x}_2)^2 
 \end{equation}
 
 Pretty neat!
+
+\section{Cluster sampling}
+
+Divide population into $\ell$ strata, take SRS of strata, and measure all units in those strata.
+Each stratum is a cluster.
+
+Gain: economical, no gain in precision.
+
+Let there be L clusters, each of size K.
+
+\begin{equation}
+\bar{x}_{cl} = \frac{\ell K}  \sum_{i=1}^\ell 
+\sum_{j=1}^K x_{ij}
+\quad
+var(\bar{x}_{cl}) = \frac{1-f}{\ell} 
+\frac{1}{L-1} \sum_{i=1}^L (\bar{X}_i - \bar{X})^2
+\end{equation}
+
+where $f=\frac{\ell}{L} = \frac{\ell K}{LK}$, the sampling fraction.
+
+\textbf{Comparison with SRS and stratified sampling}: In SRS, 
+
+\begin{equation}
+var(\bar{x}) = (1-\frac{\ell}{L}) \frac{S^2}{\ell K}
+\end{equation}
+
+\begin{tabular}{|c|c|c|}
+\hline
+Within cluster var low & Betw. cluster var. high & 
+$\Rightarrow$ SRS\\
+Within cluster var high & Betw. cluster var. low & 
+$\Rightarrow$ CS\\
+\hline
+\end{tabular}
+
+Cf.\ Stratified sampling is better than SRS when
+strata are homogeneous (within strata var is small) but well separated (large difference between stratum means).
+
 
 \section{Capture-recapture sampling}
 
@@ -3840,6 +4111,15 @@ Cov(aX+b,Y)= aCov(X,Y)
 Cov(aX+bY+cZ,W)= Cov(aX,W)+Cov(bY,W)+Cov(cZ,W)
 \end{equation}
 \end{enumerate}
+
+\begin{equation}
+\begin{split}
+Cov(X,XY) =& E(X^2Y) - E(X) E(XY) = E(X^2) E(Y) - (E(X))^2 E(Y)\\
+=& E(Y). {E(X^2) - (E(X))^2} \hbox{ by indep.}\\
+=& E(Y).var(X)\\
+\end{split}
+\end{equation}
+
 
 \subsection{Expectation and variance: Some unfamiliar results}
 
