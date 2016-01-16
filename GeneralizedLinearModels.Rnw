@@ -163,7 +163,7 @@ The big thing about the canonical link is that is expresses $\theta_i$ as a line
 
 
 <<echo=F>>=
-load("MAS473.RData")
+load("data/MAS473.RData")
 @
 
 
@@ -383,6 +383,7 @@ est.\ Var(\log \hat{\lambda})=& \frac{1}{s}+\frac{1}{n-s}\\
 \textbf{Example}: Beetle dataset.
 
 <<>>=
+head(beetle)
 fm1<-glm(propn.dead~conc,
          binomial(logit),
          weights=number,
