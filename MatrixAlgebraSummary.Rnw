@@ -130,7 +130,6 @@ options(continue=" ")
 
 \section{Vectors}
 
-
 A vector is an ordered triple. It has a geometric interpretation only when the coordinates are established.
 
 \begin{equation}
@@ -167,15 +166,13 @@ then
 \vect{a} = x_1 \vect{i} + y_1 \vect{j} + z_1 \vect{k} 
 \end{equation}
 
-Dot product:
+Dot (Inner) product:
 
 \begin{equation}
 	\vect{a}\cdot \vect{b} = a_1 b_1 + a_2 b_2 + a_3 b_3  
 \end{equation}
 
 Note that
-
-
 
 \begin{equation}
 \vect{a}\vect{a} = \mid\mid \vect{a} \mid \mid ^2
@@ -194,6 +191,9 @@ Also,
 \end{equation}
 
 
+Outer product: $a\times b$, where a is an $n\times 1$ matrix and b $a 1 \times n$.
+Outer product is defined for matrices of any dimensions and results in a matrix.
+Compare with inner product, which is defined only for vectors and results in a scalar. Note also that the outer product is not symmetric, but the inner product is.
 
 
 \section{Basic facts about matrices}
@@ -492,6 +492,10 @@ $tr(A + B) = tr(A) + tr(B)$
 $tr(cA) = ctr(A)$
 \item
 $tr(AB) = tr(BA)$
+\item
+Let u and v both be $m \times 1$ vectors. Then $tr(uv') = u'v = v'u$. 
+
+[Example application: If we are given a square matrix A, then there doesn't exist  another square matrix X that satisfies the equation AX − XA = I because the trace of the LHS is 0 and the trace of the RHS is 1.]
 \end{enumerate}
 
 Here's a trick used for evaluating MLE of MVN:
@@ -562,6 +566,37 @@ $A_{n\times n}$ has only one 1 in any row or column; 0's in others.
 
 For any conformable matrix X, AX permutes X's rows, and XA permutes its columns.
 
+Also, $A'A = AA' = I$. As a consequence, if we have permuted the rows/columns of a 
+matrix X by pre-/post-multiplication by a permutation matrix, then pre-/post-multiplication by $A'$ will give the original matrix X. Here, $A'$ is the \textit{inverse} of $A$.
+
+<<>>=
+## permutation matrix:
+P<-matrix(c(0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,1),ncol=4)
+t(P) ## its transpose is the
+solve(P) ## inverse
+@
+
+\section{Triangular matrices}
+
+Upper-/lower triangular matrices (which must be square matrices) have zeros below/above the diagonal.
+Strictly triangular matrices have zero on the diagonal as well. For a strictly triangular matrix A, $A^n=0$. Any square matrix (not necessarily triangular) that has
+$A^n = 0$ is called nilpotent. 
+
+``Triangular matrices play a very important role in numerical linear algebra. Most algorithms for solving general systems of linear equations rely upon reducing them to triangular systems. We will see more of these in the subsequent chapters. If, however, the constraints of an algorithm do not allow a general matrix to be conveniently reduced to a triangular form, reduction to matrices that are almost triangular often prove to be the next best thing. A particular type, known as Hessenberg matrices, is especially important in numerical linear algebra.'' 
+
+[Banerjee,  Sudipto. Linear Algebra and Matrix Analysis for Statistics. CRC Press, 06/2014.]
+
+\subsection{Hessenberg matrices}
+
+to-do 
+
+\section{Sparse matrices}
+
+These are matrices with lots of zeroes. We can use compressed row/column storage to 
+store the non-zero values, this can be used to speed up matrix multiplication. See section 1.6.4 of Banerjee book.
+
+Band matrices: to-do
+
 \section{Partitioned matrices}
 \subsection{Sub-matrix}
 
@@ -580,7 +615,9 @@ A_{21} & A_{22} \\
 \end{pmatrix}
 \end{equation}
 
-Addition and multiplication proceeds as for matrices with numerical cell entries.
+Addition and multiplication proceeds as for matrices with numerical cell entries (but the partitions in the two matrices have to conformable of course; see Banerjee et al book, section 1.4).
+
+Transposing works as follows:
 
 \begin{equation}
 A'=\begin{pmatrix}
