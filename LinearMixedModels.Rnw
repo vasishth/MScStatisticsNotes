@@ -90,12 +90,13 @@
     Version dated: \today}
 \end{center}
 
-<<echo=F>>=
-load("MAS473.RData")
-library(lme4)
-@
-
 \section{Background and review of linear model theory}
+
+<<echo=FALSE>>=
+library(lme4)
+load("data/MAS473.RData")
+#write.table(BHHshoes,file="BHHshoes.txt")
+@
 
 In linear modelling we model the mean of a response $Y_1,\dots,Y_n$ as a function of a vector of predictors $x_1,\dots,x_n$. We assume that the $Y_i$ are conditionally independent given $\mathbf{x}, \mathbf{\beta}$. When $Y$'s are not marginally independent, we have $Cor(Y_1,Y_2)\neq 0$, or $P(Y_2\mid Y_1)\neq P(Y_2)$.
 
@@ -931,7 +932,7 @@ For an ordinary linear model, the covariance matrix (from which we can get the c
 \sigma^2 \times (X^T X)^{-1}.
 \end{equation}
 
-For a mixed effects model, the standard deviations (standard errors) and correlations for the fixed effects estimators are listed at the end of the lmer output. 
+For a mixed effects model, the standard deviations (standard errors) and correlations for the fixed effects estimators are listed at the end of the lmer output. Here is an example from a data-set that measures some dependent variable ``wear'' as a function of three material types for 10 subjects:
 
 <<>>=
 lm.full<-lmer(wear~material-1+
@@ -944,7 +945,6 @@ Correlation of Fixed Effects:
           matrlA
 materialB 0.988 
 \end{verbatim}
-
 
 %(Note that you need to include the -1 term in the lmer command to match the parameterisation used in the solutions. The estimated correlation between $\hat{beta}_1$ and $\hat{beta}_2$ is $0.988$.
 %We're not going to cover how to derive the covariance matrix in general, as it's quite complicated, but as we have a balanced design, we have simple forms for the parameter estimators:
@@ -975,9 +975,6 @@ covar/(sds[1]*sds[2])
 #cf:
 covar/((0.786*sqrt(10))^2)  
 @
-
-
-
 
 \end{multicols}
 \end{document}
